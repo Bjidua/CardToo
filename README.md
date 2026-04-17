@@ -1,7 +1,3 @@
-# HokiCard
-Belajar Kampus Bareng
+# Cardtoo
 
-Hafiizh here
-ferrari wdc 2026
-Randi Ganteng
-Hafiizh here
+Every Change Update Must Update README.md
