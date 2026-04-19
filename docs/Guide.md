@@ -1,4 +1,3 @@
-
 # Command
 Wajib Sebelum Ngoding (buat update file)
 - git checkout develop 
@@ -14,7 +13,7 @@ Wajib Sesudah Ngoding (Update & Push file)
 ## 👩‍💻 Guide Contributor
 1. **Clone repo**
     ```bash
-    git clone https://github.com/Hafizcod/CardToo.git
+    git clone https://github.com/Bjidua/CardToo.git
     ```
 2. **Buat branch untuk fitur/bugfix baru**
     ```bash
