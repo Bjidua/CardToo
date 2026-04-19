@@ -10,6 +10,7 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 -
 
 ## 📂 Struktur Repo
+```plaintext
 📦 CardToo (Project Structure)
 ├── frontend/                  # File frontend & assets bisa langsung diakses browser
 │   ├── index.html           # Homepage utamamu
@@ -38,3 +39,4 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 ├── .gitignore               # File yang diabaikan oleh Git
 ├── LICENSE
 └── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
+```
