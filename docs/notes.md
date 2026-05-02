@@ -44,6 +44,5 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   
 ├── .env.local               # Variabel environment\API Key Appwrite
 ├── .gitignore               # File yang diabaikan oleh Git
-├── tailwind.config.js       # Pengaturan warna kustom Tailwind CSS
 └── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
 ```
