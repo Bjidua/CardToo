@@ -6,7 +6,7 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 
 ## 🚀 Fitur Utama (akan diupdate)
 - Daftar fitur website (None)
-- Teknologi: HTML, Tailwind CSS, Next.Js
+- Teknologi:  Next.Js, Tailwind CSS
 - Framework: React
 
 ## 📂 Struktur Repo
@@ -18,10 +18,10 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │ 
 ├── src/                     # Source code aplikasi
 │   ├── app/                 # Rute halaman web Next.js
-│   │   ├── layout.jsx       # Struktur kerangka aplikasi
-│   │   ├── page.jsx         # Halaman utama website
+│   │   ├── layout.tsx       # Struktur kerangka aplikasi
+│   │   ├── page.tsx         # Halaman utama website
 │   │   ├── global.css       # File utama Tailwind CSS
-│   │   └── products/        # Rute halaman daftar produk
+│   │   └── products/        # Rute halaman daftar produk (blm ada)
 │   │       └── [id]/        # Rute dinamis detail kartu
 │   │           └── page.jsx # Halaman detail kartu
 │   │ 
@@ -33,12 +33,14 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   └── appwrite.js      # Koneksi ke Appwrite
 │   │ 
 │   └── hooks/               # Fungsi pengatur data internal
-│       └── useCart.js       # Logika sistem keranjang belanja
+│       └── useCart.js       # Logika sistem keranjang belanja(blm ada)
 │    
 ├── docs/                    # Dokumentasi, panduan tugas, dsb
-│   ├── feature_guide.md     # Panduan fitur
+│	├── design_system        # Guideline utama design project
+│   ├── feature_guide.md     # Panduan fitur ada apa aja
 │   ├── notes.md             # Catatan
-│   └── Guide.md             # Panduan kerja 
+│   ├── to-do.md             # Fitur yang ingin di kerjakan
+│   └── guide.md             # Panduan kerja 
 │   
 ├── .env.local               # Variabel environment\API Key Appwrite
 ├── .gitignore               # File yang diabaikan oleh Git

@@ -9,6 +9,21 @@ Wajib Sesudah Ngoding (Update & Push file)
 - git commit -m "Yang lagi dibuat"
 - git push origin feature/nama-fitur
 
+## 📑 Struktur File
+- Struktur detail Projects: cek [[notes]]
+## Penginstallan Library
+Yang perlu di install agar lancar karena pake Next.js dan tailwind CSS
+1. Buka terminal di vscode
+2. Cek Framework di terminal
+	```bash
+	node -v
+	```
+3. Install framework di terminal vscode (jika step 2 tidak terpenuhi)
+	```bash
+	npm install
+	```
+4.  Tunggu sampe semua library terinstall dan run *step 2*
+5. Kalo ada error tanyain hafiiz
 
 ## 👩‍💻 Guide Contributor
 1. **Clone repo**
@@ -37,17 +52,10 @@ Wajib Sesudah Ngoding (Update & Push file)
 7. **Jangan push file yang di .gitignore**
 
 ## ⚠️ Note Workflow
-- Semua file utama (HTML, CSS, JS, ASSETS).
+- Semua file utama.
 - File sensitif, build, node_modules, cache, hasil npm install → IGNORE
 - Kalau ada asset yang terlalu besar/sensitif, jangan masuk repo. Share manual.
 
-## 🧑‍🤝‍🧑 Anggota Tim
-- Muhammad Hafiizh Abdillah (10124870)
-- Nama 2 (NIM)
-- dst.
-
-## 📑 Guide/SOP
-- Penjelasan detail/panduan kerja kelompok: cek [`Guide.md`](./Guide.md)
 
 ## 📝 License
 - _Tugas Kuliah_
