@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { SocialButton } from "@/components/ui/SocialButton";
 import { AuthCard } from "@/components/layout/AuthCard";
+import { Separator } from "@/components/ui/Separator";
 
 export default function RegisterPage() {
   return (
@@ -46,12 +47,7 @@ export default function RegisterPage() {
               Sign Up
             </Button>
 
-            {/* Separator */}
-            <div className="w-full flex items-center gap-4 py-2">
-              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
-              <span className="text-base text-black/50">OR</span>
-              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
-            </div>
+            <Separator label="OR" />
 
             <SocialButton provider="google" />
           </div>

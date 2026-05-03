@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { SocialButton } from "@/components/ui/SocialButton";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { AuthCard } from "@/components/layout/AuthCard";
+import { Separator } from "@/components/ui/Separator";
 
 export default function LoginPage() {
   return (
@@ -52,18 +53,13 @@ export default function LoginPage() {
               Sign In
             </Button>
             
-            <Link href="/login" className="w-full">
-              <Button variant="ghost" className="bg-background shadow-soft">
+            <Link href="/" className="w-full">
+              <Button variant="ghost" className="bg-surface shadow-soft">
                 Cancel
               </Button>
             </Link>
 
-            {/* Separator */}
-            <div className="w-full flex items-center gap-4 py-2">
-              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
-              <span className="text-base text-black/50">OR</span>
-              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
-            </div>
+            <Separator label="OR" />
 
             <SocialButton provider="google" />
           </div>

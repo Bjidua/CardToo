@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { BackButton } from "@/components/ui/BackButton";
 
+import bigLogo from "../../../../public/assets/big-logo.svg";
+
 export default function ForgotPasswordPage() {
   return (
     <main className="relative min-h-screen w-full bg-background px-6 flex flex-col items-center">
@@ -18,7 +20,7 @@ export default function ForgotPasswordPage() {
       {/* Illustration Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
         <Image
-          src="/assets/big-logo.svg"
+          src={bigLogo}
           alt="Illustration"
           width={180}
           height={164}

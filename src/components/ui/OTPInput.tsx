@@ -4,11 +4,13 @@ import React, { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface OTPInputProps {
+  label?: string;
+  error?: string;
   length?: number;
   onComplete?: (code: string) => void;
 }
 
-const OTPInput = ({ length = 4, onComplete }: OTPInputProps) => {
+const OTPInput = ({ label, error, length = 4, onComplete }: OTPInputProps) => {
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -38,27 +40,42 @@ const OTPInput = ({ length = 4, onComplete }: OTPInputProps) => {
   };
 
   return (
-    <div className="flex justify-between items-center w-full gap-4 sm:gap-[31px]">
-      {otp.map((digit, index) => (
-        <input
-          key={index}
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          maxLength={1}
-          value={digit}
-          ref={(el) => {
-            inputRefs.current[index] = el;
-          }}
-          onChange={(e) => handleChange(e.target.value, index)}
-          onKeyDown={(e) => handleKeyDown(e, index)}
-          className={cn(
-            "w-[64px] h-[64px] bg-[#F2F2F2] rounded-[24px] text-center text-xl font-bold text-black outline-none",
-            "focus:ring-2 focus:ring-primary/50 transition-all",
-            "select-none"
-          )}
-        />
-      ))}
+    <div className="flex flex-col gap-1.5 w-full">
+      {label && (
+        <label className="text-sm font-medium text-text-main ml-4">
+          {label}
+        </label>
+      )}
+
+      <div className="flex justify-between items-center w-full gap-4 sm:gap-[31px]">
+        {otp.map((digit, index) => (
+          <input
+            key={index}
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={1}
+            value={digit}
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
+            onChange={(e) => handleChange(e.target.value, index)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            className={cn(
+              "w-[64px] h-[64px] bg-surface rounded-[24px] text-center text-xl font-bold text-black outline-none transition-all",
+              "focus:ring-2 focus:ring-primary/50",
+              error && "ring-2 ring-danger/50",
+              "select-none"
+            )}
+          />
+        ))}
+      </div>
+
+      {error && (
+        <span className="text-xs text-danger ml-4 font-medium">
+          {error}
+        </span>
+      )}
     </div>
   );
 };
