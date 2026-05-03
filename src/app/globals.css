@@ -12,13 +12,21 @@
   --color-danger: #EF4444;
   --color-success: #A78BFA;
   --color-warning: #F59E0B;
+  --color-notification: #7A3CFF;
+
+  /* Grayscale & Surface Tokens */
+  --color-skeleton: #D9D9D9;
+  --color-surface-light: #FAFAFA;
+  --color-surface-muted: #F2F2F2;
+  --color-surface-hover: #E9E9E9;
+  --color-surface-tint: #F7F9FA;
 
   --shadow-soft: 0px 4px 20px rgba(0, 0, 0, 0.05);
   --shadow-medium: 0px 10px 30px rgba(0, 0, 0, 0.08);
 
-  --radius-card: 46px;
-  --radius-button: 26px;
-  --radius-input: 26px;
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-input: 8px;
 }
 
 @layer base {
@@ -44,6 +52,13 @@
 @layer utilities {
   .p-safe {
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }
 
