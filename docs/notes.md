@@ -1,48 +1,27 @@
-# CardToo
+Urutan terbaik sekarang:
 
-Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
+Auth + role dulu
+Store onboarding seller
+Product CRUD seller
+Catalog buyer (list/detail/search)
+Cart + checkout
+Order + payment status
+Alasannya: semua fitur marketplace nempel ke identitas user. Kalau auth/role belum jadi, fitur lain bakal banyak bongkar ulang.
 
----
+Kita mulai Flow Auth & Role (yang paling minimal tapi scalable).
 
-## 🚀 Fitur Utama (akan diupdate)
-- Daftar fitur website (None)
-- Teknologi:  Next.Js, Tailwind CSS
-- Framework: React
-
-## 📂 Struktur Repo
-```plaintext
-📦 CardToo (Project Structure)
-├── public/                  # Aset statis akses langsung
-│   ├── images/              # Gambar
-│   └── favicon.ico          # Icon website
-│ 
-├── src/                     # Source code aplikasi
-│   ├── app/                 # Rute halaman web Next.js
-│   │   ├── layout.tsx       # Struktur kerangka aplikasi
-│   │   ├── page.tsx         # Halaman utama website
-│   │   ├── global.css       # File utama Tailwind CSS
-│   │   └── products/        # Rute halaman daftar produk (blm ada)
-│   │       └── [id]/        # Rute dinamis detail kartu
-│   │           └── page.jsx # Halaman detail kartu
-│   │ 
-│   └── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Tombol dan elemen desain kecil
-│   │   └── layout/          # Navbar dan Footer
-│   │ 
-│   └── lib/                 # Skrip eksternal pendukung
-│   │   └── appwrite.js      # Koneksi ke Appwrite
-│   │ 
-│   └── hooks/               # Fungsi pengatur data internal
-│       └── useCart.js       # Logika sistem keranjang belanja(blm ada)
-│    
-├── docs/                    # Dokumentasi, panduan tugas, dsb
-│	├── design_system        # Guideline utama design project
-│   ├── feature_guide.md     # Panduan fitur ada apa aja
-│   ├── notes.md             # Catatan
-│   ├── to-do.md             # Fitur yang ingin di kerjakan
-│   └── guide.md             # Panduan kerja 
-│   
-├── .env.local               # Variabel environment\API Key Appwrite
-├── .gitignore               # File yang diabaikan oleh Git
-└── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
-```
+Flow target
+User register/login via Appwrite Auth.
+Setelah register, buat row users_profile.
+Default role buyer.
+User bisa “upgrade jadi seller”.
+Middleware/blok akses halaman berdasarkan role.
+Struktur yang perlu kalian bikin dulu di codebase
+src/lib/appwrite/client.ts
+src/lib/appwrite/server.ts
+src/lib/auth.ts
+src/lib/roles.ts
+src/app/(auth)/login/page.tsx
+src/app/(auth)/register/page.tsx
+src/app/(seller)/onboarding/page.tsx
+src/middleware.ts

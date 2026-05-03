@@ -4,36 +4,44 @@
   /* Brand Colors */
   --color-primary: #00CAE0;
   --color-secondary: #A78BFA;
-  --color-accent: #434343;
+  --color-background: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-text-main: #000000;
+  --color-text-sub: rgba(0, 0, 0, 0.5);
+  --color-danger: #FF4D4F;
 
-  /* Neutral & Surface */
-  --color-surface: #F3F3F3;
-  --color-border-custom: #E5E7EB;
+  --shadow-soft: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0px 8px 30px rgba(0, 0, 0, 0.08);
 
-  /* Text Colors */
-  --color-text-main: #111827;
-  --color-text-sub: #6B7280;
+  --radius-card: 46px;
+  --radius-button: 26px;
+  --radius-input: 26px;
+}
 
-  /* Semantic */
-  --color-success: #A78BFA;
-  --color-danger: #EF4444;
-  --color-warning: #F59E0B;
+@layer base {
+  body {
+    @apply bg-background text-text-main antialiased select-none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
 
-  /* Shadow - Format Baru Tailwind 4 */
-  --shadow-soft: 0 4px 20px 0 rgb(0 0 0 / 0.05);
-  --shadow-float: 0 10px 30px 0 rgb(0 0 0 / 0.08);
+  /* Izinkan seleksi teks hanya pada input agar bisa mengetik */
+  input, textarea {
+    @apply select-text;
+  }
 
-  /* Typography */
-  --font-size-h1: 1.5rem;
-  --font-size-h2: 1.25rem;
-  --font-size-body: 0.875rem;
-  --font-size-small: 0.75rem;
-  
-  /* Spacing */
-  --spacing-safe: 1rem;
-  --radius-card: 1rem;
-  --radius-btn: 0.75rem;
+  /* Matikan drag pada semua gambar secara global */
+  img {
+    -webkit-user-drag: none;
+    @apply pointer-events-none;
+  }
+}
 
+/* Custom Utilities */
+@layer utilities {
+  .p-safe {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
 }
 
 /* Safe Area Insets untuk mobile view */
