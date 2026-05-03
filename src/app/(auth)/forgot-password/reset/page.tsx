@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
           </Button>
           
           <Link href="/login" className="w-full">
-            <Button variant="ghost" className="bg-[#FAFAFA] shadow-soft">
+            <Button variant="ghost" className="bg-background shadow-soft">
               Cancel
             </Button>
           </Link>

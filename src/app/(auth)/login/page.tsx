@@ -10,7 +10,7 @@ import { AuthCard } from "@/components/layout/AuthCard";
 
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-[#F6DFFF]">
+    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-[#F6DFFF]">
       {/* Header Section */}
       <div className="flex flex-col items-center pt-[70px] px-6 text-center">
         <h1 className="text-[32px] font-bold leading-tight text-black">Sign In</h1>
@@ -51,12 +51,18 @@ export default function LoginPage() {
             <Button type="submit" variant="primary">
               Sign In
             </Button>
+            
+            <Link href="/login" className="w-full">
+              <Button variant="ghost" className="bg-background shadow-soft">
+                Cancel
+              </Button>
+            </Link>
 
             {/* Separator */}
             <div className="w-full flex items-center gap-4 py-2">
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
+              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
               <span className="text-base text-black/50">OR</span>
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
+              <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
             </div>
 
             <SocialButton provider="google" />

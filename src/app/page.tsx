@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-[#F6DFFF] flex flex-col items-center justify-center p-6 text-center">
+    <main className="min-h-screen bg-linear-to-b from-white to-[#F6DFFF] flex flex-col items-center justify-center p-6 text-center">
       {/* Hero Section */}
       <div className="flex flex-col items-center gap-4 mb-12">
         <div className="w-40 h-40 flex items-center justify-center mb-4">

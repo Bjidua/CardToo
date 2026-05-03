@@ -8,7 +8,7 @@ import { BackButton } from "@/components/ui/BackButton";
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="relative min-h-screen w-full bg-[#FAFAFA] px-6 flex flex-col items-center">
+    <main className="relative min-h-screen w-full bg-background px-6 flex flex-col items-center">
       {/* Back Button */}
       <div className="absolute left-[33px] top-[66px]">
         <BackButton variant="primary" />
