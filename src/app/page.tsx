@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 export default function Home() {
@@ -7,10 +8,13 @@ export default function Home() {
       {/* Hero Section */}
       <div className="flex flex-col items-center gap-4 mb-12">
         <div className="w-40 h-40 flex items-center justify-center mb-4">
-          <img 
-            src="/assets/Big Logo.svg" 
+          <Image 
+            src="/assets/big-logo.svg" 
             alt="CardToo Logo" 
+            width={160}
+            height={160}
             className="w-full h-full object-contain drop-shadow-xl"
+            priority
           />
         </div>
         <h1 className="text-4xl font-bold text-black tracking-tight">
