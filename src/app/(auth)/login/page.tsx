@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/Button";
 import { SocialButton } from "@/components/ui/SocialButton";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { AuthCard } from "@/components/layout/AuthCard";
+import { Separator } from "@/components/ui/Separator";
 
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-[#F6DFFF]">
+    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-[#F6DFFF]">
       {/* Header Section */}
       <div className="flex flex-col items-center pt-[70px] px-6 text-center">
         <h1 className="text-[32px] font-bold leading-tight text-black">Sign In</h1>
@@ -51,13 +52,14 @@ export default function LoginPage() {
             <Button type="submit" variant="primary">
               Sign In
             </Button>
+            
+            <Link href="/" className="w-full">
+              <Button variant="ghost" className="bg-surface shadow-soft">
+                Cancel
+              </Button>
+            </Link>
 
-            {/* Separator */}
-            <div className="w-full flex items-center gap-4 py-2">
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
-              <span className="text-base text-black/50">OR</span>
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
-            </div>
+            <Separator label="OR" />
 
             <SocialButton provider="google" />
           </div>

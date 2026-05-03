@@ -49,7 +49,7 @@ const SocialButton = ({ provider, className, ...props }: SocialButtonProps) => {
       )}
       {...props}
     >
-      <span className="flex-shrink-0">{icon}</span>
+      <span className="shrink-0">{icon}</span>
       <span className="text-base font-bold text-black">{text}</span>
     </button>
   );

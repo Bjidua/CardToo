@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
@@ -10,10 +11,13 @@ export default function ResetPasswordPage() {
     <main className="relative min-h-screen w-full bg-white px-6 flex flex-col items-center">
       {/* Logo Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
-        <img 
-          src="/assets/Big Logo.svg" 
+        <Image 
+          src="/assets/big-logo.svg" 
           alt="Illustration" 
+          width={180}
+          height={164}
           className="w-full h-full object-contain drop-shadow-lg"
+          priority
         />
       </div>
 
@@ -43,7 +47,7 @@ export default function ResetPasswordPage() {
           </Button>
           
           <Link href="/login" className="w-full">
-            <Button variant="ghost" className="bg-[#FAFAFA] shadow-soft">
+            <Button variant="ghost" className="bg-background shadow-soft">
               Cancel
             </Button>
           </Link>

@@ -7,6 +7,9 @@ import { SocialButton } from "@/components/ui/SocialButton";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { OTPInput } from "@/components/ui/OTPInput";
 import { AuthCard } from "@/components/layout/AuthCard";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { Icons } from "@/components/ui/Icons";
+import { Separator } from "@/components/ui/Separator";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 export default function TestComponentsPage() {
@@ -28,10 +31,7 @@ export default function TestComponentsPage() {
           placeholder="Enter your email"
           startIcon={<Mail size={18} />}
         />
-        <div className="space-y-4">
-          <label className="text-base text-black block">OTP Input (4 Digits)</label>
-          <OTPInput length={4} />
-        </div>
+        <OTPInput label="OTP Input (4 Digits)" length={4} />
         <Checkbox label="Remember me" />
       </section>
 
@@ -51,6 +51,9 @@ export default function TestComponentsPage() {
           <Button variant="ghost">
             Ghost / Cancel Button
           </Button>
+          
+          <p className="text-sm text-gray-500 mt-2">Separator Component:</p>
+          <Separator label="OR" />
         </div>
       </section>
 
@@ -64,15 +67,27 @@ export default function TestComponentsPage() {
         </div>
       </section>
 
-      {/* Layout Components */}
+      {/* Icons & Navigation */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Layout: AuthCard (Mini Demo)</h2>
-        <div className="relative h-[300px] bg-gray-200 overflow-hidden rounded-xl border border-dashed border-gray-400">
-           <AuthCard title="Demo Auth Card" className="top-20">
-              <p className="text-sm text-center text-gray-500">
-                Konten di dalam kartu...
-              </p>
-           </AuthCard>
+        <h2 className="text-lg font-semibold border-b pb-2">Custom Navigation</h2>
+        <div className="flex flex-col gap-6">
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">Custom SVG Icons (Active/Inactive):</p>
+            <div className="flex gap-4 p-4 bg-white rounded-xl border border-gray-100">
+              <Icons.Home active={true} size={32} className="text-primary" />
+              <Icons.Message active={true} size={32} className="text-primary" />
+              <Icons.Collection active={true} size={32} className="text-primary" />
+              <Icons.Profile active={true} size={32} className="text-primary" />
+              <Icons.Search size={32} className="text-black" />
+            </div>
+          </div>
+          
+          <div className="space-y-2 pb-10">
+            <p className="text-sm text-gray-500">Bottom Navigation (Dynamic Pill):</p>
+            <div className="relative h-[150px] bg-gray-50 rounded-xl overflow-hidden border border-dashed border-gray-300 flex items-center justify-center">
+              <BottomNav isDemo={true} />
+            </div>
+          </div>
         </div>
       </section>
     </main>

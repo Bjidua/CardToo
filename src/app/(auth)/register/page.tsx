@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { SocialButton } from "@/components/ui/SocialButton";
 import { AuthCard } from "@/components/layout/AuthCard";
+import { Separator } from "@/components/ui/Separator";
 
 export default function RegisterPage() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-[#F6DFFF]">
+    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-[#F6DFFF]">
       {/* Header Section */}
       <div className="flex flex-col items-center pt-[70px] px-6 text-center">
         <h1 className="text-[32px] font-bold leading-tight text-black">Sign Up</h1>
@@ -46,12 +47,7 @@ export default function RegisterPage() {
               Sign Up
             </Button>
 
-            {/* Separator */}
-            <div className="w-full flex items-center gap-4 py-2">
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
-              <span className="text-base text-black/50">OR</span>
-              <div className="h-[1px] flex-1 bg-black/10 border-t border-dashed border-black/30" />
-            </div>
+            <Separator label="OR" />
 
             <SocialButton provider="google" />
           </div>

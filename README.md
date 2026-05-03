@@ -25,6 +25,10 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   │       ├── page.tsx     # Form Email
 │   │   │       ├── verify/      # Verifikasi OTP
 │   │   │       └── reset/       # Reset Password Baru
+│   │   ├── home/            # Halaman Dashboard Utama
+│   │   ├── messages/        # Halaman Pesan
+│   │   ├── collections/     # Halaman Koleksi TCG
+│   │   ├── profile/         # Halaman Profil User
 │   │   ├── test-components/ # Laboratorium Component
 │   │   ├── layout.tsx       # Struktur kerangka aplikasi
 │   │   ├── page.tsx         # Halaman utama (Landing)
@@ -32,8 +36,8 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   └── products/        # Rute halaman daftar produk (blm ada)
 │   │ 
 │   └── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Atom components (Button, Input, Checkbox, OTPInput, dll)
-│   │   └── layout/          # Organism/Layout components (AuthCard, Navbar)
+│   │   ├── ui/              # Atom components (Button, Input, Checkbox, Icons, dll)
+│   │   └── layout/          # Organism/Layout components (AuthCard, BottomNav)
 │   │ 
 │   └── lib/                 # Skrip eksternal pendukung
 │   │   ├── appwrite.ts      # Koneksi ke Appwrite

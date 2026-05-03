@@ -2,13 +2,16 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { BackButton } from "@/components/ui/BackButton";
 
+import bigLogo from "../../../../public/assets/big-logo.svg";
+
 export default function ForgotPasswordPage() {
   return (
-    <main className="relative min-h-screen w-full bg-[#FAFAFA] px-6 flex flex-col items-center">
+    <main className="relative min-h-screen w-full bg-background px-6 flex flex-col items-center">
       {/* Back Button */}
       <div className="absolute left-[33px] top-[66px]">
         <BackButton variant="primary" />
@@ -16,10 +19,13 @@ export default function ForgotPasswordPage() {
 
       {/* Illustration Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
-        <img
-          src="/assets/Big Logo.svg"
+        <Image
+          src={bigLogo}
           alt="Illustration"
+          width={180}
+          height={164}
           className="w-full h-full object-contain drop-shadow-lg"
+          priority
         />
       </div>
 
