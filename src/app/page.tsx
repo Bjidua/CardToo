@@ -1,45 +1,42 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Mail, Lock, LogIn } from "lucide-react";
 
-export default function TestPage() {
-    return (
-        <main className="min-h-screen bg-background p-safe flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-h1 font-bold text-text-main">Testing Components</h1>
-                <p className="text-body text-text-sub">Cek visual button dan input CardToo.</p>
-            </div>
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white to-[#F6DFFF] flex flex-col items-center justify-center p-6 text-center">
+      {/* Hero Section */}
+      <div className="flex flex-col items-center gap-4 mb-12">
+        <div className="w-40 h-40 flex items-center justify-center mb-4">
+          <img 
+            src="/assets/Big Logo.svg" 
+            alt="CardToo Logo" 
+            className="w-full h-full object-contain drop-shadow-xl"
+          />
+        </div>
+        <h1 className="text-4xl font-bold text-black tracking-tight">
+          Card<span className="text-primary">Too</span>
+        </h1>
+        <p className="text-base text-gray-600 max-w-[280px]">
+          The ultimate marketplace for your favorite TCG collections.
+        </p>
+      </div>
 
-            <section className="flex flex-col gap-4 p-4 bg-surface rounded-card shadow-soft">
-                <h2 className="text-h2 font-semibold text-text-main">Input Section</h2>
-                <Input
-                    label="Email Address"
-                    placeholder="Masukkan email lo"
-                    startIcon={<Mail size={18} />}
-                />
-                <Input
-                    label="Password"
-                    type="password"
-                    placeholder="Password rahasia"
-                    startIcon={<Lock size={18} />}
-                />
-            </section>
+      {/* Action Buttons */}
+      <div className="w-full max-w-[347px] flex flex-col gap-4">
+        <Link href="/login" className="w-full">
+          <Button variant="primary">Get Started</Button>
+        </Link>
+        <Link href="/register" className="w-full">
+          <Button variant="ghost">Create Account</Button>
+        </Link>
+      </div>
 
-            <section className="flex flex-col gap-4">
-                <h2 className="text-h2 font-semibold text-text-main">Button Section</h2>
-                <Button variant="primary" fullWidth startIcon={<LogIn size={18} />}>
-                    Login Primary
-                </Button>
-
-                <Button variant="secondary" fullWidth>
-                    Daftar Akun
-                </Button>
-
-                <div className="flex gap-2">
-                    <Button variant="dark">Filter</Button>
-                    <Button variant="outline">Outline</Button>
-                </div>
-            </section>
-        </main>
-    );
+      {/* Debug/Test Link */}
+      <div className="mt-20 opacity-30 hover:opacity-100 transition-opacity">
+        <Link href="/test-components" className="text-xs text-gray-500 underline">
+          Component Lab
+        </Link>
+      </div>
+    </main>
+  );
 }
