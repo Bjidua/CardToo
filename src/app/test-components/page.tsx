@@ -179,20 +179,20 @@ export default function TestComponentsPage() {
         <div className="flex flex-col gap-4">
           <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Cart Item:</p>
           <CartItemCard 
-            id="1"
             title="Pikachu VMAX (Secret Rare)"
+            shopName="PokeShop Official"
             price={1500000}
             image="/assets/images/cards/pikachu.png"
-            initialQuantity={1}
+            quantity={1}
           />
           
           <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-4">Favorite Item:</p>
           <FavoriteItemCard 
-            id="2"
-            title="Charizard GX - Hidden Fates"
+            id="1"
+            title="Charizard GX"
+            shopName="TCG Vault"
             price={2750000}
             image="/assets/images/cards/charizard.png"
-            stockStatus="Tersisa 2"
           />
         </div>
       </section>

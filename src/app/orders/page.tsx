@@ -57,7 +57,7 @@ const ALL_ORDERS: OrderItem[] = [
   }
 ];
 
-export default function OrdersPage() {
+function OrdersContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status");
 
@@ -207,5 +207,13 @@ export default function OrdersPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <React.Suspense fallback={<div className="flex-1 flex min-h-screen bg-[#F7F9FA]"></div>}>
+      <OrdersContent />
+    </React.Suspense>
   );
 }

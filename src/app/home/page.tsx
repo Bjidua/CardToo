@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function HomePage() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") || "All";
   
@@ -139,5 +139,13 @@ export default function HomePage() {
         </motion.div>
       </section>
     </main>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <React.Suspense fallback={<main className="flex-1 flex flex-col bg-background relative pb-40"></main>}>
+      <HomeContent />
+    </React.Suspense>
   );
 }
