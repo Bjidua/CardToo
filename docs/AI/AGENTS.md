@@ -27,9 +27,13 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   │       ├── verify/      # Verifikasi OTP
 │   │   │       └── reset/       # Reset Password Baru
 │   │   ├── home/            # Halaman Dashboard Utama
+│   │   ├── cart/            # Halaman Keranjang Belanja
+│   │   ├── categories/      # Halaman Semua Kategori
+│   │   ├── search/          # Halaman Pencarian Produk
 │   │   ├── messages/        # Halaman Pesan
 │   │   ├── collections/     # Halaman Koleksi TCG
 │   │   ├── profile/         # Halaman Profil User
+│   │   ├── notifications/   # Halaman Notifikasi
 │   │   ├── test-components/ # Laboratorium Component
 │   │   ├── layout.tsx       # Struktur kerangka aplikasi
 │   │   ├── page.tsx         # Halaman utama (Landing)
@@ -37,8 +41,8 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   └── products/        # Rute halaman daftar produk (blm ada)
 │   │ 
 │   └── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Atom components (Button, Input, Icons, dll)
-│   │   └── layout/          # Organism components (Navbar, BottomNav)
+│   │   ├── ui/              # Atom components (Button, Input, Icons, NotificationCard, CartItemCard, CategoryCard, BackgroundLogo, dll)
+│   │   └── layout/          # Organism components (StickyHeader, BottomNav)
 │   │ 
 │   └── lib/                 # Skrip eksternal pendukung
 │   │   ├── appwrite.ts      # Koneksi ke Appwrite
@@ -59,6 +63,13 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 ```
 
 ## AI AGENTS RULES
+
+### 🧠 PEMAHAMAN KONTEKS & PROGRESS (WAJIB SAAT MULAI SESI)
+- SAAT MEMULAI SESI BARU, AI AGENT WAJIB MEMBACA `README.md`, `docs/to-do.md`, dan `docs/notes.md` TERLEBIH DAHULU UNTUK MEMAHAMI PROGRESS TERAKHIR.
+- AI AGENT WAJIB MENGECEK STRUKTUR FILE TERBARU (Membaca file codebase utama jika diperlukan) UNTUK MENYAMAKAN KONTEKS SEBELUM MENULIS KODE.
+- SETIAP KALI SELESAI MENGERJAKAN FITUR/TUGAS BERSAMA USER, AI AGENT WAJIB MENG-UPDATE `docs/to-do.md` DAN `docs/notes.md` AGAR PROGRESS TEREKAM UNTUK SESI BERIKUTNYA.
+
+### 🛠 ATURAN KERJA & CODING
 - AI AGENTS DILARANG INISIATIF (kecuali ada ijin)
 - BERTANYA TERLEBIH DAHULU SEBELUM MEMBUAT APA PUN
 - SELALU KONFIRMASI SEBELUM MEMBUAT
@@ -69,12 +80,16 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 - AI AGENTS BUKAN PEMUTUS KEPUTUSAN AKHIR
 - SELALU PAKE RULES YANG SUDAH DI BUAT
 - SELALU MENGIKUTI TEMPLATE YANG SUDAH DI BUAT
-- SELALU MENGIKUTI TEMPLATE COMPONENT YANG SUDAH DI BUAT UNTUK MENCEGAH REDUNDANSI CODE (JADI HARUS MENGIKUTIN DESIGN SYSTEM)
-- SETIAP ADA UPDATE FILE TREE UPDATE JUGA STRUKTUR REPONYA DI README.md
+- SELALU MENGIKUTI TEMPLATE COMPONENT YANG SUDAH DI BUAT UNTUK MENCEGAH REDUNDANSI CODE (JADI HARUS MENGIKUTIN DESIGN SYSTEM).
+- **WAJIB MENGECEK `src/components/ui` SEBELUM MEMBUAT COMPONENT BARU.** Jika sudah ada (seperti `Button`, `Input`, `Icons`), gunakan yang sudah ada.
+- **DILARANG membuat styling manual untuk elemen yang sudah ada di template.** Contoh: Gunakan `<Button variant="danger">` daripada membuat button merah manual dengan Tailwind.
+- **IDENTIFIKASI POLA BERULANG**: Jika ada elemen UI yang digunakan di lebih dari satu halaman (misal: menu list, card produk), **WAJIB** mengekstraknya menjadi component template di `src/components/ui/`.
 - FOKUS DI UKURAN MOBILE TERLEBIH DAHULU (UKURAN HP) (PAKSA WIDESCREEN MEMAKAI UKURAN MOBILE)
 - SELALU UPDATE COMPONENT BARU SETIAP ADA TAMBAHAN DI test-components/page.tsx 
 - JIKA ADA COMPONENT CODING YANG BERULANG BUAT SARAN KE DEVELOPER AGAR MEMBUAT COMPONENT TEMPLATE AGAR MENCEGAH REDUNDANSI CODE
 - DILARANG menggunakan tag label manual untuk Input. WAJIB menggunakan prop 'label' yang tersedia di component Input.
 - IDENTIFIKASI pola UI yang berulang dan buatkan component template-nya (seperti AuthCard, Checkbox, dll) sebelum implementasi massal.
 - PASTIKAN aplikasi memiliki "Native App Feel" (APK Vibe) dengan mematikan seleksi teks dan drag gambar secara global (kecuali pada input).
+- **STRICT NEXT.JS ARCHITECTURE:** Selalu prioritaskan penggunaan Server Components pada `page.tsx`. Gunakan `"use client";` hanya pada komponen anak yang membutuhkan state/interaktivitas (ekstrak komponen ke file terpisah).
+- **STRICT TAILWIND STYLING:** DILARANG KERAS menggunakan *hardcoded hex colors* (misal `#4CB6C4`) atau *arbitrary values* yang tidak perlu (misal `shadow-[0_4px_4px_...]`). WAJIB menggunakan variabel CSS dari `globals.css` (misal `text-primary`, `bg-surface-light`, `shadow-soft`, `shadow-medium`).
 <!-- END:nextjs-agent-rules -->

@@ -2,24 +2,35 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface CategoryListProps {
   categories?: string[];
+  activeCategory?: string;
   onSelect?: (category: string) => void;
   className?: string;
 }
 
 export const CategoryList = ({
   categories = ["All", "Pokemon", "Boboiboy", "Onepiece", "Digimon", "Yu-Gi-Oh!"],
+  activeCategory: externalActiveCategory,
   onSelect,
   className,
 }: CategoryListProps) => {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const router = useRouter();
+  const [internalActiveCategory, setInternalActiveCategory] = useState("All");
+  
+  const activeCategory = externalActiveCategory || internalActiveCategory;
 
   const handleSelect = (category: string) => {
-    setActiveCategory(category);
-    if (onSelect) onSelect(category);
+    setInternalActiveCategory(category);
+    if (onSelect) {
+      onSelect(category);
+    } else if (category !== "All") {
+      router.push(`/categories/${category.toLowerCase()}`);
+    }
   };
 
   return (
@@ -29,30 +40,29 @@ export const CategoryList = ({
         <h2 className="text-[20px] font-bold text-black tracking-tight">
           Categories
         </h2>
-        <button className="text-[14px] font-bold text-[#4CB6C4] hover:opacity-70 transition-opacity active:scale-95">
-          See All
-        </button>
+        <Link href="/categories">
+          <button className="text-[14px] font-bold text-primary hover:opacity-70 transition-opacity active:scale-95">
+            See All
+          </button>
+        </Link>
       </div>
 
       {/* Categories Scrollable Area */}
-      <div className="w-full overflow-x-auto no-scrollbar pb-2">
-        <div className="flex items-center gap-3 px-6 min-w-max">
+      <div className="w-full overflow-x-scroll scrollbar-hide pb-2 touch-pan-x relative z-10">
+        <div className="flex items-center gap-2 px-6 min-w-max">
           {categories.map((category) => (
-            <motion.button
+            <button
               key={category}
-              whileTap={{ scale: 0.95 }}
               onClick={() => handleSelect(category)}
               className={cn(
-                "relative px-6 py-2.5 rounded-full text-[14px] font-bold transition-all duration-300 select-none",
+                "whitespace-nowrap flex-shrink-0 relative px-6 py-2.5 rounded-full text-[14px] font-bold transition-all duration-300 select-none",
                 activeCategory === category
-                  ? "bg-white text-black shadow-[0px_4px_8px_rgba(0,0,0,0.12)]"
+                  ? "bg-white text-black shadow-medium"
                   : "bg-transparent text-black/40 hover:text-black/60"
               )}
             >
-              {/* Shared Layout Animation for active background could be added here, 
-                  but simple shadow toggle matches the clean look */}
               {category}
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>

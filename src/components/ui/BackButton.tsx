@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BackButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -20,7 +20,7 @@ const BackButton = ({ variant = "primary", className, ...props }: BackButtonProp
   return (
     <button
       type="button"
-      onClick={() => router.back()}
+      onClick={props.onClick || (() => router.back())}
       className={cn(
         "flex items-center justify-center p-[10px] w-[42px] h-[40px] rounded-[24px] shadow-soft",
         "transition-all active:scale-90 hover:brightness-110",
@@ -29,7 +29,7 @@ const BackButton = ({ variant = "primary", className, ...props }: BackButtonProp
       )}
       {...props}
     >
-      <ChevronLeft size={22} className="text-white" />
+      <ChevronsLeft size={22} className="text-white" />
     </button>
   );
 };

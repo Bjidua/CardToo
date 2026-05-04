@@ -17,6 +17,14 @@ const navItems = [
 export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
   const pathname = usePathname();
 
+  // Daftar halaman core yang menampilkan BottomNav
+  const showOnPaths = ["/home", "/messages", "/collections", "/profile"];
+  
+  // Sembunyikan navbar jika tidak berada di path core (dan bukan demo)
+  if (!isDemo && !showOnPaths.some(path => pathname === path || pathname === `${path}/`)) {
+    return null;
+  }
+
   return (
     <div className={cn(
       "left-0 right-0 flex justify-center px-4 z-50 pointer-events-none",
@@ -75,12 +83,14 @@ export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
         </div>
 
         {/* Search Button (Separate & Static) */}
-        <motion.button 
-          whileTap={{ scale: 0.9 }}
-          className="w-[65px] h-[65px] bg-white shadow-[0px_8px_16px_rgba(0,0,0,0.1)] rounded-full flex items-center justify-center active:bg-gray-50 transition-colors"
-        >
-          <Icons.Search size={28} className="text-accent" />
-        </motion.button>
+        <Link href="/search">
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            className="w-[65px] h-[65px] bg-white shadow-[0px_8px_16px_rgba(0,0,0,0.1)] rounded-full flex items-center justify-center active:bg-gray-50 transition-colors"
+          >
+            <Icons.Search size={28} className="text-accent" />
+          </motion.button>
+        </Link>
       </nav>
     </div>
   );

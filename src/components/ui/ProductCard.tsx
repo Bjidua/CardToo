@@ -5,6 +5,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   title: string;
@@ -14,6 +15,7 @@ interface ProductCardProps {
   isWishlisted?: boolean;
   className?: string;
   onPress?: () => void;
+  onWishlistToggle?: () => void;
 }
 
 export const ProductCard = ({
@@ -24,8 +26,14 @@ export const ProductCard = ({
   isWishlisted = false,
   className,
   onPress,
+  onWishlistToggle,
 }: ProductCardProps) => {
-  const [isLiked, setIsLiked] = useState(isWishlisted);
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push("/product/1");
+    onPress?.();
+  };
 
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -38,17 +46,17 @@ export const ProductCard = ({
   return (
     <motion.div
       whileTap={{ scale: 0.98 }}
-      onClick={onPress}
+      onClick={handleCardClick}
       className={cn(
         "group relative flex flex-col items-start p-1 gap-2",
         "w-[172px] h-[250px] bg-surface-light rounded-card",
-        "shadow-[0px_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.1)]",
+        "shadow-soft hover:shadow-medium",
         "transition-all duration-300 cursor-pointer select-none overflow-hidden",
         className
       )}
     >
       {/* Image Container with Inset Shadow */}
-      <div className="relative w-full h-[146px] bg-skeleton rounded-t-card overflow-hidden shadow-[inset_0px_4px_4px_rgba(0,0,0,0.25)]">
+      <div className="relative w-full h-[146px] bg-skeleton rounded-t-card overflow-hidden shadow-[inset_0px_4px_4px_rgba(0,0,0,0.15)]">
         {image ? (
           <Image
             src={image}
@@ -74,7 +82,7 @@ export const ProductCard = ({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIsLiked(!isLiked);
+            onWishlistToggle?.();
           }}
           className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm active:scale-90 transition-transform"
         >
@@ -82,7 +90,7 @@ export const ProductCard = ({
             size={12}
             className={cn(
               "transition-colors",
-              isLiked ? "fill-danger text-danger" : "text-black/40"
+              isWishlisted ? "fill-danger text-danger" : "text-black/40"
             )}
           />
         </button>
@@ -93,7 +101,7 @@ export const ProductCard = ({
         <h3 className="text-[14px] font-bold text-black line-clamp-2 leading-[1.2] h-[34px]">
           {title}
         </h3>
-        <p className="text-[16px] font-bold text-[#4CB6C4] mt-1">
+        <p className="text-[16px] font-bold text-primary mt-1">
           {formatPrice(price)}
         </p>
       </div>

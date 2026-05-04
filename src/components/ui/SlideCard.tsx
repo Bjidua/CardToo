@@ -23,13 +23,13 @@ export const SlideCard = ({
       className={cn(
         "relative flex flex-row items-center justify-center p-[10px] gap-[10px]",
         "w-full max-w-[361px] h-[150px] bg-surface-light rounded-card",
-        "shadow-[0px_4px_4px_rgba(0,0,0,0.25),inset_0px_4px_4px_rgba(0,0,0,0.25)]",
+        "shadow-soft",
         "overflow-hidden select-none", // Native App Feel
         className
       )}
     >
-      <div className="flex flex-col flex-1 gap-1 px-4">
-        <span className="text-[#4CB6C4] font-bold text-[16px] leading-[19px] uppercase tracking-wider">
+      <div className="flex flex-col flex-1 gap-1 px-4 z-20">
+        <span className="text-primary font-bold text-[16px] leading-[19px] uppercase tracking-wider">
           {promotion}
         </span>
         {title && (

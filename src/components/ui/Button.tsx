@@ -32,7 +32,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "font-bold text-base focus-visible:outline-none",
             "h-[55px] px-6 rounded-[26px]", // Sesuai spek Figma (55px height, 26px radius)
             "disabled:pointer-events-none disabled:opacity-60",
-            "shadow-[0px_4px_4px_rgba(0,0,0,0.25)]", // Shadow sesuai Figma
+            "shadow-soft", // Shadow sesuai standard design system
             fullWidth ? "w-full" : "w-auto"
         );
 

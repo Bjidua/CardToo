@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { OTPInput } from "@/components/ui/OTPInput";
 import { AuthCard } from "@/components/layout/AuthCard";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { Header } from "@/components/layout/Header";
+import { StickyHeader } from "@/components/layout/StickyHeader";
 import { Icons } from "@/components/ui/Icons";
 import { Separator } from "@/components/ui/Separator";
 import { ProfilePicture } from "@/components/ui/ProfilePicture";
@@ -17,6 +17,10 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { CategoryList } from "@/components/ui/CategoryList";
 import { MessageCard } from "@/components/ui/MessageCard";
 import { CollectionCard } from "@/components/ui/CollectionCard";
+import { MenuListItem } from "@/components/ui/MenuListItem";
+import { FavoriteItemCard } from "@/components/ui/FavoriteItemCard";
+import { OrderItemCard } from "@/components/ui/OrderItemCard";
+import { CartItemCard } from "@/components/ui/CartItemCard";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 export default function TestComponentsPage() {
@@ -34,7 +38,7 @@ export default function TestComponentsPage() {
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold border-b pb-2">App Layout: Header</h2>
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
-          <Header title="Home" />
+          <StickyHeader title="Home" />
           <div className="h-20 flex items-center justify-center bg-gray-50 text-gray-400 text-xs italic">
             Halaman Content Area
           </div>
@@ -160,7 +164,59 @@ export default function TestComponentsPage() {
         </div>
       </section>
 
-      {/* Messaging Section */}
+      {/* List Items */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold border-b pb-2">Profile & Settings: List Items</h2>
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+          <MenuListItem icon={<Icons.Store size={20} />} label="Toko Saya" href="#" showBorder />
+          <MenuListItem icon={<Icons.Lock size={20} />} label="Keamanan" href="#" subValue="Kuat" />
+        </div>
+      </section>
+
+      {/* Cart & Wishlist */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold border-b pb-2">Shopping: Cart & Wishlist</h2>
+        <div className="flex flex-col gap-4">
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Cart Item:</p>
+          <CartItemCard 
+            id="1"
+            title="Pikachu VMAX (Secret Rare)"
+            price={1500000}
+            image="/assets/images/cards/pikachu.png"
+            initialQuantity={1}
+          />
+          
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-4">Favorite Item:</p>
+          <FavoriteItemCard 
+            id="2"
+            title="Charizard GX - Hidden Fates"
+            price={2750000}
+            image="/assets/images/cards/charizard.png"
+            stockStatus="Tersisa 2"
+          />
+        </div>
+      </section>
+
+      {/* Order Tracking */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold border-b pb-2">Orders: History & Tracking</h2>
+        <div className="flex flex-col gap-4">
+          <OrderItemCard 
+            order={{
+              id: "ORD-20260504-001",
+              shopName: "PokeStore ID",
+              productTitle: "Mewtwo GX - Hidden Fates",
+              condition: "Mint",
+              quantity: 1,
+              totalPrice: 850000,
+              status: "Selesai",
+              productImage: "/assets/images/cards/mewtwo.png"
+            }}
+          />
+        </div>
+      </section>
+
+      {/* Collections Section */}
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold border-b pb-2">Collections & Folders</h2>
         <div className="grid grid-cols-2 gap-4 bg-gray-50 p-6 rounded-xl">

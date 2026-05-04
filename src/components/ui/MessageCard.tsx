@@ -29,7 +29,7 @@ export const MessageCard = ({
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "relative flex items-center gap-3 p-4 w-full max-w-[361px] h-[91px] bg-white rounded-card",
+        "relative flex items-center gap-3 p-4 w-full bg-white rounded-card",
         "shadow-soft hover:shadow-medium",
         "transition-all duration-300 cursor-pointer select-none",
         className
@@ -44,7 +44,7 @@ export const MessageCard = ({
 
       {/* Content */}
       <div className="flex-1 flex flex-col justify-center gap-0.5 overflow-hidden">
-        <h4 className="text-[16px] font-semibold text-[#4CB6C4] truncate">
+        <h4 className="text-[16px] font-semibold text-primary truncate">
           {userName}
         </h4>
         <p className="text-[14px] text-black/60 font-normal line-clamp-2 leading-tight">
@@ -59,7 +59,7 @@ export const MessageCard = ({
         </span>
         
         {unreadCount > 0 && (
-          <div className="flex items-center justify-center w-[22px] h-[22px] bg-notification rounded-full shadow-[0px_2px_4px_rgba(122,60,255,0.3)]">
+          <div className="flex items-center justify-center w-[22px] h-[22px] bg-notification rounded-full shadow-sm">
             <span className="text-[10px] font-bold text-white">
               {unreadCount}
             </span>

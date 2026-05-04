@@ -41,7 +41,7 @@ export default function LoginPage() {
               <Checkbox label="Remember me" />
               <Link 
                 href="/forgot-password" 
-                className="text-[12px] font-bold text-[#A98BFE] hover:underline"
+                className="text-[12px] font-bold text-secondary hover:underline"
               >
                 Forgot Password?
               </Link>
@@ -70,7 +70,7 @@ export default function LoginPage() {
           <span className="text-[14px] text-black">Don’t have an account?</span>
           <Link 
             href="/register" 
-            className="text-[14px] font-bold text-[#A98BFE] hover:underline"
+            className="text-[14px] font-bold text-secondary hover:underline"
           >
             Sign Up
           </Link>
