@@ -17,7 +17,8 @@ Sistem ini fokus ke layar hp dengan 8pt grid.
 - Space Large: 24px
 - Space XL: 32px
 
-## Radius
-- Radius Card: 16px
-- Radius Button: 12px
-- Radius Input: 8px
+## Radius (Modern UI)
+- Radius Card Large: 24px (Layar penuh / Modal / Sheet)
+- Radius Card Standard: 16px (Card produk / Item list)
+- Radius Button & Input: 24px - 26px (Pill shape untuk kesan modern & native feel)
+- Radius Badge/Tag: 8px - 12px

@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { Header } from "@/components/layout/Header";
 import { CollectionCard } from "@/components/ui/CollectionCard";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Icons } from "@/components/ui/Icons";
 import { CategoryList } from "@/components/ui/CategoryList";
+import { StickyHeader } from "@/components/layout/StickyHeader";
 
 export default function CollectionsPage() {
   const dummyCollections = [
@@ -42,42 +42,10 @@ export default function CollectionsPage() {
   } as const;
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-[#E0F7FA] relative pb-40">
-      
-      {/* Background Decorative Element */}
-      <div className="fixed inset-0 bg-linear-to-b from-white to-[#E0F7FA] z-0 pointer-events-none" />
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-[#F6DFFF] relative pb-40">
 
       {/* STICKY HEADER AREA */}
-      <div className="sticky top-0 z-40 w-full h-[140px] flex items-end justify-center pb-4 overflow-hidden">
-        {/* Background Accent Logo inside Header */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.6, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute top-[-45%] left-[-12%] w-[110%] h-[150%] pointer-events-none z-0"
-        >
-          <Image 
-            src="/assets/BackgroundLogo.svg" 
-            alt="Header Background" 
-            fill
-            className="object-contain"
-            priority
-          />
-        </motion.div>
-
-        {/* Premium Blur Background */}
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-md border-b border-black/5 pointer-events-none z-[-1]" />
-        
-        {/* Title */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="relative z-10 text-[24px] font-bold text-black tracking-tight"
-        >
-          My Collections
-        </motion.h1>
-      </div>
+      <StickyHeader title="Collection" variant="logo" size="lg" />
 
       {/* Categories - Scrolled with content */}
       <div className="relative z-10 pt-6">
@@ -89,7 +57,7 @@ export default function CollectionsPage() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="relative z-10 grid grid-cols-2 gap-x-4 gap-y-6 px-6 pt-6 justify-items-center"
+        className="relative z-10 grid grid-cols-3 gap-x-3 gap-y-6 px-6 pt-6"
       >
         {dummyCollections.map((item) => (
           <motion.div key={item.id} variants={itemVariants}>
@@ -104,12 +72,12 @@ export default function CollectionsPage() {
         <motion.button
           variants={itemVariants}
           whileTap={{ scale: 0.95 }}
-          className="w-[172px] h-[220px] rounded-card border-2 border-dashed border-accent/20 flex flex-col items-center justify-center gap-2 hover:border-primary/40 transition-colors bg-white/20"
+          className="w-full aspect-4/5 rounded-card border-2 border-dashed border-accent/20 flex flex-col items-center justify-center gap-1.5 hover:border-primary/40 transition-colors bg-white/20"
         >
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Icons.Plus size={24} className="text-primary" />
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Icons.Plus size={20} className="text-primary" />
           </div>
-          <span className="text-[14px] font-bold text-accent/40">New Folder</span>
+          <span className="text-[11px] font-bold text-accent/40">New Folder</span>
         </motion.button>
       </motion.div>
 

@@ -42,7 +42,7 @@ export default function OnboardingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <main className="min-h-screen bg-[#F7F9FA] flex flex-col relative overflow-hidden">
+    <main className="min-h-screen bg-surface-tint flex flex-col relative overflow-hidden">
       {/* Skip Button */}
       <div className="absolute top-10 right-6 z-20">
         <Link

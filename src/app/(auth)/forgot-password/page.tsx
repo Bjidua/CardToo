@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
           <span className="text-[14px] text-black">Remember Now?</span>
           <Link
             href="/login"
-            className="text-[14px] font-bold text-[#A98BFE] hover:underline"
+            className="text-[14px] font-bold text-secondary hover:underline"
           >
             Log in
           </Link>

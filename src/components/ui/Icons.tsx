@@ -164,7 +164,7 @@ export const Icons = {
 
   Dikemas: ({ size = 24, className, ...props }: IconProps) => (
     <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
-      <path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z" fill="currentColor"/>
+      <path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5-29t10.5-40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z" fill="currentColor"/>
     </svg>
   ),
 
@@ -201,6 +201,53 @@ export const Icons = {
   ChevronRight: ({ size = 24, className, ...props }: IconProps) => (
     <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
       <path d="M504-480 348-636q-11-11-11-28t11-28q11-11 28-11t28 11l184 184q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L404-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l156-156Z" fill="currentColor"/>
+    </svg>
+  ),
+
+  Filter: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M4 6H20M7 12H17M10 18H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  File: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M13 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V9L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M14.5 17.5L17 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Logout: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" fill="currentColor"/>
+    </svg>
+  ),
+  Lock: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M240-80q-33 0-56.5-23.5T160-200v-400q0-33 23.5-56.5T240-680h40v-80q0-83 58.5-141.5T480-960q83 0 141.5 58.5T680-760v80h40q33 0 56.5 23.5T800-600v400q0 33-23.5 56.5T760-80H240Zm0-80h520v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-680h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" fill="currentColor"/>
+    </svg>
+  ),
+  MapPin: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q306-224 223-346.5T140-572q0-156 102.5-252T480-920q135 0 237.5 96T820-572q0 150-83 272.5T480-80Zm0-131q115-104 177.5-206.5T720-572q0-109-72-178.5T480-820q-108 0-180 69.5T228-572q0 82 62.5 184.5T480-211Zm0-349Z" fill="currentColor"/>
+    </svg>
+  ),
+  CreditCard: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160q-33 0-56.5-23.5T80-200Zm80-80h640v-240H160v240Zm0-320h640v-160H160v160Zm0 320v-160 160Z" fill="currentColor"/>
+    </svg>
+  ),
+  Help: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80q0-32 6.5-52.5T543-542q30-31 43.5-56.5T600-653q0-50-35-83.5T480-770q-44 0-77 26.5T356-673l74 30q7-26 23.5-41.5T492-700q26 0 42 15.5t16 39.5q0 19-10.5 35T512-578q-33 32-42.5 57T440-440Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227-93t-93 227q0 134 93 227t227 93Zm0-320Z" fill="currentColor"/>
+    </svg>
+  ),
+  Info: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 -960 960 960" fill="none" className={className} {...props}>
+      <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227-93t-93 227q0 134 93 227t227 93Zm0-320Z" fill="currentColor"/>
+    </svg>
+  ),
+  X: ({ size = 24, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
 };

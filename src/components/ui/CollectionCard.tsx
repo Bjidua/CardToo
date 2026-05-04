@@ -24,13 +24,13 @@ export const CollectionCard = ({
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col w-[172px] h-[220px] bg-white rounded-card overflow-hidden",
+        "group relative flex flex-col w-full aspect-4/5 bg-white rounded-card overflow-hidden",
         "shadow-soft cursor-pointer select-none",
         className
       )}
     >
       {/* Background Section (Grey Area from Image) */}
-      <div className="relative w-full h-[150px] bg-skeleton/50 flex items-center justify-center p-4">
+      <div className="relative w-full h-[65%] bg-skeleton/50 flex items-center justify-center p-2">
         {/* Decorative Light Glow */}
         <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
         
@@ -46,11 +46,11 @@ export const CollectionCard = ({
       </div>
 
       {/* Info Section */}
-      <div className="flex-1 flex flex-col justify-center px-4 gap-0.5">
-        <h3 className="text-[16px] font-bold text-black truncate leading-tight">
+      <div className="h-[35%] flex flex-col justify-center px-2 gap-0.5">
+        <h3 className="text-[12px] font-bold text-black line-clamp-1 leading-tight">
           {title}
         </h3>
-        <p className="text-[12px] font-medium text-accent/60">
+        <p className="text-[10px] font-medium text-accent/60">
           {count} Items
         </p>
       </div>

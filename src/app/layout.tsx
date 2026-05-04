@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next"
+import { Outfit } from "next/font/google"
 import "./globals.css"
 import { BottomNav } from "@/components/layout/BottomNav"
+
+const outfit = Outfit({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
+})
 
 export const metadata: Metadata = {
   title: "CardToo - Marketplace TCG",
@@ -21,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-surface antialiased">
+      <body className={`${outfit.className} bg-white antialiased`}>
         {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
         <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] relative flex flex-col">
           {/* Konten Utama */}

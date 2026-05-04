@@ -1,109 +1,102 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { MessageCard } from "@/components/ui/MessageCard";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { StickyHeader } from "@/components/layout/StickyHeader";
+import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/Input";
+import { Icons } from "@/components/ui/Icons";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function MessagesPage() {
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState("Semua");
+
   const dummyMessages = [
-    { id: 1, name: "User1", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "5 min", unread: 1 },
-    { id: 2, name: "User2", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "12 min", unread: 1 },
-    { id: 3, name: "User3", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "1 hour", unread: 0 },
-    { id: 4, name: "CardMaster99", msg: "Ready for trade? I have the Pikachu VMAX you're looking for!", time: "2 hours", unread: 3 },
-    { id: 5, name: "User4", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
-    { id: 6, name: "User5", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
-    { id: 7, name: "CollectorX", msg: "Is the Charizard still available?", time: "2 days ago", unread: 0 },
-    { id: 8, name: "TrainerRed", msg: "Good game!", time: "3 days ago", unread: 0 },
-    { id: 9, name: "PokeFan", msg: "Nice collection!", time: "4 days ago", unread: 0 },
+    { id: "1", name: "User1", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "5 min", unread: 1 },
+    { id: "2", name: "User2", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "12 min", unread: 1 },
+    { id: "3", name: "User3", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "1 hour", unread: 0 },
+    { id: "4", name: "CardMaster99", msg: "Ready for trade? I have the Pikachu VMAX you're looking for!", time: "2 hours", unread: 3 },
+    { id: "5", name: "User4", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
+    { id: "6", name: "User5", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
+    { id: "7", name: "CollectorX", msg: "Is the Charizard still available?", time: "2 days ago", unread: 0 },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.2,
-      }
-    }
-  } as const;
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.98 },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 30
-      }
-    }
-  } as const;
+  const filteredMessages = dummyMessages.filter(m => {
+    const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.msg.toLowerCase().includes(search.toLowerCase());
+    const matchesFilter = activeFilter === "Semua" || (activeFilter === "Belum Dibaca" && m.unread > 0);
+    return matchesSearch && matchesFilter;
+  });
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen relative pb-40">
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-[#F6DFFF] relative pb-40">
+      <StickyHeader title="Messages" variant="logo" size="lg" />
       
-      {/* FIXED GRADIENT BACKGROUND - Supaya tetap konsisten saat scroll */}
-      <div className="fixed inset-0 bg-linear-to-b from-white to-[#F6DFFF] z-0 pointer-events-none" />
-
-      {/* STICKY HEADER AREA */}
-      <div className="sticky top-0 z-40 w-full h-[140px] flex items-end justify-center pb-4 overflow-hidden">
-        {/* Background Logo inside Header */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.6, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute top-[-45%] left-[-12%] w-[110%] h-[150%] pointer-events-none z-0"
-        >
-          <Image 
-            src="/assets/BackgroundLogo.svg" 
-            alt="Header Background" 
-            fill
-            className="object-contain"
-            priority
+      <div className="sticky top-[140px] z-30 px-6 pt-6 pb-4 bg-linear-to-b from-white to-white/95 backdrop-blur-md">
+        <div className="flex flex-col gap-6">
+          <Input 
+            placeholder="Cari pesan atau toko..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            startIcon={<Icons.Search size={20} />}
+            className="bg-white/50 backdrop-blur-sm shadow-soft"
           />
-        </motion.div>
 
-        {/* Premium Blur Background */}
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-md border-b border-black/5 pointer-events-none z-[-1]" />
-        
-        {/* Bottom Fade Mask */}
-        <div className="absolute bottom-[-60px] left-0 right-0 h-[60px] bg-linear-to-b from-white/30 to-transparent pointer-events-none" />
-
-        {/* Title */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="relative z-10 text-[24px] font-bold text-black tracking-tight"
-        >
-          Messages
-        </motion.h1>
+          <div className="flex gap-2">
+            {["Semua", "Belum Dibaca", "Arsip"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={cn(
+                  "px-5 py-2 rounded-full text-[13px] font-bold transition-all",
+                  activeFilter === filter 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                    : "bg-white text-black/40 border border-black/5"
+                )}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-
-      {/* Message List */}
       <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="relative z-20 flex flex-col items-center gap-4 px-6 pt-6"
+        layout
+        className="flex flex-col gap-4 px-6 pt-8"
       >
-        {dummyMessages.map((chat) => (
-          <motion.div key={chat.id} variants={itemVariants} className="w-full flex justify-center">
-            <MessageCard
-              userName={chat.name}
-              message={chat.msg}
-              time={chat.time}
-              unreadCount={chat.unread}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+        <AnimatePresence mode="popLayout">
+          {filteredMessages.map((chat) => (
+            <motion.div 
+              key={chat.id}
+              layout
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              <Link href={`/messages/${chat.id}`}>
+                <MessageCard
+                  userName={chat.name}
+                  message={chat.msg}
+                  time={chat.time}
+                  unreadCount={chat.unread}
+                />
+              </Link>
+            </motion.div>
+          ))}
+        </AnimatePresence>
 
+        {filteredMessages.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center text-black/10 mb-4">
+              <Icons.Message size={40} />
+            </div>
+            <p className="text-[14px] text-black/30 font-medium">Tidak ada pesan ditemukan</p>
+          </div>
+        )}
+      </motion.div>
     </main>
   );
 }
