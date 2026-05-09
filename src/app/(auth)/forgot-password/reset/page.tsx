@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { getAssetPath } from "@/lib/utils";
 
 export default function ResetPasswordPage() {
   return (
@@ -12,7 +13,7 @@ export default function ResetPasswordPage() {
       {/* Logo Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
         <Image 
-          src="/assets/big-logo.svg" 
+          src={getAssetPath("/assets/big-logo.svg")} 
           alt="Illustration" 
           width={180}
           height={164}

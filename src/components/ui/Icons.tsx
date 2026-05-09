@@ -109,25 +109,15 @@ export const Icons = {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 34 34"
+      viewBox="0 -960 960 960"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn("transition-all duration-300", className)}
       {...props}
     >
       <path
-        d="M15.5833 26.9167C21.8426 26.9167 26.9167 21.8426 26.9167 15.5833C26.9167 9.32411 21.8426 4.25 15.5833 4.25C9.32411 4.25 4.25 9.32411 4.25 15.5833C4.25 21.8426 9.32411 26.9167 15.5833 26.9167Z"
-        stroke="currentColor"
-        strokeWidth="2.83333"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M29.75 29.75L23.5875 23.5875"
-        stroke="currentColor"
-        strokeWidth="2.83333"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"
+        fill="currentColor"
       />
     </svg>
   ),

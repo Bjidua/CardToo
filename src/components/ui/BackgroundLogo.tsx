@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn, getAssetPath } from "@/lib/utils";
 
 export const BackgroundLogo = ({ className }: { className?: string }) => {
   return (
@@ -18,7 +18,7 @@ export const BackgroundLogo = ({ className }: { className?: string }) => {
         {/* Karena file aslinya sangat besar (132KB), kita gunakan <image> tag 
             di dalam SVG untuk menjaga performa sambil tetap mendukung preserveAspectRatio slice */}
         <image 
-          href="/assets/BackgroundLogo.svg" 
+          href={getAssetPath("/assets/BackgroundLogo.svg")} 
           width="472" 
           height="234" 
           preserveAspectRatio="xMidYMid slice"
