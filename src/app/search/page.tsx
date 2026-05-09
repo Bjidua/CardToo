@@ -34,13 +34,13 @@ export default function SearchPage() {
   const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Played"];
 
   const toggleCondition = (cond: string) => {
-    setSelectedConditions(prev => 
+    setSelectedConditions(prev =>
       prev.includes(cond) ? prev.filter(c => c !== cond) : [...prev, cond]
     );
   };
 
   const toggleWishlist = (id: number) => {
-    setWishlistedIds(prev => 
+    setWishlistedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -63,17 +63,17 @@ export default function SearchPage() {
     // Sort logic
     if (activeTab === "Terbaru") return [...products].reverse();
     if (activeTab === "Harga") return [...products].sort((a, b) => a.price - b.price);
-    
+
     return products;
   }, [searchQuery, activeTab, selectedConditions, priceRange]);
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint">
-      <StickyHeader 
-        title="Search" 
+      <StickyHeader
+        title="Search"
         variant="minimal"
         size="sm"
-        leftAction={<BackButton variant="primary" />} 
+        leftAction={<BackButton variant="primary" />}
       />
 
       <main className="flex-1 flex flex-col">
@@ -85,12 +85,12 @@ export default function SearchPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               startIcon={<Icons.Search size={20} className="text-black/30 group-focus-within:text-primary transition-colors" />}
-              className="shadow-soft !bg-surface-light border-none h-[48px] rounded-2xl group-focus-within:ring-2 group-focus-within:ring-primary/10 transition-all"
+              className="shadow-soft bg-surface-light! border-none h-[48px] rounded-2xl group-focus-within:ring-2 group-focus-within:ring-primary/10 transition-all"
               autoFocus
             />
           </div>
-          
-          {/* Shopee-style Sort Tabs */}
+
+          {/* Sort Tabs */}
           {searchQuery.trim() !== "" && (
             <div className="flex items-center justify-between mt-4 -mx-6 px-6">
               <div className="flex gap-8 overflow-x-auto no-scrollbar scroll-smooth">
@@ -114,13 +114,13 @@ export default function SearchPage() {
                   </button>
                 ))}
               </div>
-              <div className="w-[1px] h-6 bg-black/5 ml-2" />
-              <button 
+              <div className="w-px h-6 bg-black/5 ml-2" />
+              <button
                 onClick={() => setShowFilter(true)}
                 className={cn(
                   "flex items-center gap-2 py-3 text-[14px] ml-4 transition-all active:scale-95 whitespace-nowrap px-3 rounded-xl",
-                  selectedConditions.length > 0 || priceRange.min || priceRange.max 
-                    ? "text-white bg-primary font-bold shadow-md shadow-primary/20" 
+                  selectedConditions.length > 0 || priceRange.min || priceRange.max
+                    ? "text-white bg-primary font-bold shadow-md shadow-primary/20"
                     : "text-black/60 bg-black/5 hover:bg-black/10"
                 )}
               >
@@ -136,7 +136,7 @@ export default function SearchPage() {
             <div className="flex flex-col gap-6">
               {/* Mock Official Store Section (Shopee style) */}
               {searchQuery.toLowerCase().includes("pokemon") && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-white rounded-card p-4 shadow-soft border border-primary/10"
@@ -172,7 +172,7 @@ export default function SearchPage() {
                 </div>
                 <span className="text-[12px] font-bold text-black/20">{filteredProducts.length} Kartu ditemukan</span>
               </div>
-              
+
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 gap-x-4 gap-y-6 justify-items-center">
                   <AnimatePresence mode="popLayout">
@@ -197,7 +197,7 @@ export default function SearchPage() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center justify-center py-24 text-center bg-white/50 backdrop-blur-sm rounded-[32px] border border-white shadow-soft"
@@ -212,7 +212,7 @@ export default function SearchPage() {
                   <p className="text-black/30 text-[14px] max-w-[220px] leading-relaxed">
                     Maaf, kartu <span className="text-black font-bold">"{searchQuery}"</span> tidak ditemukan. Coba kata kunci lain atau hapus filter.
                   </p>
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedConditions([]);
                       setPriceRange({ min: "", max: "" });
@@ -225,7 +225,7 @@ export default function SearchPage() {
               )}
             </div>
           ) : (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-24 text-center"
@@ -248,14 +248,14 @@ export default function SearchPage() {
       <AnimatePresence>
         {showFilter && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowFilter(false)}
               className="fixed inset-0 bg-black/40 z-50 backdrop-blur-xs"
             />
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -270,8 +270,8 @@ export default function SearchPage() {
                   <h2 className="text-[20px] font-bold text-black tracking-tight">Filter</h2>
                   <p className="text-[12px] text-black/30 font-medium">Saring pencarian sesuai kebutuhanmu</p>
                 </div>
-                <button 
-                  onClick={() => setShowFilter(false)} 
+                <button
+                  onClick={() => setShowFilter(false)}
                   className="w-10 h-10 flex items-center justify-center bg-black/5 rounded-full text-black/40 hover:text-black hover:bg-black/10 transition-all active:scale-90"
                 >
                   <Icons.X size={20} />
@@ -313,23 +313,23 @@ export default function SearchPage() {
                   <div className="flex items-center gap-4">
                     <div className="flex-1 relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-black/20">Rp</span>
-                      <input 
-                        type="number" 
-                        placeholder="Min" 
+                      <input
+                        type="number"
+                        placeholder="Min"
                         value={priceRange.min}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     </div>
                     <div className="w-4 h-[2px] bg-black/10 rounded-full" />
                     <div className="flex-1 relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-black/20">Rp</span>
-                      <input 
-                        type="number" 
-                        placeholder="Max" 
+                      <input
+                        type="number"
+                        placeholder="Max"
                         value={priceRange.max}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     </div>
                   </div>
@@ -337,7 +337,7 @@ export default function SearchPage() {
               </div>
 
               <div className="flex gap-4 mt-12">
-                <button 
+                <button
                   onClick={() => {
                     setSelectedConditions([]);
                     setPriceRange({ min: "", max: "" });
@@ -346,7 +346,7 @@ export default function SearchPage() {
                 >
                   Reset
                 </button>
-                <button 
+                <button
                   onClick={() => setShowFilter(false)}
                   className="flex-[2.5] h-[58px] bg-linear-to-r from-primary to-[#00D1FF] text-white rounded-[22px] text-[16px] font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >

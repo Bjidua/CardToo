@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, getAssetPath } from "@/lib/utils";
 
 interface ProfilePictureProps {
   src?: string;
@@ -13,11 +13,13 @@ interface ProfilePictureProps {
 }
 
 export const ProfilePicture = ({
-  src = "/assets/ProfilePicture.svg",
+  src,
   alt = "Profile Picture",
   className,
   size = 60,
 }: ProfilePictureProps) => {
+  const imageSrc = src || getAssetPath("/assets/ProfilePicture.svg");
+
   return (
     <div
       className={cn(
@@ -27,19 +29,13 @@ export const ProfilePicture = ({
       )}
       style={{ width: size, height: size }}
     >
-      {src ? (
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          className="object-cover"
-          draggable={false}
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center text-black/20 font-bold">
-          {alt.charAt(0).toUpperCase()}
-        </div>
-      )}
+      <Image
+        src={imageSrc}
+        alt={alt}
+        fill
+        className="object-cover"
+        draggable={false}
+      />
     </div>
   );
 };

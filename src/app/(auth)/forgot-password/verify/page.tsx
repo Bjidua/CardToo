@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { BackButton } from "@/components/ui/BackButton";
 import { OTPInput } from "@/components/ui/OTPInput";
+import { getAssetPath } from "@/lib/utils";
 
 export default function VerifyCodePage() {
   return (
@@ -18,7 +19,7 @@ export default function VerifyCodePage() {
       {/* Logo Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
         <Image 
-          src="/assets/big-logo.svg" 
+          src={getAssetPath("/assets/big-logo.svg")} 
           alt="Illustration" 
           width={180}
           height={164}

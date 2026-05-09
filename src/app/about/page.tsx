@@ -5,6 +5,7 @@ import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import Image from "next/image";
 import { Icons } from "@/components/ui/Icons";
+import { getAssetPath } from "@/lib/utils";
 
 export default function AboutPage() {
   return (
@@ -17,7 +18,7 @@ export default function AboutPage() {
       <main className="flex-1 px-6 pt-12 pb-32 flex flex-col items-center">
         <div className="w-28 h-28 bg-white rounded-[32px] shadow-xl flex items-center justify-center p-6 mb-6">
           <Image 
-            src="/assets/images/logo.png" 
+            src={getAssetPath("/assets/big-logo.svg")} 
             alt="CardToo Logo" 
             width={80} 
             height={80} 

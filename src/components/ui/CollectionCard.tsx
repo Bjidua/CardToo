@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, getAssetPath } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface CollectionCardProps {
@@ -37,7 +37,7 @@ export const CollectionCard = ({
         {/* Main Visual: Big Logo TCG Stack */}
         <div className="relative w-full h-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
           <Image 
-            src="/assets/big-logo.svg" 
+            src={getAssetPath("/assets/big-logo.svg")} 
             alt="Collection Visual" 
             fill
             className="object-contain p-2"
