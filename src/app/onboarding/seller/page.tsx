@@ -10,8 +10,11 @@ import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function SellerRegistrationPage() {
   const router = useRouter();
+  const { becomeSeller } = useAuth();
   const [step, setStep] = useState(0); // 0: Welcome, 1: Store Info, 2: KYC, 3: Success
 
   const steps = [
@@ -20,8 +23,12 @@ export default function SellerRegistrationPage() {
     { title: "Selesai", icon: <Icons.Plus size={20} className="rotate-45" /> },
   ];
 
+  const handleRegistrationComplete = () => {
+    becomeSeller(); // Update AuthContext to seller status and redirect
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft pb-20">
       <StickyHeader
         title={step === 0 ? "Buka Toko Gratis" : "Registrasi Penjual"}
         leftAction={
@@ -69,10 +76,10 @@ export default function SellerRegistrationPage() {
           {step === 0 && <WelcomeStep key="welcome" onStart={() => setStep(1)} />}
           {step === 1 && <StoreInfoStep key="store" onNext={() => setStep(2)} />}
           {step === 2 && <KYCStep key="kyc" onNext={() => setStep(3)} />}
-          {step === 3 && <SuccessStep key="success" />}
+          {step === 3 && <SuccessStep key="success" onComplete={handleRegistrationComplete} />}
         </AnimatePresence>
       </main>
-    </div>
+    </main>
   );
 }
 
@@ -153,15 +160,12 @@ function KYCStep({ onNext }: { onNext: () => void }) {
     >
       <div className="mb-2 px-2">
         <h3 className="text-[20px] font-bold text-black mb-1">Verifikasi Identitas</h3>
-        <p className="text-[14px] text-black/40">Pastikan data sesuai dengan KTP asli.</p>
+        <p className="text-[14px] text-black/40">Pastikan data sesuai.</p>
       </div>
-
-      <div className="grid grid-cols-1 gap-4">
-        <UploadBox label="Foto KTP" desc="Pastikan tulisan terbaca jelas" />
-        <UploadBox label="Selfie dengan KTP" desc="Wajah dan KTP harus terlihat fokus" />
-      </div>
-
-      <Input label="Nomor NIK" placeholder="Masukkan 16 digit NIK" inputMode="numeric" />
+      
+      <Input label="Nama Lengkap" placeholder="Masukkan Nama Lengkap" />
+      <Input label="Nomor Telefon" placeholder="Masukkan Nomor Telefon" inputMode="numeric" />
+      <Input label="Tanggal Lahir" placeholder="Masukkan Tanggal Lahir" inputMode="numeric" />
 
       <div className="bg-primary/5 p-4 rounded-card border border-primary/10 flex gap-3">
         <Icons.Lock size={20} className="text-primary shrink-0" />
@@ -177,7 +181,7 @@ function KYCStep({ onNext }: { onNext: () => void }) {
   );
 }
 
-function SuccessStep() {
+function SuccessStep({ onComplete }: { onComplete: () => void }) {
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
@@ -189,11 +193,11 @@ function SuccessStep() {
       </div>
       <h2 className="text-[26px] font-black text-black leading-tight mb-4">Pendaftaran Terkirim!</h2>
       <p className="text-[15px] text-black/50 leading-relaxed px-10 mb-12">
-        Tim kami sedang meninjau data tokomu. Proses ini biasanya memakan waktu 1-2 hari kerja.
+        (Demo) Selamat! Akun tokomu telah diaktifkan. Kamu sekarang bisa mulai mengelola produkmu.
       </p>
 
-      <Button onClick={() => window.location.href = "/profile"}>
-        Kembali ke Profil
+      <Button onClick={onComplete}>
+        Masuk ke Dashboard Seller
       </Button>
     </motion.div>
   );

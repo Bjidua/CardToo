@@ -1,3 +1,56 @@
+#### 📅 Update: 13 Mei 2026 (Sesi UI Re-Architecture - Premium Product Detail)
+**Waktu Eksekusi:** Sesi Malam (22:50 WIB)
+
+**✨ 1. Premium Product Detail (Buyer POV)**
+- **`src/app/product/[id]/ProductDetailClient.tsx`**
+  - *Features:* Implementasi halaman detail produk TCG premium dengan image carousel (Dots indicator), pricing logic (diskon & strike-through), dan stock info.
+  - *TCG Specific:* Menambahkan seksi "Grading Details" khusus untuk kartu TCG bersertifikat (ARS Japan) dan grid rincian spesifikasi kartu.
+  - *Interactive:* Implementasi sistem akordion menggunakan `framer-motion` untuk Deskripsi dan Info Pengiriman.
+  - *Logic:* Memfungsikan tombol Chat (navigasi ke ChatRoom Seller), "Add to Cart" (Direct Navigation ke Cart Page), "Buy Now" (navigasi ke Checkout Page), dan Checkout pada Cart.
+  - *Navigation:* Sinkronisasi dengan `StickyHeader` varian "Detail Produk" dan penambahan fitur Share & Favorite.
+  - *Action Bar:* Implementasi fixed bottom bar dengan chat button, "Add to Cart", dan "Buy Now" sesuai standar industri.
+
+**✨ 2. Premium Checkout Page (Buyer POV)**
+- **`src/app/checkout/page.tsx`** [NEW]
+  - *Features:* Alur checkout satu halaman yang mencakup:
+    - Alamat Pengiriman (Card Style).
+    - Review Pesanan (Item Details).
+    - Opsi Pengiriman (Reguler/Ekspres dengan estimasi).
+    - Metode Pembayaran (VA & E-Wallet dengan seleksi interaktif).
+    - Summary Biaya (Subtotal, Ongkir, Biaya Layanan).
+  - *UX:* Desain "Native App Feel" dengan pemilihan item yang reaktif dan visual footer summary yang melayang.
+
+**💳 3. QRIS Payment System (Buyer POV)**
+- **`src/app/checkout/payment/page.tsx`** [NEW]
+  - *Features:* Halaman pembayaran QRIS mandiri dengan:
+    - Countdown Timer (24h) dengan visual progress bar merah.
+    - Status Badge (Menunggu Pembayaran).
+    - QRIS Card dengan integrasi gambar QR dan instruksi langkah-demi-langkah.
+    - Total Tagihan yang jelas dan terformat.
+  - *Interactivity:* Fitur "Simpan ke Galeri" dan "Saya Sudah Bayar" (Direct navigation ke Order History).
+  - *UI/UX:* Mengadopsi referensi industri dengan layout clean, tipografi bold, dan elemen visual yang memandu pengguna secara intuitif.
+
+**🏠 4. Address Management (`/profile/address`)** [UPGRADED]
+- *Features:* Daftar alamat dengan kartu radius 32px, indikator "Utama", dan tombol "Konfirmasi Alamat" yang melayang.
+- *Integration:* Terhubung dengan tombol "Ubah" di halaman Checkout.
+
+**🏪 5. Store Profile (`/store/[id]`)** [NEW]
+- *Features:* Header banner dinamis, statistik toko (rating, followers), dan katalog produk seller dalam grid.
+- *Integration:* Terhubung melalui nama toko di halaman Detail Produk.
+
+**⭐ 6. Review System (`/orders/[id]/review`)** [NEW]
+- *Features:* Pemilihan rating bintang interaktif (1-5), input ulasan teks, dan simulasi unggah foto.
+- *Integration:* Terhubung melalui tombol "Nilai" pada pesanan dengan status "Selesai".
+
+**📜 2. Rules Compliance & Updates**
+- Mengikuti mandat `docs/AI/AGENTS.md` untuk mencatat progres di setiap sesi.
+- **Database Simulation:** Mengimplementasikan **Dummy Data Engine** untuk `ProductDetailClient`, memisahkan data (Logic) dari tampilan (UI).
+- **Rules Update:** Menambahkan aturan **DUMMY DATA ENGINE** ke `docs/AI/AGENTS.md` sebagai standar proyek.
+- Penggunaan `mx-auto max-w-[440px]` untuk konsistensi layout mobile di layar lebar.
+- Menggunakan variabel CSS semantik (`primary`, `secondary`, `surface-muted`) tanpa hardcoded hex.
+
+---
+
 Urutan terbaik sekarang:
 
 Auth + role dulu
@@ -654,3 +707,181 @@ src/middleware.ts
 - **Line Clamp**: Mengganti `truncate` dengan `line-clamp-1` pada judul kartu untuk mencegah pembungkusan teks (wrapping) yang bisa merusak tata letak flexbox.
 - **Grid Alignment**: Menghapus `justify-items-center` pada grid agar setiap kartu meregang (stretch) mengisi lebar kolom secara penuh, memastikan keselarasan vertikal dan horizontal yang sempurna.
 - **Placeholder Sync**: Menyelaraskan proporsi ikon dan teks pada tombol "New Folder" agar serasi dengan kartu koleksi yang kini lebih padat.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Notification Premium)
+**Waktu Eksekusi:** Sesi Siang (14:50 WIB)
+
+**🛠️ 1. Premium Notification UI Overhaul**
+- **`src/components/ui/NotificationCard.tsx`**
+  - *Aesthetic:* Implementasi desain premium dengan efek glassmorphism pada ikon, indikator unread dengan animasi pulse, dan standarisasi radius sesuai `design_system`.
+  - *Variants:* Menambahkan sistem tipe (`promo`, `order`, `alert`, `message`, `system`) dengan skema warna semantik.
+  - *Interactivity:* Menambahkan animasi `framer-motion` (entrance, hover lift, tap scale) untuk "Native App Feel".
+  - *Strict Rules:* Menghapus *hardcoded values* dan beralih sepenuhnya ke variabel CSS (`shadow-soft`, `shadow-medium`, `rounded-card`).
+
+**🛠️ 2. Data & Usage Sync**
+- **`src/app/notifications/page.tsx`**
+  - *Data:* Memperbarui `NOTIFICATIONS_DATA` dengan varian tipe baru dan status baca (isRead) untuk demonstrasi UI yang lebih komprehensif.
+  - *UX:* Penyesuaian layout list agar tetap responsif dan bersih.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Cart Premium)
+**Waktu Eksekusi:** Sesi Siang (15:00 WIB)
+
+**🛒 1. Premium Cart UI Overhaul**
+- **`src/app/cart/page.tsx`**
+  - *Data Strategy:* Migrasi dari dummy data generik ke data TCG riil (Charizard, Pikachu, dll) untuk preview yang lebih akurat.
+  - *UX Improvements:* Menambahkan indikator jumlah produk terpilih dan area checkout yang lebih premium dengan efek *glassmorphism*.
+  - *Empty State:* Mendesain ulang tampilan keranjang kosong dengan visual yang lebih menarik dan tombol CTA "Mulai Belanja".
+
+**🛒 2. Component Refinement**
+- **`src/components/ui/CartItemCard.tsx`**
+  - *Standardization:* Mengintegrasikan komponen global `Icons` dan `Checkbox`.
+  - *Interactive:* Menambahkan animasi `layout` Framer Motion untuk transisi penambahan/pengurangan item yang mulus.
+  - *Design:* Penyesuaian tipografi dan skema warna agar selaras dengan `design_system`.
+- **`src/components/ui/Checkbox.tsx`**
+  - *Visual Upgrade:* Menambahkan ikon *checkmark* SVG dan transisi skala untuk *Native App Feel*.
+  - *Flexibility:* Menjadikan label opsional agar bisa digunakan di dalam kartu produk.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Collections Functional)
+**Waktu Eksekusi:** Sesi Siang (15:25 WIB)
+
+**📂 1. Premium Collections UI & Functionality**
+- **`src/app/collections/page.tsx`**
+  - *Features:* Implementasi fitur pencarian koleksi secara *real-time* dan sistem penambahan folder koleksi baru.
+  - *Interactive Dialog:* Menambahkan *Bottom Sheet* premium untuk input nama koleksi baru dengan animasi `AnimatePresence`.
+  - *UX Improvements:* Menambahkan *empty state* untuk hasil pencarian dan optimasi animasi *stagger* pada grid.
+- **`src/components/ui/CollectionCard.tsx`**
+  - *Visual:* Peningkatan estetika dengan gradien, indikator interaktif (chevron), dan standarisasi bayangan (`shadow-soft` & `hover:shadow-medium`).
+  - *Visual:* Menghapus nilai bayangan manual dan beralih ke variabel desain sistem.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Collection Detail & Upload)
+**Waktu Eksekusi:** Sesi Siang (15:30 WIB)
+
+**📂 1. Collection Detail & Card Management**
+- **`src/app/collections/[id]/page.tsx`**
+  - *Dynamic Routing:* Implementasi halaman detail koleksi menggunakan Next.js Dynamic Routes.
+  - *Server-Side:* Mendukung `generateStaticParams` untuk optimasi `output: export`.
+- **`src/components/collections/CollectionDetailClient.tsx`**
+  - *Gallery View:* Menampilkan daftar kartu di dalam folder koleksi menggunakan `ProductCard`.
+  - *Upload System:* Implementasi fitur "Upload Kartu" melalui *Bottom Sheet* interaktif untuk menambah koleksi secara lokal.
+  - *Visual Consistency:* Menggunakan variabel `--color-accent-soft` (#F6DFFF) untuk konsistensi gradien latar belakang.
+
+**🎨 2. Design System Sync**
+- **`src/app/globals.css`**
+  - *Token:* Menambahkan `--color-accent-soft` (#F6DFFF) sebagai variabel tema resmi.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Collection Detail Refinement)
+**Waktu Eksekusi:** Sesi Siang (15:35 WIB)
+
+**📂 1. UI Consistency & Filtering**
+- **`src/components/collections/CollectionDetailClient.tsx`**
+  - *Header Evolution:* Memperhalus tata letak "Isi Koleksi" dengan aksen visual vertikal dan penyelarasan tipografi agar lebih premium.
+  - *Filter System:* Implementasi bar filter horizontal (chips) untuk mengkategorikan kartu berdasarkan kondisi (*Mint*, *Near Mint*, dsb).
+  - *Motion Refinement:* Meningkatkan kualitas animasi masuk (*entrance*) menggunakan fisika `spring` untuk transisi yang lebih organik.
+  - *Filtering Logic:* Menambahkan logika filter kartu secara *real-time* dan *empty state* yang informatif untuk hasil pencarian/filter yang kosong.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Seller Dashboard)
+**Waktu Eksekusi:** Sesi Sore (16:00 WIB)
+
+**🏪 1. Seller Portal Slicing**
+- **`/seller/dashboard/page.tsx`**: Pembuatan UI halaman beranda *Seller* dengan kartu saldo interaktif, ringkasan status pesanan (Pesanan Baru, Dikirim, Selesai), dan menu manajemen toko.
+- **`/seller/products/page.tsx`**: Pembuatan halaman "Kelola Produk" yang menampilkan daftar inventaris penjual dengan indikator jumlah stok *real-time* di atas setiap kartu produk. Dilengkapi juga dengan fitur pencarian dan *empty state*.
+- **`/seller/products/add/page.tsx`**: Slicing form "Tambah Produk" dengan desain form premium, meliputi:
+  - Kotak unggah foto utama dengan format panduan batas file.
+  - Input nama produk, kategori, harga, dan stok.
+  - Sistem *chips* interaktif untuk penentuan "Kondisi Kartu".
+  - Tombol aksi mengambang (FAB/Sticky Button) untuk kemudahan *submit* pada mode *mobile*.
+
+**📝 2. Task Tracking**
+- Mengubah status "Store onboarding seller" dan "Product CRUD seller" menjadi selesai pada `docs/to-do.md`.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Logic - Profile Conditional Menu)
+**Waktu Eksekusi:** Sesi Sore (16:05 WIB)
+
+**👤 1. Profile Context Logic**
+- **`src/app/profile/page.tsx`**: Implementasi logika kondisional untuk membedakan tampilan profil antara *Buyer* dan *Seller*.
+  - *Dynamic Menu:* Menu secara otomatis berganti antara "Register as Seller" (jika belum terdaftar) dan "Dashboard Seller" (jika sudah terdaftar).
+  - *Identity Badge:* Menambahkan *badge* "Seller" di samping nama profil untuk identifikasi peran pengguna.
+  - *Debug Toggle:* Menambahkan tombol simulasi *state* sementara di bagian bawah untuk mempermudah pengetesan perubahan UI tanpa harus login/logout.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Full Seller Suite)
+**Waktu Eksekusi:** Sesi Sore (16:15 WIB)
+
+**🏪 1. Seller Ecosystem Finalization**
+- **`/seller/orders/page.tsx`**: Implementasi halaman manajemen pesanan dengan sistem tab (*Perlu Dikirim*, *Diproses*, *Selesai*) dan kartu pesanan interaktif.
+- **`/seller/settings/page.tsx`**: Pembuatan halaman pengaturan toko untuk kustomisasi profil toko (nama, deskripsi) dan verifikasi metode pembayaran.
+- **`/seller/dashboard/page.tsx` (Refinement)**: Peningkatan standar industri dengan penambahan seksi "Penjualan Terbaru" dan optimasi tata letak navigasi.
+- **`src/app/profile/page.tsx`**: Sinkronisasi navigasi antara mode *Buyer* dan *Seller* menggunakan logika kondisional.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Seller Analytics & Reports)
+**Waktu Eksekusi:** Sesi Sore (16:20 WIB)
+
+**📊 1. Seller Analytics Suite**
+- **`/seller/reports/page.tsx`**: Implementasi halaman analisis performa toko bergaya industri (*Tokopedia/Shopee style*).
+  - *KPI Cards:* Metrik utama untuk Omzet, Profit, Jumlah Pesanan, dan Pengunjung dengan indikator persentase pertumbuhan.
+  - *Data Visualization:* Grafik batang interaktif (simulasi) dengan animasi masuk menggunakan *Framer Motion*.
+  - *Best Sellers:* Daftar produk terlaris dengan sistem peringkat dan total pendapatan per produk.
+  - *Time Range Filtering:* Filter data berdasarkan rentang waktu (Hari, Minggu, Bulan).
+- **`/seller/dashboard/page.tsx`**: Integrasi menu "Laporan Penjualan" ke dalam navigasi utama *Seller*.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi Bugfix - Icons Sync)
+**Waktu Eksekusi:** Sesi Sore (16:25 WIB)
+
+**🛠️ 1. Icons Library Update**
+- **`src/components/ui/Icons.tsx`**: Menambahkan definisi `Icons.Chart` untuk mendukung fitur visualisasi data pada Dashboard dan Laporan Seller.
+- **Fix:** Menyelesaikan error `Element type is invalid` pada Dashboard Seller yang disebabkan oleh ikon yang belum didefinisikan.
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Sales Transaction Detail)
+**Waktu Eksekusi:** Sesi Sore (16:30 WIB)
+
+**💸 1. Sales Transaction Analytics**
+- **`/seller/reports/detail/page.tsx`**: Implementasi halaman rincian transaksi penjualan untuk transparansi finansial *Seller*.
+  - *Financial Breakdown:* Menampilkan rincian biaya per transaksi, termasuk Harga Produk, Potongan Biaya Layanan (1%), dan Penghasilan Bersih.
+  - *Search & Filter:* Fitur pencarian *real-time* berdasarkan ID Pesanan atau Nama Produk.
+  - *Status Tracking:* Indikator status transaksi (Selesai/Diproses) dengan skema warna industrial.
+- **`/seller/reports/page.tsx`**: Integrasi navigasi ke halaman rincian transaksi melalui tombol "Lihat Detail Transaksi".
+
+---
+
+#### 📅 Update: 12 Mei 2026 (Sesi UI Re-Architecture - Seller Report Export)
+**Waktu Eksekusi:** Sesi Sore (16:25 WIB)
+
+**📥 1. Data Export Functionality**
+- **`/seller/reports/page.tsx`**: Implementasi fitur ekspor data laporan penjualan.
+  - *CSV Export:* Logika fungsional untuk menghasilkan file CSV dari data transaksi dan mengunduhnya langsung ke perangkat pengguna.
+  - *PDF Export:* Simulasi penyiapan dokumen PDF menggunakan fungsi *native print* browser yang telah dioptimalkan.
+  - *Loading UX:* Animasi *spinner* pada tombol header dan transisi menu pilihan format yang halus menggunakan *AnimatePresence*.
+
+---
+
+
+
+
+
+
+
+
+
+
+

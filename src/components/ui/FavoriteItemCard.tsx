@@ -39,7 +39,7 @@ export const FavoriteItemCard = ({
       )}
     >
       {/* Product Image */}
-      <div className="w-[70px] h-[90px] bg-skeleton rounded-card overflow-hidden flex-shrink-0 relative shadow-inner">
+      <div className="w-[70px] h-[90px] bg-skeleton rounded-card overflow-hidden shrink-0 relative shadow-inner">
         {image ? (
           <Image src={image} alt={title} fill className="object-cover" />
         ) : (

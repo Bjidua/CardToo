@@ -13,7 +13,7 @@ export default function ChangePasswordPage() {
   const [showNew, setShowNew] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Ganti Password"
         leftAction={<BackButton variant="primary" />}

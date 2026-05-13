@@ -70,7 +70,7 @@ export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
 
       {/* Body: Product Info */}
       <div className="flex gap-4">
-        <div className="w-[80px] h-[80px] bg-skeleton rounded-card overflow-hidden flex-shrink-0 relative">
+        <div className="w-[80px] h-[80px] bg-skeleton rounded-card overflow-hidden shrink-0 relative">
           {order.productImage ? (
             <Image src={order.productImage} alt={order.productTitle} fill className="object-cover" />
           ) : (
@@ -94,21 +94,35 @@ export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
       {/* Footer: Actions */}
       <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-black/5">
         {order.status === "Belum Bayar" && (
-          <button className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all">
+          <button 
+            onClick={() => window.location.href = "/checkout/payment"}
+            className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all"
+          >
             Bayar Sekarang
           </button>
         )}
         {order.status === "Dikirim" && (
-          <button className="px-4 h-[36px] border border-primary text-primary text-[13px] font-bold rounded-full active:scale-95 transition-all">
-            Lacak
-          </button>
+          <>
+            <button className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all">
+              Terima Pesanan
+            </button>
+            <button 
+              onClick={() => window.location.href = `/orders/${order.id}/track`}
+              className="px-4 h-[36px] border border-primary text-primary text-[13px] font-bold rounded-full active:scale-95 transition-all"
+            >
+              Lacak
+            </button>
+          </>
         )}
         {order.status === "Selesai" && (
           <>
             <button className="px-4 h-[36px] border border-black/10 text-black/60 text-[13px] font-bold rounded-full active:scale-95 transition-all">
               Beli Lagi
             </button>
-            <button className="px-4 h-[36px] bg-accent text-white text-[13px] font-bold rounded-full active:scale-95 transition-all">
+            <button 
+              onClick={() => window.location.href = `/orders/${order.id}/review`}
+              className="px-4 h-[36px] bg-accent text-white text-[13px] font-bold rounded-full active:scale-95 transition-all"
+            >
               Nilai
             </button>
           </>

@@ -8,20 +8,15 @@ import { Input } from "@/components/ui/Input";
 import { Icons } from "@/components/ui/Icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 
 export default function MessagesPage() {
+  const { isGuest } = useAuth();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("Semua");
 
-  const dummyMessages = [
-    { id: "1", name: "User1", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "5 min", unread: 1 },
-    { id: "2", name: "User2", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "12 min", unread: 1 },
-    { id: "3", name: "User3", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "1 hour", unread: 0 },
-    { id: "4", name: "CardMaster99", msg: "Ready for trade? I have the Pikachu VMAX you're looking for!", time: "2 hours", unread: 3 },
-    { id: "5", name: "User4", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
-    { id: "6", name: "User5", msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", time: "Yesterday", unread: 0 },
-    { id: "7", name: "CollectorX", msg: "Is the Charizard still available?", time: "2 days ago", unread: 0 },
-  ];
+  const dummyMessages: any[] = [];
 
   const filteredMessages = dummyMessages.filter(m => {
     const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.msg.toLowerCase().includes(search.toLowerCase());
@@ -29,8 +24,21 @@ export default function MessagesPage() {
     return matchesSearch && matchesFilter;
   });
 
+  if (isGuest) {
+    return (
+      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
+        <StickyHeader title="Messages" variant="logo" size="lg" />
+        <GuestEmptyState 
+          title="Login untuk Mulai Obrolan" 
+          description="Masuk atau daftar sekarang untuk bernegosiasi harga dan bertanya langsung ke penjual."
+          icon={<Icons.Message size={48} />}
+        />
+      </main>
+    );
+  }
+
   return (
-    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-[#F6DFFF] relative pb-40">
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-whit relative pb-40">
       <StickyHeader title="Messages" variant="logo" size="lg" />
       
       <div className="sticky top-[140px] z-30 px-6 pt-6 pb-4 bg-linear-to-b from-white to-white/95 backdrop-blur-md">

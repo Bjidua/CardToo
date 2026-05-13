@@ -6,16 +6,15 @@ import { BackButton } from "@/components/ui/BackButton";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { motion } from "framer-motion";
 
-const DUMMY_PRODUCTS = [
-  { id: 1, title: "Pikachu VMAX", price: 1500000, condition: "Mint" as const, category: "Pokemon" },
-  { id: 2, title: "Charizard GX", price: 2800000, condition: "Near Mint" as const, category: "Pokemon" },
-  { id: 3, title: "Mewtwo EX", price: 950000, condition: "Excellent" as const, category: "Pokemon" },
-  { id: 4, title: "Dragonite V", price: 1200000, condition: "Mint" as const, category: "Pokemon" },
-  { id: 5, title: "Luffy Gear 5", price: 2100000, condition: "Mint" as const, category: "Onepiece" },
-  { id: 6, title: "Boboiboy Supra", price: 850000, condition: "Excellent" as const, category: "Boboiboy" },
-  { id: 7, title: "Digimon Wargreymon", price: 1750000, condition: "Mint" as const, category: "Digimon" },
-  { id: 8, title: "Yu-Gi-Oh! Blue Eyes", price: 5000000, condition: "Near Mint" as const, category: "Yu-Gi-Oh!" },
-];
+interface CategoryProduct {
+  id: number;
+  title: string;
+  price: number;
+  condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
+  category: string;
+}
+
+const DUMMY_PRODUCTS: CategoryProduct[] = [];
 
 interface CategoryProductsClientProps {
   slug: string;
@@ -42,7 +41,7 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-[#F7F9FA] to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title={categoryName}
         leftAction={<BackButton variant="primary" />}

@@ -23,7 +23,7 @@ export default function AllCategoriesPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-[#F7F9FA] to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       {/* Header Section */}
       <StickyHeader
         title="All Category"
@@ -43,21 +43,6 @@ export default function AllCategoriesPage() {
               <CategoryCard 
                 name={category.name} 
                 onClick={() => handleCategorySelect(category.name)}
-              />
-            </motion.div>
-          ))}
-          
-          {/* Duplicate Onepiece for visual matching of Figma */}
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={`extra-${i}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: (CATEGORIES.length + i) * 0.05 }}
-            >
-              <CategoryCard 
-                name="Onepiece" 
-                onClick={() => handleCategorySelect("Onepiece")}
               />
             </motion.div>
           ))}

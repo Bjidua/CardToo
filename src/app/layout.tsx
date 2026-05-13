@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Outfit } from "next/font/google"
 import "./globals.css"
 import { BottomNav } from "@/components/layout/BottomNav"
+import { AuthProvider } from "@/context/AuthContext"
 
 const outfit = Outfit({ 
   subsets: ["latin"],
@@ -29,14 +30,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} bg-white antialiased`}>
-        {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
-        <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] relative flex flex-col">
-          {/* Konten Utama */}
-          <main className="flex-1 flex flex-col relative pb-32">
-            {children}
-          </main>
-          <BottomNav />
-        </div>
+        <AuthProvider>
+          {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
+          <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] relative flex flex-col">
+            {/* Konten Utama */}
+            <main className="flex-1 flex flex-col relative pb-32">
+              {children}
+            </main>
+            <BottomNav />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )

@@ -16,6 +16,7 @@ function HomeContent() {
   const categoryParam = searchParams.get("category") || "All";
   
   const [selectedCategory, setSelectedCategory] = React.useState(categoryParam);
+  const [searchQuery, setSearchQuery] = React.useState("");
   const [wishlistedIds, setWishlistedIds] = React.useState<number[]>([1, 4]);
 
   // Update selectedCategory if param changes
@@ -23,19 +24,23 @@ function HomeContent() {
     if (categoryParam) setSelectedCategory(categoryParam);
   }, [categoryParam]);
 
-  const dummyProducts = [
-    { id: 1, title: "Pikachu VMAX", price: 1500000, condition: "Mint" as const, category: "Pokemon" },
-    { id: 2, title: "Charizard GX", price: 2800000, condition: "Near Mint" as const, category: "Pokemon" },
-    { id: 3, title: "Mewtwo EX", price: 950000, condition: "Excellent" as const, category: "Pokemon" },
-    { id: 4, title: "Dragonite V", price: 1200000, condition: "Mint" as const, category: "Pokemon" },
-    { id: 5, title: "Luffy Gear 5", price: 2100000, condition: "Mint" as const, category: "Onepiece" },
-    { id: 6, title: "Boboiboy Supra", price: 850000, condition: "Excellent" as const, category: "Boboiboy" },
-  ];
+  interface HomeProduct {
+    id: number;
+    title: string;
+    price: number;
+    condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
+    category: string;
+  }
+
+  const dummyProducts: HomeProduct[] = [];
 
   const filteredProducts = React.useMemo(() => {
-    if (selectedCategory === "All") return dummyProducts;
-    return dummyProducts.filter(p => p.category === selectedCategory);
-  }, [selectedCategory]);
+    return dummyProducts.filter(p => {
+      const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
 
   const toggleWishlist = (id: number) => {
     setWishlistedIds(prev => 
@@ -104,8 +109,29 @@ function HomeContent() {
         />
       </motion.section>
 
+      {/* Search Bar Section */}
+      <motion.section 
+        variants={fadeInVariants}
+        initial="hidden"
+        animate="show"
+        className="px-6 pt-6"
+      >
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-text-sub/40 group-focus-within:text-primary transition-colors">
+            <Icons.Search size={20} />
+          </div>
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Cari kartu Pokemon, One Piece..."
+            className="w-full h-14 bg-white rounded-[24px] pl-14 pr-6 text-[15px] font-bold text-text-main shadow-soft border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none transition-all placeholder:text-text-sub/30"
+          />
+        </div>
+      </motion.section>
+
       {/* Category Section */}
-      <section className="pt-8">
+      <section className="pt-6">
         <CategoryList 
           onSelect={setSelectedCategory} 
           activeCategory={selectedCategory} 
@@ -133,7 +159,7 @@ function HomeContent() {
           ))}
           {filteredProducts.length === 0 && (
             <div className="col-span-2 py-10 text-center text-black/40">
-              Belum ada produk di kategori ini.
+              Tidak ada produk 
             </div>
           )}
         </motion.div>

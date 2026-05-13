@@ -8,9 +8,22 @@ import Image from "next/image";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { cn } from "@/lib/utils";
 import { MenuListItem } from "@/components/ui/MenuListItem";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { isGuest, isSeller } = useAuth();
+
+  React.useEffect(() => {
+    if (isGuest) {
+      router.push("/login");
+    }
+  }, [isGuest, router]);
+
+  if (isGuest) return null; // Avoid rendering flash before redirect
+
   // Animation Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -36,19 +49,12 @@ export default function ProfilePage() {
   } as const;
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF] pb-32">
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-white/95 pb-32">
       {/* STICKY HEADER AREA */}
       <StickyHeader 
         title="Profile" 
         variant="logo" 
         size="lg"
-        rightAction={
-          <Link href="/settings">
-            <button className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white active:scale-90 transition-all">
-              <Icons.Settings size={20} />
-            </button>
-          </Link>
-        }
       />
 
       {/* User Info Section */}
@@ -62,8 +68,15 @@ export default function ProfilePage() {
           <ProfilePicture size={88} className="border-[5px] border-white shadow-soft" />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[20px] font-bold text-black leading-tight">CanTika</h2>
-          <p className="text-[14px] text-black/60 font-medium">cantika33@gmail.com</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-[20px] font-bold text-text-main leading-tight">Pi User</h2>
+            {isSeller && (
+              <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">
+                Seller
+              </span>
+            )}
+          </div>
+          <p className="text-[14px] text-text-sub font-medium">pi.user@cardtoo.com</p>
         </div>
       </motion.div>
 
@@ -74,12 +87,12 @@ export default function ProfilePage() {
         className="flex flex-col gap-6 px-6"
       >
         {/* My Order Card */}
-        <motion.div variants={itemVariants} className="bg-white rounded-card p-5 shadow-soft">
+        <motion.div variants={itemVariants} className="bg-white rounded-card p-5 shadow-soft border border-surface-muted">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[16px] font-bold text-black">My Order</h3>
-            <Link href="/orders" className="flex items-center gap-1 text-[16px] font-medium text-black/80 hover:opacity-60 transition-opacity">
+            <h3 className="text-[16px] font-bold text-text-main">My Order</h3>
+            <Link href="/orders" className="flex items-center gap-1 text-[13px] font-bold text-primary hover:opacity-60 transition-opacity uppercase tracking-wider">
               Order history
-              <Icons.ChevronRight size={18} />
+              <Icons.ChevronRight size={14} />
             </Link>
           </div>
 
@@ -92,7 +105,7 @@ export default function ProfilePage() {
         </motion.div>
 
         {/* Menu List Card */}
-        <motion.div variants={itemVariants} className="bg-white rounded-card overflow-hidden shadow-soft">
+        <motion.div variants={itemVariants} className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
           <div className="flex flex-col">
             <MenuListItem 
               icon={<Icons.Favorite size={20} />} 
@@ -100,12 +113,23 @@ export default function ProfilePage() {
               href="/profile/favorites"
               showBorder 
             />
-            <MenuListItem 
-              icon={<Icons.Store size={20} />} 
-              label="Register as Seller" 
-              href="/onboarding/seller"
-              showBorder 
-            />
+            
+            {isSeller ? (
+              <MenuListItem 
+                icon={<Icons.Store size={20} />} 
+                label="Dashboard Seller" 
+                href="/seller/dashboard"
+                showBorder 
+              />
+            ) : (
+              <MenuListItem 
+                icon={<Icons.Store size={20} />} 
+                label="Register as Seller" 
+                href="/onboarding/seller"
+                showBorder 
+              />
+            )}
+
             <MenuListItem 
               icon={<Icons.Settings size={20} />} 
               label="Setting" 
@@ -113,10 +137,12 @@ export default function ProfilePage() {
             />
           </div>
         </motion.div>
+        
       </motion.div>
     </main>
   );
 }
+
 
 function OrderStatusItem({ icon, label, href = "#" }: { icon: React.ReactNode; label: string; href?: string }) {
   return (

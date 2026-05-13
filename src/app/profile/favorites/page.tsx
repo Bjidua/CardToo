@@ -6,39 +6,9 @@ import { BackButton } from "@/components/ui/BackButton";
 import { FavoriteItemCard } from "@/components/ui/FavoriteItemCard";
 import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
-const DUMMY_FAVORITES = [
-  {
-    id: "1",
-    title: "Pikachu VMAX Rainbow",
-    shopName: "Pokemon Center",
-    price: 3500000,
-  },
-  {
-    id: "2",
-    title: "Luffy Gear 5 Card",
-    shopName: "Onepiece Shop",
-    price: 1250000,
-  },
-  {
-    id: "3",
-    title: "Blue Eyes White Dragon",
-    shopName: "Yu-Gi-Oh! Official",
-    price: 5000000,
-  },
-  {
-    id: "4",
-    title: "Charizard GX Shiny",
-    shopName: "TCG Master",
-    price: 2800000,
-  },
-  {
-    id: "5",
-    title: "Mewtwo EX Full Art",
-    shopName: "Card House",
-    price: 1500000,
-  },
-];
+const DUMMY_FAVORITES: any[] = [];
 
 export default function MyFavoritePage() {
   const [favorites, setFavorites] = useState(DUMMY_FAVORITES);
@@ -56,19 +26,21 @@ export default function MyFavoritePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
       <StickyHeader
         title="My Favorite"
         variant="logo"
         size="lg"
         leftAction={<BackButton variant="primary" />}
         rightAction={
-          <button className="relative p-2 hover:bg-black/5 rounded-full transition-colors">
-            <Icons.Cart size={24} className="text-black/60" />
-            <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
+          <Link href="/cart" className="p-1 hover:opacity-70 transition-opacity active:scale-90">
+            <button className="relative p-2 hover:bg-black/5 rounded-full transition-colors">
+              <Icons.Cart size={32} className="text-accent" />
+              <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                0
+              </span>
+            </button>
+          </Link>
         }
       />
 
