@@ -30,8 +30,9 @@ function SellerSettingsContent() {
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
+      // TODO: Integrasi Appwrite — simpan data toko ke database
+      // Setelah integrasi, ganti dengan komponen Toast UI
       setIsSaving(false);
-      alert("Pengaturan toko berhasil disimpan!");
     }, 1000);
   };
 
@@ -105,16 +106,16 @@ function SellerSettingsContent() {
           </div>
         </section>
 
-        {/* Store Stats (Read Only) */}
+        {/* Store Stats (Read Only — akan di-fetch dari Appwrite) */}
         <section className="grid grid-cols-2 gap-4">
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
             <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Waktu Balas</span>
-            <span className="text-[15px] font-black text-text-main">± 5 Menit</span>
+            <span className="text-[15px] font-black text-text-main">-</span>
           </div>
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
             <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Rating Toko</span>
             <div className="flex items-center gap-1">
-              <span className="text-[15px] font-black text-text-main">4.9</span>
+              <span className="text-[15px] font-black text-text-main">-</span>
               <Icons.Review size={12} className="text-warning fill-warning" />
             </div>
           </div>

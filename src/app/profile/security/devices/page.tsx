@@ -5,23 +5,9 @@ import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
 import { motion } from "framer-motion";
+import type { Device } from "@/types";
 
-const DEVICES = [
-  {
-    id: "1",
-    name: "Samsung Galaxy S24 Ultra",
-    location: "Jakarta, Indonesia",
-    time: "Sedang Aktif",
-    isCurrent: true,
-  },
-  {
-    id: "2",
-    name: "MacBook Pro 14\"",
-    location: "Bandung, Indonesia",
-    time: "Aktif 2 jam yang lalu",
-    isCurrent: false,
-  },
-];
+const DEVICES: Device[] = [];
 
 export default function DevicesPage() {
   return (

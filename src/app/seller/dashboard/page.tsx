@@ -26,7 +26,8 @@ function SellerDashboardContent() {
   const handleWithdraw = () => {
     setIsWithdrawing(true);
     setTimeout(() => {
-      alert("Permintaan penarikan saldo Rp 4.250.000 telah diajukan! Dana akan masuk ke rekening Anda dalam 1x24 jam.");
+      // TODO: Integrasi Appwrite — kirim request penarikan saldo
+      // Setelah integrasi, ganti dengan komponen Toast UI
       setIsWithdrawing(false);
     }, 1500);
   };

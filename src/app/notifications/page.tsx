@@ -5,8 +5,9 @@ import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { NotificationCard } from "@/components/ui/NotificationCard";
 import { motion } from "framer-motion";
+import type { NotificationGroup, NotificationItem } from "@/types";
 
-const NOTIFICATIONS_DATA: any[] = [];
+const NOTIFICATIONS_DATA: NotificationGroup[] = [];
 
 export default function NotificationsPage() {
   const containerVariants = {
@@ -47,7 +48,7 @@ export default function NotificationsPage() {
                   {group.group}
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {group.items.map((item: any) => (
+                  {group.items.map((item: NotificationItem) => (
                     <motion.div key={item.id} variants={itemVariants}>
                       <NotificationCard {...item} />
                     </motion.div>

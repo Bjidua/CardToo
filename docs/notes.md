@@ -1,3 +1,36 @@
+#### 📅 Update: 14 Mei 2026 (Sesi Full Codebase Audit & Cleanup)
+**Waktu Eksekusi:** Dini Hari (02:30 WIB)
+
+**🔍 1. Full Codebase Audit (Pre-Backend Integration)**
+- Melakukan audit menyeluruh terhadap seluruh codebase (50+ file) sebelum integrasi Appwrite.
+- Membuat laporan temuan lengkap (Kritis, Sedang, Info).
+
+**🧬 2. TypeScript: Centralized Types (`src/types/index.ts`)** [NEW]
+- Membuat file tipe sentral berisi semua interface entity: `Product`, `Store`, `Order`, `SellerOrder`, `CartItem`, `ChatContact`, `ChatMessage`, `NotificationItem`, `NotificationGroup`, `Collection`, `FavoriteItem`, `Address`, `TransactionDetail`, `Device`.
+- Mengganti **9 instance** `any[]` dan `any` yang tersebar di 9 file berbeda dengan tipe eksplisit dari file sentral ini.
+
+**🧹 3. Data Dummy Purge (Round 2)**
+- Membersihkan 5 file yang masih menyimpan data dummy aktif:
+  - `ChatClient.tsx` (4 pesan palsu)
+  - `messages/[id]/page.tsx` (7 user palsu)
+  - `seller/reports/detail/page.tsx` (3 transaksi palsu)
+  - `profile/security/devices/page.tsx` (2 perangkat palsu)
+  - `search/page.tsx` ("Pokemon Official Store" hardcoded)
+  - `seller/products/edit/[id]/EditProductClient.tsx` (3 mock produk)
+
+**🛡️ 4. Native App Feel: Hapus alert() Browser**
+- Menghapus **7 instance** `alert()` native dari seluruh codebase:
+  - `seller/dashboard/page.tsx`, `seller/settings/page.tsx`, `seller/orders/page.tsx`
+  - `seller/products/add/page.tsx`, `seller/products/edit/[id]/EditProductClient.tsx`
+  - `orders/[id]/review/ReviewClient.tsx`
+- Diganti dengan `// TODO` untuk integrasi komponen Toast UI saat backend siap.
+
+**🎨 5. Design System Compliance**
+- Menghapus hardcoded values: rating "4.9" dan waktu balas "± 5 Menit" di `seller/settings/page.tsx`.
+- Menghapus file sampah `temp.js`.
+
+---
+
 #### 📅 Update: 13 Mei 2026 (Sesi UI Re-Architecture - Premium Product Detail)
 **Waktu Eksekusi:** Sesi Malam (22:50 WIB)
 

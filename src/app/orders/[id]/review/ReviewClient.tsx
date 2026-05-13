@@ -16,7 +16,8 @@ export default function ReviewClient({ id }: { id: string }) {
   const [review, setReview] = useState("");
 
   const handleSubmit = () => {
-    alert("Terima kasih atas ulasanmu!");
+    // TODO: Integrasi Appwrite — kirim ulasan ke database
+    // Setelah integrasi, ganti dengan komponen Toast UI
     router.push("/orders");
   };
 

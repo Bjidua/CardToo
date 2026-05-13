@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
+import type { Collection } from "@/types";
 
-const INITIAL_COLLECTIONS: any[] = [];
+const INITIAL_COLLECTIONS: Collection[] = [];
 
 export default function CollectionsPage() {
-  const [collections, setCollections] = useState(INITIAL_COLLECTIONS);
+  const [collections, setCollections] = useState<Collection[]>(INITIAL_COLLECTIONS);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -80,10 +81,8 @@ export default function CollectionsPage() {
     <main className="flex-1 flex flex-col bg-background relative pb-40">
       <StickyHeader title="Collection" variant="logo" size="lg" />
 
-      {/* Categories & Search */}
+      {/* Search */}
       <div className="relative z-10 pt-6 px-6 flex flex-col gap-6">
-        <CategoryList />
-        
         <div className="flex items-center gap-3">
           <Input 
             placeholder="Cari koleksi..." 
@@ -132,7 +131,7 @@ export default function CollectionsPage() {
       {/* Add Dialog Overlay */}
       <AnimatePresence>
         {isAdding && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center p-6 sm:items-center">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -141,12 +140,11 @@ export default function CollectionsPage() {
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              className="relative w-full max-w-[440px] bg-white rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-[440px] bg-white rounded-[32px] p-8 shadow-2xl"
             >
-              <div className="w-12 h-1.5 bg-surface-muted rounded-full mx-auto mb-6 sm:hidden" />
               <h2 className="text-xl font-black text-text-main mb-2">Buat Koleksi Baru</h2>
               <p className="text-sm text-text-sub mb-8">Beri nama folder untuk mengelompokkan kartu kesayanganmu.</p>
               

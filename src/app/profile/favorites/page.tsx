@@ -7,11 +7,12 @@ import { FavoriteItemCard } from "@/components/ui/FavoriteItemCard";
 import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import type { FavoriteItem } from "@/types";
 
-const DUMMY_FAVORITES: any[] = [];
+const DUMMY_FAVORITES: FavoriteItem[] = [];
 
 export default function MyFavoritePage() {
-  const [favorites, setFavorites] = useState(DUMMY_FAVORITES);
+  const [favorites, setFavorites] = useState<FavoriteItem[]>(DUMMY_FAVORITES);
 
   const handleRemove = (id: string) => {
     setFavorites((prev) => prev.filter((item) => item.id !== id));

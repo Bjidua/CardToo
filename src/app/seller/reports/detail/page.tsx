@@ -7,23 +7,9 @@ import { Icons } from "@/components/ui/Icons";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import type { TransactionDetail } from "@/types";
 
-interface TransactionDetail {
-  id: string;
-  orderId: string;
-  date: string;
-  productName: string;
-  grossAmount: number;
-  serviceFee: number;
-  netAmount: number;
-  status: "Completed" | "Processing";
-}
-
-const DUMMY_DETAILS: TransactionDetail[] = [
-  { id: "1", orderId: "ORD-7721", date: "10 Mei 2026, 14:20", productName: "Charizard VMAX Shiny", grossAmount: 1500000, serviceFee: 15000, netAmount: 1485000, status: "Completed" },
-  { id: "2", orderId: "ORD-7718", date: "09 Mei 2026, 11:05", productName: "Pikachu VMAX Rainbow", grossAmount: 3200000, serviceFee: 32000, netAmount: 3168000, status: "Processing" },
-  { id: "3", orderId: "ORD-7705", date: "08 Mei 2026, 09:15", productName: "Lugia V Alternate Art", grossAmount: 850000, serviceFee: 8500, netAmount: 841500, status: "Completed" },
-];
+const DUMMY_DETAILS: TransactionDetail[] = [];
 
 export default function SalesDetailPage() {
   const [searchTerm, setSearchTerm] = useState("");
