@@ -12,6 +12,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default function StoreProfilePage({ params }: { params: { id: string } }) {
-  return <StoreProfileClient id={params.id} />;
+export default async function StoreProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return <StoreProfileClient id={resolvedParams.id} />;
 }
