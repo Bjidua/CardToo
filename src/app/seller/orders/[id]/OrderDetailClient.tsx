@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -8,12 +8,13 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Image from "next/image";
 import { getAssetPath } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import type { SellerOrder, SellerOrderItem } from "@/types";
 
 export default function OrderDetailClient({ id }: { id: string }) {
   const router = useRouter();
   
-  // Mock data cleaned - in production this would fetch from Appwrite
-  const order: any = null;
+  // Data akan di-fetch dari Appwrite saat integrasi backend
+  const [order] = useState<SellerOrder | null>(null);
 
   if (!order) {
     return (
@@ -96,7 +97,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
             </div>
 
             <div className="flex flex-col gap-4">
-              {order.items.map((item: any) => (
+              {order.items.map((item: SellerOrderItem) => (
                 <div key={item.id} className="flex gap-4">
                   <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-surface-muted border border-surface-muted">
                     {/* Gambar fallback jika URL error */}

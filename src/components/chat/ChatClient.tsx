@@ -12,24 +12,21 @@ interface ChatClientProps {
   name: string;
 }
 
-const DUMMY_MESSAGES = [
-  { id: 1, text: "Halo Kak! Apakah Pikachu VMAX-nya masih ready?", sender: "me", time: "10:30" },
-  { id: 2, text: "Halo! Iya masih ready kak, kondisinya Mint 10/10 ya.", sender: "other", time: "10:32" },
-  { id: 3, text: "Bisa kirim foto detail bagian belakangnya kak?", sender: "me", time: "10:33" },
-  { id: 4, text: "Tentu, sebentar ya saya ambilkan fotonya.", sender: "other", time: "10:35" },
-];
+import type { ChatMessage } from "@/types";
+
+const DUMMY_MESSAGES: ChatMessage[] = [];
 
 export default function ChatClient({ id, name }: ChatClientProps) {
-  const [messages, setMessages] = useState(DUMMY_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessage[]>(DUMMY_MESSAGES);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
-    const newMessage = {
+    const newMessage: ChatMessage = {
       id: Date.now(),
       text: input,
-      sender: "me",
+      sender: "me" as const,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setMessages([...messages, newMessage]);

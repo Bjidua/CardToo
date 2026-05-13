@@ -35,16 +35,15 @@ function AddProductContent() {
 
   const handleUpload = () => {
     if (!formData.name || !formData.price) {
-      alert("Harap isi nama kartu dan harga minimal.");
+      // TODO: Ganti dengan Toast UI untuk validasi
       return;
     }
 
     setIsUploading(true);
     
-    // Simulasi upload ke server
+    // TODO: Integrasi Appwrite — upload produk ke database
     setTimeout(() => {
       setIsUploading(false);
-      alert("Produk berhasil diunggah! Kartu Anda sekarang aktif di marketplace.");
       router.push('/seller/products');
     }, 2000);
   };

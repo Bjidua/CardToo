@@ -1,15 +1,7 @@
 import React from "react";
 import ChatClient from "@/components/chat/ChatClient";
 
-const DUMMY_CHATS = [
-  { id: "1", name: "User1" },
-  { id: "2", name: "User2" },
-  { id: "3", name: "User3" },
-  { id: "4", name: "CardMaster99" },
-  { id: "5", name: "User4" },
-  { id: "6", name: "User5" },
-  { id: "7", name: "CollectorX" },
-];
+const DUMMY_CHATS: { id: string; name: string }[] = [];
 
 export function generateStaticParams() {
   return DUMMY_CHATS.map((chat) => ({

@@ -10,13 +10,14 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
+import type { ChatContact } from "@/types";
 
 export default function MessagesPage() {
   const { isGuest } = useAuth();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("Semua");
 
-  const dummyMessages: any[] = [];
+  const dummyMessages: ChatContact[] = [];
 
   const filteredMessages = dummyMessages.filter(m => {
     const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.msg.toLowerCase().includes(search.toLowerCase());
@@ -38,7 +39,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-whit relative pb-40">
+    <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white relative pb-40">
       <StickyHeader title="Messages" variant="logo" size="lg" />
       
       <div className="sticky top-[140px] z-30 px-6 pt-6 pb-4 bg-linear-to-b from-white to-white/95 backdrop-blur-md">

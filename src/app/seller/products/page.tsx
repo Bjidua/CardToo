@@ -8,8 +8,9 @@ import { Icons } from "@/components/ui/Icons";
 import { Input } from "@/components/ui/Input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import type { Product } from "@/types";
 
-const MY_PRODUCTS: any[] = [];
+const MY_PRODUCTS: Product[] = [];
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
