@@ -58,9 +58,8 @@ function SellerOrdersContent() {
       ));
       setIsActioning(null);
       
-      // Feedback sukses
-      if (newStatus === "Processing") alert("Pesanan berhasil diterima! Segera siapkan produk.");
-      if (newStatus === "Shipped") alert("Resi berhasil diinput! Pesanan beralih ke pengiriman.");
+      // TODO: Integrasi Appwrite — update status pesanan di database
+      // Setelah integrasi, ganti dengan komponen Toast UI
     }, 1000);
   };
 

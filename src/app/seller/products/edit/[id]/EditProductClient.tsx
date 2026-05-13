@@ -23,37 +23,22 @@ export default function EditProductClient({ id }: { id: string }) {
 
   const conditions = ["Mint", "Near Mint", "Excellent", "Good"];
 
-  // Mock fetching data based on ID
+  // TODO: Fetch data produk dari Appwrite berdasarkan ID
   useEffect(() => {
-    // Simulasi fetch data produk
-    const mockData = {
-      "1": { name: "Charizard VMAX - Darkness Ablaze", category: "Darkness Ablaze", price: "1500000", condition: "Mint", stock: "1", description: "Mulus kinyis-kinyis." },
-      "2": { name: "Pikachu VMAX - Vivid Voltage", category: "Vivid Voltage", price: "3200000", condition: "Near Mint", stock: "2", description: "Bagus banget." },
-      "3": { name: "Lugia V - Silver Tempest", category: "Silver Tempest", price: "850000", condition: "Excellent", stock: "1", description: "Koleksi pribadi." }
-    }[id] || { name: "Kartu TCG", category: "Expansion", price: "100000", condition: "Mint", stock: "1", description: "" };
-
-    setFormData({
-      name: mockData.name,
-      category: mockData.category,
-      price: mockData.price,
-      stock: mockData.stock,
-      description: mockData.description
-    });
-    setCondition(mockData.condition);
+    // Data akan di-fetch dari database saat integrasi backend
   }, [id]);
 
   const handleSave = () => {
     if (!formData.name || !formData.price) {
-      alert("Harap isi nama kartu dan harga minimal.");
+      // TODO: Ganti dengan Toast UI untuk validasi
       return;
     }
 
     setIsSaving(true);
     
-    // Simulasi update ke server
+    // TODO: Integrasi Appwrite — update produk di database
     setTimeout(() => {
       setIsSaving(false);
-      alert("Produk berhasil diperbarui!");
       router.push('/seller/products');
     }, 1500);
   };

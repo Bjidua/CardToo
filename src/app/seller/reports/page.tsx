@@ -35,7 +35,7 @@ function SellerReportsContent() {
       ordersChange: "0%",
       visitorsChange: "0%",
       chartHeights: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      bestSellers: []
+      bestSellers: [] as { rank: number; title: string; sold: number; revenue: string }[]
     },
     "Minggu ini": {
       omzet: "Rp 0",
@@ -47,7 +47,7 @@ function SellerReportsContent() {
       ordersChange: "0%",
       visitorsChange: "0%",
       chartHeights: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      bestSellers: []
+      bestSellers: [] as { rank: number; title: string; sold: number; revenue: string }[]
     },
     "Bulan ini": {
       omzet: "Rp 0",
@@ -59,9 +59,9 @@ function SellerReportsContent() {
       ordersChange: "0%",
       visitorsChange: "0%",
       chartHeights: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      bestSellers: []
+      bestSellers: [] as { rank: number; title: string; sold: number; revenue: string }[]
     }
-  }[timeRange as keyof any];
+  }[timeRange as "Hari ini" | "Minggu ini" | "Bulan ini"];
 
   const ranges = ["Hari ini", "Minggu ini", "Bulan ini"];
 

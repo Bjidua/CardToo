@@ -8,13 +8,14 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { Input } from "@/components/ui/Input";
 import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Product } from "@/types";
 
-const DUMMY_PRODUCTS: any[] = [];
+const DUMMY_PRODUCTS: Product[] = [];
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Terkait");
-  const [wishlistedIds, setWishlistedIds] = useState<number[]>([1, 4]);
+  const [wishlistedIds, setWishlistedIds] = useState<string[]>([]);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
@@ -28,7 +29,7 @@ export default function SearchPage() {
     );
   };
 
-  const toggleWishlist = (id: number) => {
+  const toggleWishlist = (id: string) => {
     setWishlistedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
@@ -42,7 +43,7 @@ export default function SearchPage() {
 
     // Filter by Condition
     if (selectedConditions.length > 0) {
-      products = products.filter(p => selectedConditions.includes(p.condition));
+      products = products.filter(p => p.condition && selectedConditions.includes(p.condition));
     }
 
     // Filter by Price
@@ -123,34 +124,7 @@ export default function SearchPage() {
         <div className="flex-1 px-6 pt-4 pb-20">
           {searchQuery.trim() !== "" ? (
             <div className="flex flex-col gap-6">
-              {/* Mock Official Store Section (Shopee style) */}
-              {searchQuery.toLowerCase().includes("pokemon") && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-card p-4 shadow-soft border border-primary/10"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[12px] font-bold text-black/40 uppercase tracking-wider">Toko Berkaitan</span>
-                    <span className="text-[12px] font-bold text-primary">Lihat Lainnya</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-[50px] h-[50px] bg-primary/10 rounded-full flex items-center justify-center">
-                      <Icons.Profile size={24} className="text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-[16px] font-bold text-black flex items-center gap-1">
-                        Pokemon Official Store
-                        <span className="bg-primary text-white text-[8px] px-1 rounded-xs">MALL</span>
-                      </h3>
-                      <p className="text-[12px] text-black/40">4.9 | 274rb Pengikut</p>
-                    </div>
-                  </div>
-                  <button className="w-full mt-4 h-[36px] border border-primary text-primary text-[14px] font-bold rounded-full active:scale-95 transition-transform">
-                    Kunjungi Toko
-                  </button>
-                </motion.div>
-              )}
+              {/* Toko Berkaitan — akan di-render dari hasil query Appwrite */}
 
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5 text-black/40 text-[14px] font-medium">

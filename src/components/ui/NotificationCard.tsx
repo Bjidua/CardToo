@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Icons } from "./Icons";
 
-export type NotificationType = "system" | "promo" | "order" | "alert" | "message";
+export type NotificationType = "system" | "promo" | "order" | "alert" | "message" | "chat";
 
 interface NotificationCardProps {
   label?: string;
@@ -40,6 +40,7 @@ const getNotificationConfig = (type: NotificationType) => {
         dotColor: "bg-warning",
       };
     case "message":
+    case "chat":
       return {
         icon: <Icons.Message size={20} />,
         color: "bg-secondary/10 text-secondary",
