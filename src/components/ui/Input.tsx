@@ -15,26 +15,27 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={cn("flex flex-col gap-1.5", fullWidth ? "w-full" : "w-auto")}>
         {label && (
-          <label className="text-small font-medium text-text-main ml-1">
+          <label className="text-sm font-medium text-text-main ml-4">
             {label}
           </label>
         )}
         
         <div className="relative flex items-center">
           {startIcon && (
-            <div className="absolute left-3.5 text-text-sub">
+            <div className="absolute left-6 text-text-sub">
               {startIcon}
             </div>
           )}
           
           <input
             className={cn(
-              "h-12 w-full rounded-lg border-none bg-surface px-4 py-2 text-body text-text-main transition-all outline-none",
-              "placeholder:text-text-sub/60",
-              "focus:ring-2 focus:ring-primary/30 focus:bg-white",
-              startIcon && "pl-11",
-              endIcon && "pr-11",
-              error && "ring-2 ring-danger/50 bg-danger/5",
+              "h-[50px] w-full border-none bg-surface-muted px-6 py-2 text-base text-text-main transition-all outline-none",
+              "rounded-[26px]", // Sesuai spek Figma
+              "placeholder:text-black/50",
+              "focus:ring-2 focus:ring-primary/30",
+              startIcon && "pl-14",
+              endIcon && "pr-14",
+              error && "ring-2 ring-danger/50",
               className
             )}
             ref={ref}
@@ -42,14 +43,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
 
           {endIcon && (
-            <div className="absolute right-3.5 text-text-sub">
+            <div className="absolute right-6 text-text-sub">
               {endIcon}
             </div>
           )}
         </div>
 
         {error && (
-          <span className="text-small text-danger ml-1 font-medium animate-in fade-in slide-in-from-top-1">
+          <span className="text-xs text-danger ml-4 font-medium">
             {error}
           </span>
         )}

@@ -1,9 +1,18 @@
 import type { Metadata, Viewport } from "next"
+import { Outfit } from "next/font/google"
 import "./globals.css"
+import { BottomNav } from "@/components/layout/BottomNav"
+import { AuthProvider } from "@/context/AuthContext"
+
+const outfit = Outfit({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
+})
 
 export const metadata: Metadata = {
-  title: "CardToo - Mobile App",
-  description: "TCG APP",
+  title: "CardToo - Marketplace TCG",
+  description: "Beli dan Jual Kartu TCG Favoritmu",
 }
 
 // Safe Area Insets untuk mobile view
@@ -20,11 +29,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-surface antialiased">
-        {/* Main Wrapper untuk Mobile View */}
-        <div className="mx-auto min-h-screen max-w-[440px] bg-background shadow-2xl">
-          {children}
-        </div>
+      <body className={`${outfit.className} bg-white antialiased`}>
+        <AuthProvider>
+          {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
+          <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] relative flex flex-col">
+            {/* Konten Utama */}
+            <main className="flex-1 flex flex-col relative pb-32">
+              {children}
+            </main>
+            <BottomNav />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )

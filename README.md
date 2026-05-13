@@ -1,4 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CardToo
+
+Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
+
+---
+
+## 🚀 Fitur Utama (akan diupdate)
+- Daftar fitur website (None)
+- Teknologi:  Next.Js, Tailwind CSS
+- Framework: React
+
+## 📂 Struktur Repo
+```plaintext
+📦 CardToo (Project Structure)
+├── public/                  # Aset statis akses langsung
+│   ├── images/              # Gambar
+│   └── favicon.ico          # Icon website
+│ 
+├── src/                     # Source code aplikasi
+│   ├── app/                 # Rute halaman web Next.js
+│   │   ├── (auth)/          # Rute autentikasi
+│   │   │   ├── login/       # Halaman Login
+│   │   │   ├── register/    # Halaman Register
+│   │   │   └── forgot-password/ # Alur Lupa Password
+│   │   │       ├── page.tsx     # Form Email
+│   │   │       ├── verify/      # Verifikasi OTP
+│   │   │       └── reset/       # Reset Password Baru
+│   │   ├── home/            # Halaman Dashboard Utama
+│   │   ├── cart/            # Halaman Keranjang Belanja
+│   │   ├── categories/      # Halaman Semua Kategori
+│   │   ├── search/          # Halaman Pencarian Produk
+│   │   ├── messages/        # Halaman Pesan
+│   │   ├── collections/     # Halaman Koleksi TCG
+│   │   ├── profile/         # Halaman Profil User
+│   │   ├── notifications/   # Halaman Notifikasi
+│   │   ├── onboarding/      # Halaman Onboarding awal
+│   │   ├── test-components/ # Laboratorium Component
+│   │   ├── layout.tsx       # Struktur kerangka aplikasi
+│   │   ├── page.tsx         # Halaman utama (Landing)
+│   │   ├── globals.css      # File utama Tailwind CSS v4
+│   │   └── products/        # Rute halaman daftar produk (blm ada)
+│   │ 
+│   └── components/          # Potongan antarmuka visual
+│   │   ├── ui/              # Atom components (CollectionCard, MessageCard, NotificationCard, CartItemCard, CategoryCard, Icons, ProfilePicture, BackgroundLogo, dll)
+│   │   └── layout/          # Organism components (StickyHeader, BottomNav, AuthCard)
+│   │ 
+│   └── lib/                 # Skrip eksternal pendukung
+│   │   ├── appwrite.ts      # Koneksi ke Appwrite
+│   │   └── utils.ts         # Utility functions (cn, dll)
+│   │ 
+│   └── hooks/               # Custom hooks
+│    
+├── docs/                    # Dokumentasi, panduan tugas, dsb
+│	├── design_system        # Guideline utama design project
+│   ├── feature_guide.md     # Panduan fitur ada apa aja
+│   ├── notes.md             # Catatan
+│   ├── to-do.md             # Fitur yang ingin di kerjakan
+│   └── guide.md             # Panduan kerja 
+│   
+├── .env.local               # Variabel environment\API Key Appwrite
+├── .gitignore               # File yang diabaikan oleh Git
+└── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
+```
 
 ## Getting Started
 
