@@ -6,7 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 
 export default function PrivacyPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Kebijakan Privasi"
         leftAction={<BackButton variant="primary" />}

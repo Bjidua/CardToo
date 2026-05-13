@@ -9,18 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DUMMY_PRODUCTS = [
-  { id: 1, title: "Pikachu VMAX Rainbow", price: 1500000, condition: "Mint" as const, isWishlisted: true },
-  { id: 2, title: "Charizard GX Shiny", price: 2800000, condition: "Near Mint" as const, isWishlisted: false },
-  { id: 3, title: "Mewtwo EX Full Art", price: 950000, condition: "Excellent" as const, isWishlisted: false },
-  { id: 4, title: "Dragonite V Alternate", price: 1200000, condition: "Mint" as const, isWishlisted: true },
-  { id: 5, title: "Lugia Legend Bottom", price: 4500000, condition: "Near Mint" as const, isWishlisted: false },
-  { id: 6, title: "Rayquaza Star", price: 8900000, condition: "Mint" as const, isWishlisted: true },
-  { id: 7, title: "Blue Eyes White Dragon", price: 5000000, condition: "Mint" as const, isWishlisted: false },
-  { id: 8, title: "Dark Magician Girl", price: 2100000, condition: "Near Mint" as const, isWishlisted: false },
-  { id: 9, title: "Luffy Gear 5 Card", price: 1250000, condition: "Excellent" as const, isWishlisted: false },
-  { id: 10, title: "Zoro Three Swords", price: 850000, condition: "Good" as const, isWishlisted: false },
-];
+const DUMMY_PRODUCTS: any[] = [];
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -348,7 +337,7 @@ export default function SearchPage() {
                 </button>
                 <button
                   onClick={() => setShowFilter(false)}
-                  className="flex-[2.5] h-[58px] bg-linear-to-r from-primary to-[#00D1FF] text-white rounded-[22px] text-[16px] font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="flex-[2.5] h-[58px] bg-linear-to-r from-primary to-accent text-white rounded-[22px] text-[16px] font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   Tampilkan {filteredProducts.length} Produk
                 </button>

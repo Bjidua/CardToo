@@ -25,7 +25,7 @@ const DEVICES = [
 
 export default function DevicesPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Perangkat Terhubung"
         leftAction={<BackButton variant="primary" />}

@@ -8,7 +8,7 @@ import { Icons } from "@/components/ui/Icons";
 
 export default function SecurityPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Keamanan & Password"
         leftAction={<BackButton variant="primary" />}

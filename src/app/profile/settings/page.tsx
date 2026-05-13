@@ -21,7 +21,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
       <StickyHeader
         title="Settings"
         variant="minimal"
@@ -42,7 +42,7 @@ export default function SettingsPage() {
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
               <MenuListItem icon={<Icons.Profile size={20} />} label="Edit Profil" href="/profile/edit" showBorder />
               <MenuListItem icon={<Icons.MapPin size={20} />} label="Alamat Saya" href="/profile/address" showBorder />
-              <MenuListItem icon={<Icons.CreditCard size={20} />} label="Rekening Bank / Kartu" href="/profile/payments" showBorder />
+              <MenuListItem icon={<Icons.Wallet size={20} />} label="Rekening Bank / Kartu" href="/profile/payments" showBorder />
               <MenuListItem icon={<Icons.Lock size={20} />} label="Keamanan & Password" href="/profile/security" />
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function SettingsPage() {
             <h3 className="text-[14px] font-bold text-black/40 uppercase tracking-wider px-2">Bantuan & Info</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
               <MenuListItem icon={<Icons.Help size={20} />} label="Pusat Bantuan" href="/help" showBorder />
-              <MenuListItem icon={<Icons.File size={20} />} label="Kebijakan Privasi" href="/privacy" showBorder />
+              <MenuListItem icon={<Icons.Privacy size={20} />} label="Kebijakan Privasi" href="/privacy" showBorder />
               <MenuListItem icon={<Icons.Info size={20} />} label="Tentang CardToo" href="/about" />
             </div>
           </div>

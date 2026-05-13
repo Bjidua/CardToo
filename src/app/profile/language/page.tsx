@@ -17,7 +17,7 @@ export default function LanguagePage() {
   const [selected, setSelected] = useState("id");
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Bahasa"
         leftAction={<BackButton variant="primary" />}

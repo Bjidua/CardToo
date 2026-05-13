@@ -105,7 +105,7 @@ export default function ChatClient({ id, name }: ChatClientProps) {
                 input.trim() ? "bg-primary text-white" : "bg-transparent text-black/20"
               )}
             >
-              <Icons.ChevronRight size={24} className="rotate-[-90deg] translate-y-[-1px]" />
+              <Icons.ChevronRight size={24} className="-rotate-90 -translate-y-px" />
             </button>
           </div>
         </div>

@@ -11,9 +11,11 @@ interface ProductCardProps {
   title: string;
   price: number;
   image?: string;
-  condition?: "Mint" | "Near Mint" | "Excellent" | "Good";
+  condition?: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played";
   isWishlisted?: boolean;
   className?: string;
+  href?: string;
+  theme?: "primary" | "secondary";
   onPress?: () => void;
   onWishlistToggle?: () => void;
 }
@@ -25,14 +27,19 @@ export const ProductCard = ({
   condition = "Mint",
   isWishlisted = false,
   className,
+  href,
+  theme = "primary",
   onPress,
   onWishlistToggle,
 }: ProductCardProps) => {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push("/product/1");
-    onPress?.();
+    if (onPress) {
+      onPress();
+    } else {
+      router.push(href || "/product/1");
+    }
   };
 
   const formatPrice = (amount: number) => {
@@ -84,7 +91,7 @@ export const ProductCard = ({
             e.stopPropagation();
             onWishlistToggle?.();
           }}
-          className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm active:scale-90 transition-transform"
+          className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm active:scale-90 transition-transform z-10"
         >
           <Heart
             size={12}
@@ -101,7 +108,10 @@ export const ProductCard = ({
         <h3 className="text-[14px] font-bold text-black line-clamp-2 leading-[1.2] h-[34px]">
           {title}
         </h3>
-        <p className="text-[16px] font-bold text-primary mt-1">
+        <p className={cn(
+          "text-[16px] font-bold mt-1",
+          theme === "primary" ? "text-primary" : "text-secondary"
+        )}>
           {formatPrice(price)}
         </p>
       </div>

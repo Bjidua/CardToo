@@ -11,7 +11,7 @@ export default function TwoFactorPage() {
   const [isEnabled, setIsEnabled] = useState(true);
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Verifikasi 2 Langkah"
         leftAction={<BackButton variant="primary" />}

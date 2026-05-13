@@ -52,14 +52,14 @@ export const StickyHeader = ({
           </div>
 
           {/* Title */}
-          <div className="flex-[4] flex justify-center text-center px-2">
+          <div className="flex-4 flex justify-center text-center px-2">
             <motion.h1 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "font-bold text-black tracking-tight leading-tight",
                 size === "lg" 
-                  ? (title.length > 15 ? "text-[20px]" : "text-[24px]")
+                  ? (title.length > 15 ? "text-[24px]" : "text-[32px]")
                   : "text-[18px]"
               )}
             >

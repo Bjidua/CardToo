@@ -12,16 +12,20 @@
 - [x] **Page Slicing (Order History)**: Rakit halaman Riwayat Order (Buyer) dengan sistem tab interaktif.
 - [x] **Page Slicing (My Favorite)**: Rakit halaman Wishlist dengan fitur quick "Add to Cart".
 - [x] **Page Slicing (Settings)**: Rakit halaman Pengaturan lengkap dengan kategori akun, keamanan, dan bantuan.
-- [x] **Tech Debt (Saran Audit)**: Refactor `StickyHeader` berulang di Profile, Collections, dan Messages menjadi satu komponen *reusable* di `components/layout/`.
+- [x] **Tech Debt**: Refactor `StickyHeader` berulang menjadi satu komponen *reusable*.
 
-## ⚙️ Fase 2: Logic & Integrasi Backend
-- [ ] **Sistem Auth**: Koneksi input form Login/Register ke Appwrite.
-- [ ] **Role Management**: Sistem upgrade user menjadi *Seller*.
-- [ ] **Global State**: Ubah dummy data (koleksi, pesan, order status) menjadi Global State (Zustand/Context) sebelum digabung dengan API.
+## 🧹 Fase 2: Clean Slate & TypeScript (Selesai)
+- [x] **Store onboarding seller**: Rakit form onboarding dan verifikasi.
+- [x] **Product CRUD seller**: Rakit Dashboard Seller, Manajemen Produk, dan Form Tambah Produk.
+- [x] **Catalog buyer**: Product Detail, Checkout Page, Cart, Address Management, Store Profile, Review System.
+- [x] **Order + Payment Status**: Slicing halaman pembayaran QRIS dan detail pesanan.
+- [x] **Penghapusan Data Dummy**: Membersihkan seluruh data tiruan dari UI (Home, Store, Product, Checkout, Dashboard) untuk mencegah kebocoran data simulasi.
+- [x] **TypeScript Fixes**: Menambahkan antarmuka (Interfaces) yang kuat di seluruh komponen untuk mencegah tipe `any` dan `never`.
+- [x] **Audit Kesiapan Backend**: Menganalisis kebutuhan skema koleksi untuk integrasi nyata.
 
-## 🛒 Fase 3: Fitur Marketplace Inti
-- [ ] Store onboarding seller
-- [ ] Product CRUD seller
-- [ ] Catalog buyer (list/detail/search)
-- [ ] Cart + checkout
-- [ ] Order + payment status
+## ⚙️ Fase 3: Integrasi Backend Appwrite (Sedang Berjalan)
+- [ ] **Sistem Auth**: Koneksi input form Login/Register ke `Account.createEmailPasswordSession()` dan simpan state di `AuthContext`.
+- [ ] **Role Management**: Sistem upgrade user menjadi *Seller* dengan merekam data di koleksi `Users` dan `Stores`.
+- [ ] **Database Setup**: Buat koleksi `Products`, `Orders`, `Carts`, `Addresses`, dan `Messages` di konsol Appwrite.
+- [ ] **Data Fetching**: Ganti status *empty arrays* dengan fungsi ambil data langsung dari database menggunakan *custom hooks* atau SWR.
+- [ ] **Storage Integration**: Fungsi unggah *banner* toko dan gambar produk ke *Appwrite Storage Bucket*.

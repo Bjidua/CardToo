@@ -41,16 +41,21 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const completeOnboarding = () => {
+    localStorage.setItem("has_seen_onboarding", "true");
+    router.push("/home");
+  };
+
   return (
     <main className="min-h-screen bg-surface-tint flex flex-col relative overflow-hidden">
       {/* Skip Button */}
       <div className="absolute top-10 right-6 z-20">
-        <Link
-          href="/login"
+        <button
+          onClick={completeOnboarding}
           className="text-base font-semibold text-black/30 hover:text-black transition-colors"
         >
           Skip
-        </Link>
+        </button>
       </div>
 
       {/* Content Section (Swiper) */}
@@ -118,7 +123,7 @@ export default function OnboardingPage() {
           {activeIndex === ONBOARDING_DATA.length - 1 && (
             <Button
               variant="primary"
-              onClick={() => router.push("/home")}
+              onClick={completeOnboarding}
               className="animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
               Get Started

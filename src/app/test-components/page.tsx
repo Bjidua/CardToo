@@ -21,6 +21,8 @@ import { MenuListItem } from "@/components/ui/MenuListItem";
 import { FavoriteItemCard } from "@/components/ui/FavoriteItemCard";
 import { OrderItemCard } from "@/components/ui/OrderItemCard";
 import { CartItemCard } from "@/components/ui/CartItemCard";
+import { Accordion } from "@/components/ui/Accordion";
+import { DetailBox } from "@/components/ui/DetailBox";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 export default function TestComponentsPage() {
@@ -116,7 +118,7 @@ export default function TestComponentsPage() {
             promotion="Exclusive"
             title="Limited Edition" 
             description="Cek koleksi kartu langka terbaru kami sekarang."
-            className="border border-[#4CB6C4]/20"
+            className="border border-primary/20"
           />
         </div>
       </section>
@@ -256,6 +258,38 @@ export default function TestComponentsPage() {
           </div>
         </div>
       </section>
+      {/* Product Detail Components */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold border-b pb-2">Product Detail: UI Atoms</h2>
+        <div className="flex flex-col gap-6">
+          <div>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3">Detail Box (Grid Style):</p>
+            <div className="grid grid-cols-2 gap-3">
+              <DetailBox label="Card Number" value="033/106 RR" />
+              <DetailBox label="HP" value="200" />
+            </div>
+          </div>
+          
+          <div>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Accordion System:</p>
+            <Accordion 
+              title="Informasi Pengiriman" 
+              isOpen={true} 
+              onToggle={() => {}}
+            >
+              <p className="text-sm text-text-sub">Packing kayu + Bubble wrap gratis.</p>
+            </Accordion>
+            <Accordion 
+              title="Syarat & Ketentuan" 
+              isOpen={false} 
+              onToggle={() => {}}
+            >
+              <p className="text-sm text-text-sub">Tidak ada retur untuk kartu Loose.</p>
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }

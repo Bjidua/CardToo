@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/Separator";
 
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-[#F6DFFF]">
+    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-accent-soft">
       {/* Header Section */}
       <div className="flex flex-col items-center pt-[70px] px-6 text-center">
         <h1 className="text-[32px] font-bold leading-tight text-black">Sign In</h1>

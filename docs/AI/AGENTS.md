@@ -92,4 +92,5 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 - PASTIKAN aplikasi memiliki "Native App Feel" (APK Vibe) dengan mematikan seleksi teks dan drag gambar secara global (kecuali pada input).
 - **STRICT NEXT.JS ARCHITECTURE:** Selalu prioritaskan penggunaan Server Components pada `page.tsx`. Gunakan `"use client";` hanya pada komponen anak yang membutuhkan state/interaktivitas (ekstrak komponen ke file terpisah).
 - **STRICT TAILWIND STYLING:** DILARANG KERAS menggunakan *hardcoded hex colors* (misal `#4CB6C4`) atau *arbitrary values* yang tidak perlu (misal `shadow-[0_4px_4px_...]`). WAJIB menggunakan variabel CSS dari `globals.css` (misal `text-primary`, `bg-surface-light`, `shadow-soft`, `shadow-medium`).
+- **DUMMY DATA ENGINE:** Selalu gunakan struktur data objek atau record (`DUMMY_DATA`) untuk mensimulasikan data yang seharusnya berasal dari database. Hindari menulis nilai teks/angka statis langsung di dalam JSX untuk elemen yang bersifat dinamis (seperti harga, nama produk, detail seller). Hal ini mempermudah migrasi ke Appwrite/API di masa depan.
 <!-- END:nextjs-agent-rules -->

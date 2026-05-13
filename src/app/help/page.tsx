@@ -8,7 +8,7 @@ import { MenuListItem } from "@/components/ui/MenuListItem";
 
 export default function HelpPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Pusat Bantuan"
         leftAction={<BackButton variant="primary" />}

@@ -24,7 +24,7 @@ export default function PinPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-[#F6DFFF]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="PIN CardToo"
         leftAction={<BackButton variant="primary" />}
