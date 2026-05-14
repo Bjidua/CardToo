@@ -37,14 +37,14 @@ export default function ReviewClient({ id }: { id: string }) {
             <Icons.Collection size={24} />
           </div>
           <div className="flex flex-col">
-            <h3 className="text-[14px] font-black text-text-main leading-tight">Pikachu VMAX Rainbow Rare</h3>
+            <h3 className="text-[14px] font-bold text-text-main leading-tight">Pikachu VMAX Rainbow Rare</h3>
             <span className="text-[12px] text-text-sub">Mint condition</span>
           </div>
         </div>
 
         {/* Rating Section */}
         <div className="bg-white rounded-[40px] p-8 shadow-medium border border-surface-muted flex flex-col items-center gap-6">
-          <h2 className="text-[18px] font-black text-text-main text-center">Bagaimana kualitas produk ini?</h2>
+          <h2 className="text-[18px] font-bold text-text-main text-center">Bagaimana kualitas produk ini?</h2>
           
           <div className="flex items-center gap-3">
             {[1, 2, 3, 4, 5].map((star) => (

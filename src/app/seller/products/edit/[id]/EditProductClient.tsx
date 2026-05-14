@@ -64,7 +64,7 @@ export default function EditProductClient({ id }: { id: string }) {
                   <Icons.Plus size={24} />
                 </div>
               </div>
-              <div className="w-full h-full flex items-center justify-center text-black/10 font-black uppercase tracking-tighter text-4xl italic">
+              <div className="w-full h-full flex items-center justify-center text-black/10 font-bold uppercase tracking-tighter text-4xl italic">
                 {formData.name.split(" ")[0] || "TCG"}
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function EditProductClient({ id }: { id: string }) {
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-white via-white/90 to-transparent pointer-events-none z-40">
           <div className="w-full pointer-events-auto">
             <Button 
-              className="w-full h-[60px] rounded-[30px] shadow-medium text-[16px] font-black tracking-wide"
+              className="w-full h-[60px] rounded-[30px] shadow-medium text-[16px] font-bold tracking-wide"
               onClick={handleSave}
               disabled={isSaving}
               variant="secondary"

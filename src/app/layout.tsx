@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google"
 import "./globals.css"
 import { BottomNav } from "@/components/layout/BottomNav"
 import { AuthProvider } from "@/context/AuthContext"
+import { DevGodModePanel } from "@/components/layout/DevGodModePanel"
 
 const outfit = Outfit({ 
   subsets: ["latin"],
@@ -24,17 +25,18 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: Readonly<{ 
   children: React.ReactNode
 }>) {
   return (
     <html lang="en">
       <body className={`${outfit.className} bg-white antialiased`}>
         <AuthProvider>
+          <DevGodModePanel />
           {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
-          <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] relative flex flex-col">
+          <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-medium relative flex flex-col">
             {/* Konten Utama */}
-            <main className="flex-1 flex flex-col relative pb-32">
+            <main className="flex-1 flex flex-col relative">
               {children}
             </main>
             <BottomNav />

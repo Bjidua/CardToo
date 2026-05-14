@@ -9,7 +9,7 @@ import { getAssetPath } from "@/lib/utils";
 
 export default function ResetPasswordPage() {
   return (
-    <main className="relative min-h-screen w-full bg-white px-6 flex flex-col items-center">
+    <main className="relative min-h-screen w-full bg-white px-6 pb-8 flex flex-col items-center">
       {/* Logo Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
         <Image 

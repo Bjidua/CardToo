@@ -91,7 +91,7 @@ export default function AddressPage() {
               )}
             >
               {addr.isPrimary && (
-                <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest">
+                <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest">
                   Utama
                 </div>
               )}
@@ -103,11 +103,11 @@ export default function AddressPage() {
                 )}>
                   <Icons.MapPin size={16} />
                 </div>
-                <span className="text-[15px] font-black text-text-main">{addr.label}</span>
+                <span className="text-[15px] font-bold text-text-main">{addr.label}</span>
               </div>
 
               <div className="flex flex-col">
-                <h3 className="text-[14px] font-black text-text-main">{addr.name}</h3>
+                <h3 className="text-[14px] font-bold text-text-main">{addr.name}</h3>
                 <p className="text-[12px] text-text-sub font-medium">{addr.phone}</p>
                 <p className="text-[13px] text-text-sub leading-relaxed mt-2">{addr.details}</p>
               </div>
@@ -161,7 +161,7 @@ export default function AddressPage() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-surface-tint via-surface-tint/80 to-transparent z-40">
         <Button 
           variant="primary" 
-          className="w-full h-15 rounded-2xl text-[16px] font-black shadow-lg shadow-primary/30 uppercase tracking-widest"
+          className="w-full h-15 rounded-2xl text-[16px] font-bold shadow-lg shadow-primary/30 uppercase tracking-widest"
           onClick={() => window.history.back()}
         >
           Konfirmasi Alamat
@@ -188,7 +188,7 @@ export default function AddressPage() {
             >
               <div className="w-12 h-1.5 bg-surface-muted rounded-full mx-auto" />
               <div className="flex flex-col gap-1">
-                <h2 className="text-[20px] font-black text-text-main">Tambah Alamat Baru</h2>
+                <h2 className="text-[20px] font-bold text-text-main">Tambah Alamat Baru</h2>
                 <p className="text-[13px] text-text-sub">Pastikan detail alamat sudah benar.</p>
               </div>
 

@@ -26,7 +26,7 @@ export default function AboutPage() {
           />
         </div>
         
-        <h2 className="text-[24px] font-black text-black">CardToo</h2>
+        <h2 className="text-[24px] font-bold text-black">CardToo</h2>
         <p className="text-[14px] text-black/40 font-medium mb-10 text-center">
           The Ultimate TCG Marketplace<br/>Version 1.0.4 (Beta)
         </p>

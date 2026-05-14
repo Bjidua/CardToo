@@ -105,7 +105,7 @@ function SellerProductsContent() {
 
                 {/* Stock Badge Overlay - Moved to bottom of image area */}
                 <div className="absolute top-[118px] right-2 px-2 py-0.5 bg-white/95 backdrop-blur-sm rounded-md shadow-sm border border-surface-muted z-10 flex items-center gap-1">
-                  <span className="text-[9px] font-black text-text-main uppercase tracking-tighter">Stok: {product.stock}</span>
+                  <span className="text-[9px] font-bold text-text-main uppercase tracking-tighter">Stok: {product.stock}</span>
                 </div>
               </motion.div>
             ))}

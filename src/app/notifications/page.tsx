@@ -44,7 +44,7 @@ export default function NotificationsPage() {
           >
             {NOTIFICATIONS_DATA.map((group) => (
               <div key={group.group} className="flex flex-col gap-4">
-                <h2 className="text-[14px] font-black text-text-sub uppercase tracking-widest px-2">
+                <h2 className="text-[14px] font-bold text-text-sub uppercase tracking-widest px-2">
                   {group.group}
                 </h2>
                 <div className="flex flex-col gap-3">

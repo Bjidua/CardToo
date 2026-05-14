@@ -63,7 +63,7 @@ export const ProductCard = ({
       )}
     >
       {/* Image Container with Inset Shadow */}
-      <div className="relative w-full h-[146px] bg-skeleton rounded-t-card overflow-hidden shadow-[inset_0px_4px_4px_rgba(0,0,0,0.15)]">
+      <div className="relative w-full h-[146px] bg-skeleton rounded-t-card overflow-hidden shadow-inner">
         {image ? (
           <Image
             src={image}

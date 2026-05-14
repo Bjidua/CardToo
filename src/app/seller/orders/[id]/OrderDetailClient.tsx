@@ -59,7 +59,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
           <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-[12px] font-bold text-text-sub uppercase tracking-widest">Status Pesanan</span>
-              <h2 className="text-[18px] font-black text-secondary">{order.status === "Pending" ? "Perlu Dikirim" : order.status}</h2>
+              <h2 className="text-[18px] font-bold text-secondary">{order.status === "Pending" ? "Perlu Dikirim" : order.status}</h2>
             </div>
             <Icons.Dikemas size={32} className="text-secondary/50" />
           </section>
@@ -68,7 +68,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
           <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex flex-col gap-4">
             <div className="flex items-center gap-2 border-b border-surface-muted pb-3">
               <Icons.Delivery size={20} className="text-secondary" />
-              <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest">Informasi Pengiriman</h3>
+              <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest">Informasi Pengiriman</h3>
             </div>
             
             <div className="flex flex-col gap-3">
@@ -93,7 +93,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
           <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex flex-col gap-4">
             <div className="flex items-center gap-2 border-b border-surface-muted pb-3">
               <Icons.Collection size={20} className="text-secondary" />
-              <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest">Daftar Produk ({order.items.length})</h3>
+              <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest">Daftar Produk ({order.items.length})</h3>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -106,7 +106,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="flex flex-col flex-1 justify-center">
-                    <h4 className="text-[14px] font-black text-text-main line-clamp-1">{item.title}</h4>
+                    <h4 className="text-[14px] font-bold text-text-main line-clamp-1">{item.title}</h4>
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-[14px] font-bold text-secondary">
                         Rp {item.price.toLocaleString("id-ID")}
@@ -120,7 +120,7 @@ export default function OrderDetailClient({ id }: { id: string }) {
 
             <div className="flex justify-between items-center pt-4 border-t border-surface-muted">
               <span className="text-[14px] font-bold text-text-sub">Total Pendapatan</span>
-              <span className="text-[18px] font-black text-secondary">
+              <span className="text-[18px] font-bold text-secondary">
                 Rp {order.totalPrice.toLocaleString("id-ID")}
               </span>
             </div>

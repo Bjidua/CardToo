@@ -67,9 +67,9 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
           </motion.div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-black/40 text-[16px]">
-              Belum ada produk untuk kategori "{categoryName}".
-            </p>
+              <p className="text-black/40 text-[16px]">
+                Belum ada produk untuk kategori {`"`}{categoryName}{`"`}.
+              </p>
           </div>
         )}
       </main>

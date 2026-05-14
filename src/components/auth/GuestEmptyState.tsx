@@ -25,7 +25,7 @@ export const GuestEmptyState = ({ title, description, icon }: GuestEmptyStatePro
         {icon || <Icons.Lock size={48} />}
       </div>
       
-      <h2 className="text-[20px] font-black text-text-main mb-2">{title}</h2>
+      <h2 className="text-[20px] font-bold text-text-main mb-2">{title}</h2>
       <p className="text-[14px] text-text-sub font-medium max-w-[280px] leading-relaxed mb-8">
         {description}
       </p>

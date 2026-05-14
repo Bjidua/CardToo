@@ -29,3 +29,23 @@
 - [ ] **Database Setup**: Buat koleksi `Products`, `Orders`, `Carts`, `Addresses`, dan `Messages` di konsol Appwrite.
 - [ ] **Data Fetching**: Ganti status *empty arrays* dengan fungsi ambil data langsung dari database menggunakan *custom hooks* atau SWR.
 - [ ] **Storage Integration**: Fungsi unggah *banner* toko dan gambar produk ke *Appwrite Storage Bucket*.
+
+## 🧾 Fase 4: Audit Kepatuhan UI Rules (14 Mei 2026)
+- [x] Audit lint & build setelah refactor (`npm run lint`, `npm run build`) — status lulus.
+- [x] Refactor pelanggaran typography (`font-black` ➜ `font-bold`) untuk konsistensi `design_system`.
+- [x] Refactor pelanggaran strict shadow (hapus `shadow-[...]` arbitrary ➜ token design system).
+- [x] Perbaikan form pattern prioritas di `seller/settings` (gunakan `label` prop pada `Input`).
+- [x] Perbaikan global overlap footer putih: hapus `pb-32` paksa di `src/app/layout.tsx` agar halaman non-BottomNav (khususnya Auth) tidak ketutup area bawah.
+- [ ] Lanjutan normalisasi label manual non-`Input` (textarea/upload section labels) secara bertahap lintas halaman sesuai template final UI.
+
+## 🏭 Fase 5: Hardening Rules Skala Industri (14 Mei 2026)
+- [x] Upgrade `docs/AI/AGENTS.md` ke standar *industry scale* (arsitektur, quality gates, security, performance, documentation discipline).
+- [x] Pertahankan sinkronisasi `docs/AI/CLAUDE.md` ➜ `@AGENTS.md`.
+- [x] Tetapkan *Definition of Done* berbasis validasi teknis (scope, lint/build, kepatuhan design system, update docs).
+- [ ] Sosialisasi rules baru ke seluruh contributor dan terapkan sebagai baseline review PR.
+
+## 🧪 Fase 6: Developer Test Utilities (14 Mei 2026)
+- [x] Tambahkan fitur **God Mode (dev-only)** berbasis env flag untuk bypass guest lock saat QA/testing flow lintas fitur.
+- [x] Tambahkan panel toggle internal (`DevGodModePanel`) yang hanya aktif di development + `NEXT_PUBLIC_ENABLE_GOD_MODE=true`.
+- [x] Terapkan hard-stop keamanan production: God Mode auto nonaktif total di `NODE_ENV=production`.
+- [ ] Lanjutkan cleanup route anomali `/collections/ [id]` setelah utilitas testing stabil.

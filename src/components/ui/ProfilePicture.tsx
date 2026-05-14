@@ -23,7 +23,7 @@ export const ProfilePicture = ({
   return (
     <div
       className={cn(
-        "relative rounded-full overflow-hidden border-[5px] border-white shadow-[2px_4px_4px_rgba(0,0,0,0.25)] bg-skeleton shrink-0",
+        "relative rounded-full overflow-hidden border-[5px] border-white shadow-soft bg-skeleton shrink-0",
         "select-none pointer-events-none", // Native App Feel
         className
       )}

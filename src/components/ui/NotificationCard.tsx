@@ -105,7 +105,7 @@ export const NotificationCard = ({
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2">
             <span className={cn(
-              "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
+              "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full",
               isRead ? "bg-black/5 text-text-sub" : `${config.color} brightness-95`
             )}>
               {label || type}

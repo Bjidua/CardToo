@@ -54,7 +54,7 @@ function SellerDashboardContent() {
               <span className="text-[14px] font-medium text-white/80">Saldo Penghasilan</span>
               <Icons.Wallet size={20} className="text-white/80" />
             </div>
-            <h2 className="text-[32px] font-black tracking-tight leading-none mb-4">Rp 0</h2>
+            <h2 className="text-[32px] font-bold tracking-tight leading-none mb-4">Rp 0</h2>
             <button 
               onClick={handleWithdraw}
               disabled={isWithdrawing}
@@ -127,7 +127,7 @@ function RecentSaleItem({ title, price, status, date }: { title: string, price: 
         <span className="text-[12px] text-text-sub">{date}</span>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="text-[14px] font-black text-secondary">{formatPrice(price)}</span>
+        <span className="text-[14px] font-bold text-secondary">{formatPrice(price)}</span>
         <span className={cn(
           "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
           status === "Selesai" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
@@ -148,7 +148,7 @@ function StatBox({ icon, title, count, alert = false }: { icon: React.ReactNode,
       <div className="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center mb-1">
         {icon}
       </div>
-      <span className="text-[18px] font-black text-text-main leading-none">{count}</span>
+      <span className="text-[18px] font-bold text-text-main leading-none">{count}</span>
       <span className="text-[10px] font-medium text-text-sub leading-tight">{title}</span>
     </div>
   );

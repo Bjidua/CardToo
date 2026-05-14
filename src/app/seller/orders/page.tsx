@@ -112,7 +112,7 @@ function SellerOrdersContent() {
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-text-sub uppercase tracking-widest">{order.orderNumber}</span>
-                      <h4 className="text-[16px] font-black text-text-main">{order.customerName}</h4>
+                      <h4 className="text-[16px] font-bold text-text-main">{order.customerName}</h4>
                     </div>
                     <span className="text-[12px] text-text-sub font-medium">{order.date}</span>
                   </div>
@@ -123,7 +123,7 @@ function SellerOrdersContent() {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[13px] font-bold text-text-main">{order.items} Produk</span>
-                      <span className="text-[14px] font-black text-secondary">
+                      <span className="text-[14px] font-bold text-secondary">
                         {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(order.totalPrice)}
                       </span>
                     </div>
