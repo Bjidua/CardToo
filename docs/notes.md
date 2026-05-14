@@ -1,3 +1,101 @@
+#### 📅 Update: 14 Mei 2026 (Sesi Dev God Mode Utility untuk QA Internal)
+**Waktu Eksekusi:** Siang (14:20 WIB)
+
+**🧪 1. Implementasi God Mode (Development Only)**
+- Menambahkan mode bypass auth internal di `src/context/AuthContext.tsx` untuk kebutuhan QA flow tanpa login berulang.
+- God Mode dikunci ketat dengan 2 lapis guard:
+  - `NODE_ENV !== "production"`
+  - `NEXT_PUBLIC_ENABLE_GOD_MODE === "true"`
+- Jika salah satu syarat tidak terpenuhi, mode otomatis nonaktif (hard-stop production-safe).
+
+**🧩 2. Panel Kontrol Internal**
+- Menambahkan `src/components/layout/DevGodModePanel.tsx` sebagai panel toggle cepat untuk tim dev.
+- Panel hanya dirender saat environment development + env flag aktif.
+- Panel di-inject pada root `src/app/layout.tsx` agar berlaku global lintas route.
+
+**🔐 3. Dampak ke Auth Guard**
+- `isGuest`, `isAuthenticated`, dan `isSeller` kini memakai `effectiveAuth` berbasis `useMemo`:
+  - Saat God Mode aktif: dianggap authenticated + seller access untuk simulasi jalur fitur.
+  - Saat nonaktif: kembali murni ke status login normal.
+- Tidak ada hardcode secret/token tambahan; seluruh state disimpan lokal untuk sandbox dev.
+
+---
+
+#### 📅 Update: 14 Mei 2026 (Sesi Audit Root Cause Footer Putih Menutupi Konten Auth)
+**Waktu Eksekusi:** Siang (13:52 WIB)
+
+**🔍 1. Root Cause Analysis (Global Layout)**
+- Ditemukan akar masalah di `src/app/layout.tsx` pada wrapper konten utama:
+  - `<main className="flex-1 flex flex-col relative pb-32">`
+- `pb-32` global tersebut selalu menambah ruang bawah besar, termasuk pada halaman yang **tidak menampilkan** `BottomNav` (contoh: Auth).
+- Efek samping di viewport mobile:
+  - area bawah terlihat seperti “footer putih”
+  - link penting (Sign Up / Log in / CTA bawah) terdorong dan tampak tertutup/terpotong.
+
+**🛠️ 2. Perbaikan Implementasi**
+- Menghapus padding bawah global paksa:
+  - dari: `pb-32`
+  - menjadi: tanpa padding bawah tambahan (`<main className="flex-1 flex flex-col relative">`)
+- Dampak:
+  - halaman Auth (`/login`, `/register`, `/forgot-password`) kembali punya alur vertikal natural tanpa tertutup area kosong bawah.
+  - halaman lain tidak lagi mewarisi spacing bawah yang tidak relevan.
+
+**✅ 3. Validasi**
+- Menjalankan `npm run lint` dengan hasil **lulus** (tanpa error lint baru).
+- Verifikasi visual berdasarkan kasus yang dilaporkan: komponen bawah pada auth tidak lagi terdorong ke area tertutup.
+
+---
+
+#### 📅 Update: 14 Mei 2026 (Sesi Hardening Rules AI Skala Industri)
+**Waktu Eksekusi:** Siang (13:35 WIB)
+
+**📘 1. Upgrade Rules Utama AI Agent**
+- File `docs/AI/AGENTS.md` direstruktur total menjadi standar **industry scale**.
+- Menambahkan pilar aturan enterprise:  
+  - Session bootstrap & context discipline  
+  - Workflow eksekusi terukur  
+  - Strict Next.js architecture boundary  
+  - Component reuse governance  
+  - Design system governance  
+  - Security/privacy hygiene  
+  - Performance & UX standards  
+  - Quality gates (Definition of Done)  
+  - Documentation/changelog discipline  
+  - Anti-patterns & prioritas saat konflik
+
+**🔗 2. Sinkronisasi Referensi CLAUDE**
+- Verifikasi `docs/AI/CLAUDE.md` tetap mengarah ke `@AGENTS.md` (single source of truth rules).
+- Tidak diperlukan perubahan isi karena sudah sesuai pola referensi yang benar.
+
+**🗂️ 3. Sinkronisasi Tracking Progress**
+- Menambahkan seksi baru di `docs/to-do.md`:  
+  `## 🏭 Fase 5: Hardening Rules Skala Industri (14 Mei 2026)`
+- Menandai task hardening rules sebagai selesai, menyisakan item sosialisasi contributor sebagai tindak lanjut.
+
+---
+
+#### 📅 Update: 14 Mei 2026 (Sesi Audit Kepatuhan Rules & Stabilitas Build)
+**Waktu Eksekusi:** Siang (13:20 WIB)
+
+**✅ 1. Re-Audit Kepatuhan Styling & Typography**
+- Menjalankan refactor lanjutan untuk memastikan kepatuhan pada rule `STRICT TAILWIND STYLING` di `docs/AI/AGENTS.md`.
+- Normalisasi penggunaan `font-black` menjadi `font-bold` pada area yang terdampak audit.
+- Normalisasi nilai bayangan *arbitrary* `shadow-[...]` ke token design system (`shadow-soft`, `shadow-medium`, `shadow-inner`).
+
+**✅ 2. Validasi Teknis Project (Gate Check)**
+- Menjalankan `npm run lint` dengan hasil **lulus** (tanpa error lint baru).
+- Menjalankan `npm run build` dengan hasil **lulus** (compile, TypeScript, dan prerender routes sukses).
+
+**✅ 3. Perbaikan Form Pattern Prioritas**
+- Melakukan sinkronisasi form di `src/app/seller/settings/page.tsx` agar field berbasis `Input` menggunakan `label` prop bawaan komponen (bukan label manual eksternal untuk field tersebut).
+- Menjaga konsistensi dengan template komponen reusable yang sudah ada.
+
+**📝 4. Dokumentasi Progress**
+- Update status audit ditambahkan ke `docs/to-do.md` pada seksi baru: **Fase 4: Audit Kepatuhan UI Rules (14 Mei 2026)**.
+- Menandai item lint/build, typography, strict shadow, dan perbaikan form prioritas sebagai selesai.
+
+---
+
 #### 📅 Update: 14 Mei 2026 (Sesi Full Codebase Audit & Cleanup)
 **Waktu Eksekusi:** Dini Hari (02:30 WIB)
 
@@ -917,4 +1015,4 @@ src/middleware.ts
 
 
 
-
+

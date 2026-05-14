@@ -85,7 +85,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
               animate={{ opacity: 1, x: 0 }}
               className="flex flex-col"
             >
-              <h2 className="text-[14px] font-black text-text-main leading-tight">{DUMMY_STORE.name}</h2>
+              <h2 className="text-[14px] font-bold text-text-main leading-tight">{DUMMY_STORE.name}</h2>
               <span className="text-[11px] text-text-sub font-medium">{DUMMY_STORE.followers} Pengikut</span>
             </motion.div>
           )}
@@ -132,7 +132,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-[20px] font-black text-text-main leading-tight">{DUMMY_STORE.name}</h1>
+                  <h1 className="text-[20px] font-bold text-text-main leading-tight">{DUMMY_STORE.name}</h1>
                   {DUMMY_STORE.isVerified && (
                     <div className="bg-primary text-white text-[8px] px-1.5 py-0.5 rounded-2xl font-bold">VERIFIED</div>
                   )}
@@ -148,15 +148,15 @@ export default function StoreProfileClient({ id }: { id: string }) {
           {/* Performance Badges */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-surface-tint p-3 rounded-2xl border border-surface-muted flex flex-col items-center">
-              <span className="text-[13px] font-black text-primary">{DUMMY_STORE.performance.chat}</span>
+              <span className="text-[13px] font-bold text-primary">{DUMMY_STORE.performance.chat}</span>
               <span className="text-[9px] text-text-sub font-bold uppercase tracking-widest mt-1 text-center">Balas Chat</span>
             </div>
             <div className="bg-surface-tint p-3 rounded-2xl border border-surface-muted flex flex-col items-center">
-              <span className="text-[13px] font-black text-success">{DUMMY_STORE.performance.process}</span>
+              <span className="text-[13px] font-bold text-success">{DUMMY_STORE.performance.process}</span>
               <span className="text-[9px] text-text-sub font-bold uppercase tracking-widest mt-1 text-center">Proses</span>
             </div>
             <div className="bg-surface-tint p-3 rounded-2xl border border-surface-muted flex flex-col items-center">
-              <span className="text-[13px] font-black text-accent">{DUMMY_STORE.performance.onTime}</span>
+              <span className="text-[13px] font-bold text-accent">{DUMMY_STORE.performance.onTime}</span>
               <span className="text-[9px] text-text-sub font-bold uppercase tracking-widest mt-1 text-center">Tepat Waktu</span>
             </div>
           </div>
@@ -251,7 +251,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
             >
               <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex items-center justify-between shadow-soft">
                 <div className="flex flex-col">
-                  <span className="text-[32px] font-black text-text-main leading-tight">{DUMMY_STORE.rating}</span>
+                  <span className="text-[32px] font-bold text-text-main leading-tight">{DUMMY_STORE.rating}</span>
                   <div className="flex gap-0.5">
                     {[1,2,3,4,5].map(i => <Icons.Review key={i} size={12} className="text-warning fill-warning" />)}
                   </div>
@@ -285,18 +285,18 @@ export default function StoreProfileClient({ id }: { id: string }) {
               className="flex flex-col gap-6"
             >
               <div className="bg-white p-8 rounded-[40px] shadow-soft border border-surface-muted">
-                <h3 className="text-[15px] font-black text-text-main mb-4 uppercase tracking-widest">Deskripsi Toko</h3>
+                <h3 className="text-[15px] font-bold text-text-main mb-4 uppercase tracking-widest">Deskripsi Toko</h3>
                 <p className="text-[14px] text-text-sub leading-relaxed font-medium">{DUMMY_STORE.description}</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1">
                   <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Bergabung</span>
-                  <span className="text-[14px] font-black text-text-main">Mei 2024</span>
+                  <span className="text-[14px] font-bold text-text-main">Mei 2024</span>
                 </div>
                 <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1">
                   <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Waktu Balas</span>
-                  <span className="text-[14px] font-black text-text-main">± 5 Menit</span>
+                  <span className="text-[14px] font-bold text-text-main">± 5 Menit</span>
                 </div>
               </div>
             </motion.div>

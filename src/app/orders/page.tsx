@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -18,35 +18,16 @@ function OrdersContent() {
   const { isGuest } = useAuth();
   const initialStatus = searchParams.get("status");
 
-  if (isGuest) {
-    return (
-      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
-        <StickyHeader 
-          title="Pesanan Saya" 
-          variant="minimal"
-          size="sm"
-          leftAction={<BackButton variant="primary" />} 
-        />
-        <GuestEmptyState 
-          title="Login untuk Lihat Pesanan" 
-          description="Lacak status pesanan dan riwayat belanja Anda dengan masuk ke akun CardToo."
-          icon={<Icons.History size={48} />}
-        />
-      </main>
-    );
-  }
-
-  const [activeTab, setActiveTab] = useState<"Order" | "History">("Order");
-  const [subFilter, setSubFilter] = useState("Semua");
-
-  useEffect(() => {
-    if (initialStatus) {
-      if (initialStatus === "unpaid") { setActiveTab("Order"); setSubFilter("Belum Bayar"); }
-      else if (initialStatus === "processing") { setActiveTab("Order"); setSubFilter("Dikemas"); }
-      else if (initialStatus === "shipped") { setActiveTab("Order"); setSubFilter("Dikirim"); }
-      else if (initialStatus === "review") { setActiveTab("History"); setSubFilter("Selesai"); }
-    }
+  const initialTabAndFilter = useMemo(() => {
+    if (initialStatus === "unpaid") return { tab: "Order" as const, filter: "Belum Bayar" };
+    if (initialStatus === "processing") return { tab: "Order" as const, filter: "Dikemas" };
+    if (initialStatus === "shipped") return { tab: "Order" as const, filter: "Dikirim" };
+    if (initialStatus === "review") return { tab: "History" as const, filter: "Selesai" };
+    return { tab: "Order" as const, filter: "Semua" };
   }, [initialStatus]);
+
+  const [activeTab, setActiveTab] = useState<"Order" | "History">(initialTabAndFilter.tab);
+  const [subFilter, setSubFilter] = useState(initialTabAndFilter.filter);
 
   const orderFilters = ["Semua", "Belum Bayar", "Dikemas", "Dikirim"];
   const historyFilters = ["Semua", "Selesai", "Dibatalkan"];
@@ -69,6 +50,24 @@ function OrdersContent() {
     setActiveTab(tab);
     setSubFilter("Semua");
   };
+
+  if (isGuest) {
+    return (
+      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
+        <StickyHeader 
+          title="Pesanan Saya" 
+          variant="minimal"
+          size="sm"
+          leftAction={<BackButton variant="primary" />} 
+        />
+        <GuestEmptyState 
+          title="Login untuk Lihat Pesanan" 
+          description="Lacak status pesanan dan riwayat belanja Anda dengan masuk ke akun CardToo."
+          icon={<Icons.History size={48} />}
+        />
+      </main>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">

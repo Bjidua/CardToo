@@ -33,7 +33,7 @@ export default function TrackClient({ id }: { id: string }) {
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-[12px] font-bold text-text-sub uppercase tracking-widest">Resi Pengiriman</span>
-            <span className="text-[16px] font-black text-text-main">JNE-882910293881</span>
+            <span className="text-[16px] font-bold text-text-main">JNE-882910293881</span>
           </div>
         </section>
 
@@ -62,7 +62,7 @@ export default function TrackClient({ id }: { id: string }) {
               {/* Text */}
               <div className="flex flex-col gap-1 pb-10">
                 <h3 className={cn(
-                  "text-[15px] font-black",
+                  "text-[15px] font-bold",
                   step.status === "upcoming" ? "text-text-sub/40" : "text-text-main"
                 )}>
                   {step.title}
@@ -77,7 +77,7 @@ export default function TrackClient({ id }: { id: string }) {
         <section className="mt-4 bg-primary/5 p-6 rounded-[32px] border border-primary/10 flex flex-col items-center text-center gap-3">
           <Icons.Message size={24} className="text-primary" />
           <p className="text-[13px] font-bold text-text-main">Ada kendala dengan pengiriman?</p>
-          <button className="text-[12px] font-black text-primary uppercase tracking-widest bg-white px-6 py-2 rounded-full shadow-soft">
+          <button className="text-[12px] font-bold text-primary uppercase tracking-widest bg-white px-6 py-2 rounded-full shadow-soft">
             Hubungi Kurir
           </button>
         </section>

@@ -67,7 +67,7 @@ function AddProductContent() {
               <Icons.Plus size={28} />
             </div>
             <div className="text-center">
-              <span className="block text-[13px] font-black text-secondary uppercase tracking-widest mb-1">Unggah Gambar</span>
+              <span className="block text-[13px] font-bold text-secondary uppercase tracking-widest mb-1">Unggah Gambar</span>
               <span className="block text-[10px] text-text-sub font-medium">Format: JPG, PNG (Max 5MB)</span>
             </div>
           </div>
@@ -147,7 +147,7 @@ function AddProductContent() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-white via-white/90 to-transparent pointer-events-none z-40">
         <div className="w-full pointer-events-auto">
           <Button 
-            className="w-full h-[60px] rounded-[30px] shadow-medium text-[16px] font-black tracking-wide"
+            className="w-full h-[60px] rounded-[30px] shadow-medium text-[16px] font-bold tracking-wide"
             onClick={handleUpload}
             disabled={isUploading}
             variant="secondary"

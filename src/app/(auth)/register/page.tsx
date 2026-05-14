@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/Separator";
 
 export default function RegisterPage() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-white to-accent-soft">
+    <main className="relative min-h-screen w-full overflow-x-hidden bg-linear-to-b from-white to-accent-soft">
       {/* Header Section */}
       <div className="flex flex-col items-center pt-[70px] px-6 text-center">
         <h1 className="text-[32px] font-bold leading-tight text-black">Sign Up</h1>

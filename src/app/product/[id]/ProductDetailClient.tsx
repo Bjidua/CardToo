@@ -175,7 +175,7 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
               {product.title}
             </h1>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[24px] font-black text-primary">
+              <span className="text-[24px] font-bold text-primary">
                 {formatPrice(product.price)}
               </span>
               <span className="text-[14px] text-text-sub line-through">
@@ -227,11 +227,11 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
             <div className="flex flex-wrap gap-2">
               <div className="px-4 py-2 bg-white rounded-2xl border border-surface-muted shadow-soft flex items-center gap-2">
                 <span className="text-[11px] text-text-sub font-medium">Grade:</span>
-                <span className="text-[12px] font-black text-primary">{product.grading.grade}</span>
+                <span className="text-[12px] font-bold text-primary">{product.grading.grade}</span>
               </div>
               <div className="px-4 py-2 bg-white rounded-2xl border border-surface-muted shadow-soft flex items-center gap-2">
                 <span className="text-[11px] text-text-sub font-medium">Company:</span>
-                <span className="text-[12px] font-black text-text-main">{product.grading.company}</span>
+                <span className="text-[12px] font-bold text-text-main">{product.grading.company}</span>
               </div>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
           {/* Customer Reviews Section */}
           <div className="mt-8 flex flex-col gap-5">
             <div className="flex items-center justify-between px-2">
-              <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest">Ulasan Pembeli</h3>
+              <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest">Ulasan Pembeli</h3>
               <div className="flex items-center gap-1.5 bg-surface-muted px-3 py-1 rounded-full">
                 <Icons.Review size={14} className="text-warning fill-warning" />
                 <span className="text-[13px] font-bold text-text-main">0.0/5.0</span>

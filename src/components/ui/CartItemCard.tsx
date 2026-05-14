@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Icons } from "./Icons";
 import { Checkbox } from "./Checkbox";
@@ -53,7 +54,13 @@ export const CartItemCard = ({
         />
         <div className="w-[60px] h-[85px] bg-surface-muted rounded-lg overflow-hidden shrink-0 shadow-sm border border-surface-muted">
           {image ? (
-            <img src={image} alt={title} className="w-full h-full object-cover" />
+            <Image
+              src={image}
+              alt={title}
+              width={60}
+              height={85}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-text-sub/30">
               <Icons.Collection size={24} />

@@ -104,7 +104,7 @@ export default function CartPage() {
             checked={isAllChecked}
             onChange={(e) => toggleAll(e.target.checked)}
           />
-          <span className="text-[12px] font-black text-primary bg-primary/10 px-4 py-1.5 rounded-full uppercase tracking-widest">
+          <span className="text-[12px] font-bold text-primary bg-primary/10 px-4 py-1.5 rounded-full uppercase tracking-widest">
             {selectedCount} Item
           </span>
         </div>
@@ -130,7 +130,7 @@ export default function CartPage() {
                     />
                     <div className="flex items-center gap-2">
                       <Icons.Store size={18} className="text-primary" />
-                      <h3 className="text-[14px] font-black text-text-main">{shopName}</h3>
+                      <h3 className="text-[14px] font-bold text-text-main">{shopName}</h3>
                       <Icons.Check size={12} className="text-white bg-primary rounded-full p-0.5" />
                     </div>
                   </div>
@@ -166,7 +166,7 @@ export default function CartPage() {
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-soft">
                 <Icons.Cart size={48} className="text-primary/20" />
               </div>
-              <h3 className="text-[18px] font-black text-text-main">Wah, keranjangmu kosong</h3>
+              <h3 className="text-[18px] font-bold text-text-main">Wah, keranjangmu kosong</h3>
               <p className="text-[13px] font-medium text-text-sub/60">Yuk, cari kartu favoritmu sekarang!</p>
               <Button variant="primary" className="mt-8 px-10 h-14 rounded-full font-bold shadow-lg shadow-primary/20" onClick={() => router.push('/home')}>
                 Mulai Belanja
@@ -193,8 +193,8 @@ export default function CartPage() {
               <span className="font-bold text-text-main">Rp {fee.toLocaleString("id-ID")}</span>
             </div>
             <div className="border-t-2 border-dashed border-surface-muted mt-3 pt-4 flex justify-between items-center">
-              <span className="font-black text-text-main text-[16px]">Total Bayar</span>
-              <span className="font-black text-primary text-[24px]">Rp {total.toLocaleString("id-ID")}</span>
+              <span className="font-bold text-text-main text-[16px]">Total Bayar</span>
+              <span className="font-bold text-primary text-[24px]">Rp {total.toLocaleString("id-ID")}</span>
             </div>
           </div>
 
@@ -202,7 +202,7 @@ export default function CartPage() {
             variant="primary" 
             disabled={selectedCount === 0}
             onClick={handleCheckout}
-            className="w-full h-16 rounded-2xl text-[16px] font-black shadow-lg shadow-primary/30 uppercase tracking-widest"
+            className="w-full h-16 rounded-2xl text-[16px] font-bold shadow-lg shadow-primary/30 uppercase tracking-widest"
           >
             Checkout ({selectedCount})
           </Button>

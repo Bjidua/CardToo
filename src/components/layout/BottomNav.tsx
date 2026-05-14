@@ -32,7 +32,7 @@ export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
     )}>
       <nav className="flex items-center justify-between w-full max-w-[393px] pointer-events-auto gap-3">
         {/* Main Nav Card - STATIS (Tidak Berubah Ukuran) */}
-        <div className="flex-1 h-[65px] bg-background shadow-[0px_8px_16px_rgba(0,0,0,0.1)] rounded-[60px] px-2 flex items-center justify-between relative overflow-hidden">
+        <div className="flex-1 h-[65px] bg-background shadow-medium rounded-[60px] px-2 flex items-center justify-between relative overflow-hidden">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname === `${item.href}/`;
 
@@ -87,7 +87,7 @@ export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-[65px] h-[65px] bg-white shadow-[0px_8px_20px_rgba(0,0,0,0.12)] border border-white rounded-full flex items-center justify-center active:bg-gray-100 transition-all relative overflow-hidden group"
+            className="w-[65px] h-[65px] bg-white shadow-medium border border-white rounded-full flex items-center justify-center active:bg-gray-100 transition-all relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <Icons.Search size={36} className="text-black/80 group-hover:text-primary transition-colors" />

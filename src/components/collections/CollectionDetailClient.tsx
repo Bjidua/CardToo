@@ -69,7 +69,7 @@ export default function CollectionDetailClient({ id, initialTitle }: CollectionD
             <div className="flex flex-col">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-1.5 h-6 bg-primary rounded-full" />
-                <h1 className="text-[20px] font-black text-text-main uppercase tracking-tight leading-none">
+                <h1 className="text-[20px] font-bold text-text-main uppercase tracking-tight leading-none">
                   {initialTitle}
                 </h1>
               </div>
@@ -185,7 +185,7 @@ export default function CollectionDetailClient({ id, initialTitle }: CollectionD
               className="relative w-full max-w-[440px] bg-white rounded-t-[32px] p-8 shadow-2xl"
             >
               <div className="w-12 h-1.5 bg-surface-muted rounded-full mx-auto mb-6" />
-              <h2 className="text-xl font-black text-text-main mb-2 uppercase italic tracking-tighter">Upload Kartu Baru</h2>
+              <h2 className="text-xl font-bold text-text-main mb-2 uppercase italic tracking-tighter">Upload Kartu Baru</h2>
               <p className="text-sm text-text-sub mb-8">Tambahkan koleksi kartumu ke dalam folder ini.</p>
               
               <div className="flex flex-col gap-6">
@@ -193,7 +193,7 @@ export default function CollectionDetailClient({ id, initialTitle }: CollectionD
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <Icons.Plus size={24} />
                   </div>
-                  <span className="text-[11px] font-black text-primary uppercase tracking-widest">Pilih Foto Kartu</span>
+                  <span className="text-[11px] font-bold text-primary uppercase tracking-widest">Pilih Foto Kartu</span>
                 </div>
 
                 <Input 

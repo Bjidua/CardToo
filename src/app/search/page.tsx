@@ -131,7 +131,7 @@ export default function SearchPage() {
                   <div className="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center">
                     <Icons.Search size={14} className="text-black/30" />
                   </div>
-                  <span>Hasil pencarian untuk <span className="text-primary font-bold">"{searchQuery}"</span></span>
+                  <span>Hasil pencarian untuk <span className="text-primary font-bold">{`"`}{searchQuery}{`"`}</span></span>
                 </div>
                 <span className="text-[12px] font-bold text-black/20">{filteredProducts.length} Kartu ditemukan</span>
               </div>
@@ -173,7 +173,7 @@ export default function SearchPage() {
                   </div>
                   <h3 className="text-[18px] font-bold text-black mb-2">Tidak Ada Hasil</h3>
                   <p className="text-black/30 text-[14px] max-w-[220px] leading-relaxed">
-                    Maaf, kartu <span className="text-black font-bold">"{searchQuery}"</span> tidak ditemukan. Coba kata kunci lain atau hapus filter.
+                    Maaf, kartu <span className="text-black font-bold">{`"`}{searchQuery}{`"`}</span> tidak ditemukan. Coba kata kunci lain atau hapus filter.
                   </p>
                   <button
                     onClick={() => {
@@ -223,7 +223,7 @@ export default function SearchPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white rounded-t-[40px] z-50 p-8 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] overflow-hidden"
+              className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white rounded-t-[40px] z-50 p-8 pb-12 shadow-medium overflow-hidden"
             >
               {/* Drag Handle */}
               <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-black/5 rounded-full" />

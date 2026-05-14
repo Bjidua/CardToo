@@ -68,7 +68,7 @@ export default function SalesDetailPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-text-sub uppercase tracking-widest">{item.orderId}</span>
-                    <h4 className="text-[14px] font-black text-text-main line-clamp-1">{item.productName}</h4>
+                    <h4 className="text-[14px] font-bold text-text-main line-clamp-1">{item.productName}</h4>
                   </div>
                   <span className={cn(
                     "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
@@ -94,7 +94,7 @@ export default function SalesDetailPage() {
                     <span className="text-[11px] text-text-sub font-medium">{item.date}</span>
                     <span className="text-[12px] font-bold text-text-main">Penghasilan Bersih</span>
                   </div>
-                  <span className="text-[18px] font-black text-secondary">{formatPrice(item.netAmount)}</span>
+                  <span className="text-[18px] font-bold text-secondary">{formatPrice(item.netAmount)}</span>
                 </div>
               </motion.div>
             ))}

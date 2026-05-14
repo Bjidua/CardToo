@@ -143,7 +143,7 @@ function SellerReportsContent() {
               {/* Bottom Sheet Handle */}
               <div className="w-12 h-1.5 bg-surface-muted rounded-full mx-auto mb-2" />
               
-              <h3 className="text-[18px] font-black text-text-main text-center">Export Laporan</h3>
+              <h3 className="text-[18px] font-bold text-text-main text-center">Export Laporan</h3>
               
               <div className="flex flex-col gap-3">
                 <button 
@@ -259,7 +259,7 @@ function SellerReportsContent() {
                   transition={{ delay: i * 0.03, type: "spring", stiffness: 100 }}
                   className={cn(
                     "w-full rounded-t-lg transition-all duration-300",
-                    height > 70 ? "bg-secondary shadow-[0_0_15px_rgba(0,202,224,0.3)]" : "bg-secondary/20"
+                    height > 70 ? "bg-secondary shadow-soft" : "bg-secondary/20"
                   )}
                 />
               ))}
@@ -302,7 +302,7 @@ function StatCard({ title, value, change, isPositive, icon }: { title: string, v
       </div>
       <div className="flex flex-col">
         <span className="text-[12px] font-bold text-text-sub">{title}</span>
-        <h4 className="text-[20px] font-black text-text-main leading-tight">{value}</h4>
+        <h4 className="text-[20px] font-bold text-text-main leading-tight">{value}</h4>
       </div>
       <span className={cn(
         "text-[10px] font-bold",
@@ -318,7 +318,7 @@ function BestSellerItem({ rank, title, sold, revenue }: { rank: number, title: s
   return (
     <div className="bg-white p-4 rounded-card shadow-soft border border-surface-muted flex items-center gap-4">
       <div className={cn(
-        "w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-black",
+        "w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold",
         rank === 1 ? "bg-warning/10 text-warning" : "bg-surface-muted text-text-sub"
       )}>
         {rank}
@@ -327,7 +327,7 @@ function BestSellerItem({ rank, title, sold, revenue }: { rank: number, title: s
         <span className="text-[14px] font-bold text-text-main line-clamp-1">{title}</span>
         <span className="text-[11px] text-text-sub font-medium">{sold} terjual</span>
       </div>
-      <span className="text-[14px] font-black text-secondary">{revenue}</span>
+      <span className="text-[14px] font-bold text-secondary">{revenue}</span>
     </div>
   );
 }

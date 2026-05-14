@@ -43,7 +43,7 @@ const SocialButton = ({ provider, className, ...props }: SocialButtonProps) => {
     <button
       className={cn(
         "flex w-full items-center justify-center gap-3 px-4 h-[55px]",
-        "bg-surface-muted rounded-[32px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)]",
+        "bg-surface-muted rounded-[32px] shadow-soft",
         "transition-all active:scale-[0.98] hover:bg-gray-100",
         className
       )}

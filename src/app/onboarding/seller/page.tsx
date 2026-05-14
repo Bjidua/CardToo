@@ -94,7 +94,7 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
       <div className="w-32 h-32 bg-white rounded-[40px] shadow-xl flex items-center justify-center mb-8">
         <Icons.Store size={64} className="text-primary" />
       </div>
-      <h2 className="text-[26px] font-black text-black leading-tight mb-4">Mulai Berjualan di CardToo</h2>
+      <h2 className="text-[26px] font-bold text-black leading-tight mb-4">Mulai Berjualan di CardToo</h2>
       <p className="text-[15px] text-black/50 leading-relaxed px-6 mb-12">
         Jangkau ribuan kolektor kartu di seluruh Indonesia. Proses pendaftaran cepat, aman, dan gratis!
       </p>
@@ -191,7 +191,7 @@ function SuccessStep({ onComplete }: { onComplete: () => void }) {
       <div className="w-24 h-24 bg-success rounded-full flex items-center justify-center text-white mb-8 shadow-lg shadow-success/20">
         <Icons.Plus size={48} className="rotate-45 scale-125" />
       </div>
-      <h2 className="text-[26px] font-black text-black leading-tight mb-4">Pendaftaran Terkirim!</h2>
+      <h2 className="text-[26px] font-bold text-black leading-tight mb-4">Pendaftaran Terkirim!</h2>
       <p className="text-[15px] text-black/50 leading-relaxed px-10 mb-12">
         (Demo) Selamat! Akun tokomu telah diaktifkan. Kamu sekarang bisa mulai mengelola produkmu.
       </p>

@@ -11,6 +11,16 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+interface HomeProduct {
+  id: number;
+  title: string;
+  price: number;
+  condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
+  category: string;
+}
+
+const HOME_DUMMY_PRODUCTS: HomeProduct[] = [];
+
 function HomeContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") || "All";
@@ -19,23 +29,9 @@ function HomeContent() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [wishlistedIds, setWishlistedIds] = React.useState<number[]>([1, 4]);
 
-  // Update selectedCategory if param changes
-  React.useEffect(() => {
-    if (categoryParam) setSelectedCategory(categoryParam);
-  }, [categoryParam]);
-
-  interface HomeProduct {
-    id: number;
-    title: string;
-    price: number;
-    condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
-    category: string;
-  }
-
-  const dummyProducts: HomeProduct[] = [];
 
   const filteredProducts = React.useMemo(() => {
-    return dummyProducts.filter(p => {
+    return HOME_DUMMY_PRODUCTS.filter(p => {
       const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
       const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;

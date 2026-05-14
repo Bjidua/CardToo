@@ -10,9 +10,9 @@ import { getAssetPath } from "@/lib/utils";
 
 export default function VerifyCodePage() {
   return (
-    <main className="relative min-h-screen w-full bg-white px-6 flex flex-col items-center">
+    <main className="relative min-h-screen w-full bg-white px-6 pb-8 flex flex-col items-center">
       {/* Back Button */}
-      <div className="absolute left-[33px] top-[66px]">
+      <div className="fixed left-[33px] top-[66px]">
         <BackButton variant="primary" />
       </div>
 

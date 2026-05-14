@@ -69,14 +69,14 @@ export default function ProfilePage() {
         </div>
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <h2 className="text-[20px] font-bold text-text-main leading-tight">Pi User</h2>
+            <h2 className="text-[20px] font-bold text-text-main leading-tight">Admin</h2>
             {isSeller && (
               <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">
                 Seller
               </span>
             )}
           </div>
-          <p className="text-[14px] text-text-sub font-medium">pi.user@cardtoo.com</p>
+          <p className="text-[14px] text-text-sub font-medium">admin@cardtoo.com</p>
         </div>
       </motion.div>
 

@@ -99,7 +99,7 @@ export default function CheckoutPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Icons.MapPin size={18} className="text-primary" />
-              <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest">Alamat Pengiriman</h3>
+              <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest">Alamat Pengiriman</h3>
             </div>
             <button 
               onClick={() => router.push("/profile/address")}
@@ -131,7 +131,7 @@ export default function CheckoutPage() {
 
         {/* Product Review */}
         <section className="flex flex-col gap-4">
-          <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest px-2">Item Pesanan</h3>
+          <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">Item Pesanan</h3>
           <div className="bg-white p-5 rounded-[32px] shadow-soft border border-surface-muted flex gap-4">
             <div className="w-20 h-20 relative rounded-2xl overflow-hidden bg-surface-muted border border-surface-muted">
               <Image src={DUMMY_CHECKOUT_PRODUCT.image} alt={DUMMY_CHECKOUT_PRODUCT.title} fill className="object-cover" />
@@ -139,14 +139,14 @@ export default function CheckoutPage() {
             <div className="flex-1 flex flex-col justify-center">
               <h4 className="text-[14px] font-bold text-text-main leading-snug line-clamp-2">{DUMMY_CHECKOUT_PRODUCT.title}</h4>
               <p className="text-[12px] text-text-sub mt-1">{DUMMY_CHECKOUT_PRODUCT.shopName}</p>
-              <span className="text-[14px] font-black text-primary mt-1">{formatPrice(DUMMY_CHECKOUT_PRODUCT.price)}</span>
+              <span className="text-[14px] font-bold text-primary mt-1">{formatPrice(DUMMY_CHECKOUT_PRODUCT.price)}</span>
             </div>
           </div>
         </section>
 
         {/* Shipping Method */}
         <section className="flex flex-col gap-4">
-          <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest px-2">Metode Pengiriman</h3>
+          <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">Metode Pengiriman</h3>
           <div className="flex flex-col gap-3">
             {SHIPPING_METHODS.map((method) => (
               <div 
@@ -165,7 +165,7 @@ export default function CheckoutPage() {
                   </span>
                   <span className="text-[12px] text-text-sub font-medium">Estimasi {method.etd}</span>
                 </div>
-                <span className="text-[14px] font-black text-text-main">{formatPrice(method.price)}</span>
+                <span className="text-[14px] font-bold text-text-main">{formatPrice(method.price)}</span>
               </div>
             ))}
           </div>
@@ -173,7 +173,7 @@ export default function CheckoutPage() {
 
         {/* Payment Method */}
         <section className="flex flex-col gap-4">
-          <h3 className="text-[14px] font-black text-text-main uppercase tracking-widest px-2">Metode Pembayaran</h3>
+          <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">Metode Pembayaran</h3>
           <div className="bg-white p-5 rounded-[32px] shadow-soft border border-surface-muted flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -203,15 +203,15 @@ export default function CheckoutPage() {
           </div>
           <div className="h-px bg-surface-muted my-1" />
           <div className="flex justify-between items-center">
-            <span className="text-[15px] font-black text-text-main uppercase tracking-widest">Total Pembayaran</span>
-            <span className="text-[20px] font-black text-primary">{formatPrice(total)}</span>
+            <span className="text-[15px] font-bold text-text-main uppercase tracking-widest">Total Pembayaran</span>
+            <span className="text-[20px] font-bold text-primary">{formatPrice(total)}</span>
           </div>
         </div>
 
         <Button 
           onClick={handlePlaceOrder}
           disabled={!selectedAddress}
-          className="w-full h-16 rounded-[24px] text-[16px] font-black shadow-lg shadow-primary/30 active:scale-95 transition-transform"
+          className="w-full h-16 rounded-[24px] text-[16px] font-bold shadow-lg shadow-primary/30 active:scale-95 transition-transform"
         >
           Konfirmasi Pesanan
         </Button>

@@ -49,7 +49,7 @@ export default function PaymentPage() {
         <div className="flex flex-col items-center gap-2 mb-10">
           <span className="text-[14px] font-medium text-text-sub">Selesaikan pembayaran dalam</span>
           <div className="relative flex items-center justify-center">
-            <h2 className="text-[40px] font-black text-text-main tabular-nums leading-none tracking-tighter">
+            <h2 className="text-[40px] font-bold text-text-main tabular-nums leading-none tracking-tighter">
               {formatTime(timeLeft)}
             </h2>
           </div>
@@ -79,7 +79,7 @@ export default function PaymentPage() {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               <Icons.QR size={24} className="text-primary" />
-              <span className="text-[18px] font-black text-text-main">QRIS</span>
+              <span className="text-[18px] font-bold text-text-main">QRIS</span>
             </div>
             <div className="bg-surface-muted px-3 py-1 rounded-lg text-[10px] font-bold text-text-sub">AUTO VERIFIED</div>
           </div>
@@ -105,7 +105,7 @@ export default function PaymentPage() {
         {/* Amount Info */}
         <div className="mt-8 flex flex-col items-center gap-1">
           <span className="text-[13px] text-text-sub">Total Tagihan</span>
-          <h3 className="text-[28px] font-black text-primary">Rp {totalAmount.toLocaleString("id-ID")}</h3>
+          <h3 className="text-[28px] font-bold text-primary">Rp {totalAmount.toLocaleString("id-ID")}</h3>
         </div>
       </main>
 

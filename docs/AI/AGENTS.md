@@ -7,7 +7,7 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 
 ## 🚀 Fitur Utama (akan diupdate)
 - Daftar fitur website (None)
-- Teknologi:  Next.Js, Tailwind CSS
+- Teknologi: Next.js, Tailwind CSS
 - Framework: React
 
 ## 📂 Struktur Repo
@@ -16,16 +16,10 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 ├── public/                  # Aset statis akses langsung
 │   ├── images/              # Gambar
 │   └── favicon.ico          # Icon website
-│ 
+│
 ├── src/                     # Source code aplikasi
 │   ├── app/                 # Rute halaman web Next.js
 │   │   ├── (auth)/          # Rute autentikasi
-│   │   │   ├── login/       # Halaman Login
-│   │   │   ├── register/    # Halaman Register
-│   │   │   └── forgot-password/ # Alur Lupa Password
-│   │   │       ├── page.tsx     # Form Email
-│   │   │       ├── verify/      # Verifikasi OTP
-│   │   │       └── reset/       # Reset Password Baru
 │   │   ├── home/            # Halaman Dashboard Utama
 │   │   ├── cart/            # Halaman Keranjang Belanja
 │   │   ├── categories/      # Halaman Semua Kategori
@@ -34,63 +28,132 @@ Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
 │   │   ├── collections/     # Halaman Koleksi TCG
 │   │   ├── profile/         # Halaman Profil User
 │   │   ├── notifications/   # Halaman Notifikasi
+│   │   ├── seller/          # Halaman seller suite
 │   │   ├── test-components/ # Laboratorium Component
 │   │   ├── layout.tsx       # Struktur kerangka aplikasi
 │   │   ├── page.tsx         # Halaman utama (Landing)
-│   │   ├── globals.css      # File utama Tailwind CSS v4
-│   │   └── products/        # Rute halaman daftar produk (blm ada)
-│   │ 
-│   └── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Atom components (Button, Input, Icons, NotificationCard, CartItemCard, CategoryCard, BackgroundLogo, dll)
-│   │   └── layout/          # Organism components (StickyHeader, BottomNav)
-│   │ 
-│   └── lib/                 # Skrip eksternal pendukung
-│   │   ├── appwrite.ts      # Koneksi ke Appwrite
-│   │   └── utils.ts         # Utility functions (cn, dll)
-│   │ 
-│   └── hooks/               # Custom hooks
-│    
+│   │   └── globals.css      # File utama Tailwind CSS v4
+│   │
+│   ├── components/          # Potongan antarmuka visual
+│   │   ├── ui/              # Atom/Molecule UI reusable
+│   │   └── layout/          # Layout reusable (StickyHeader, BottomNav, dst)
+│   │
+│   ├── hooks/               # Custom hooks
+│   ├── lib/                 # Skrip utilitas, auth, API client
+│   ├── context/             # React context provider
+│   └── types/               # TypeScript shared types
+│
 ├── docs/                    # Dokumentasi, panduan tugas, dsb
-│	├── design_system        # Guideline utama design project
-│   ├── feature_guide.md     # Panduan fitur ada apa aja
-│   ├── notes.md             # Catatan
-│   ├── to-do.md             # Fitur yang ingin di kerjakan
-│   └── guide.md             # Panduan kerja 
-│   
-├── .env.local               # Variabel environment\API Key Appwrite
-├── .gitignore               # File yang diabaikan oleh Git
-└── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
+│   ├── AI/                  # Rules AI agent
+│   ├── design_system/       # Guideline utama design project
+│   ├── feature_guide.md
+│   ├── notes.md
+│   ├── to-do.md
+│   └── Guide.md
+│
+├── .env.local
+├── .gitignore
+└── README.md
 ```
 
-## AI AGENTS RULES
+## AI AGENTS RULES (INDUSTRY SCALE)
 
-### 🧠 PEMAHAMAN KONTEKS & PROGRESS (WAJIB SAAT MULAI SESI)
-- SAAT MEMULAI SESI BARU, AI AGENT WAJIB MEMBACA `README.md`, `docs/to-do.md`, dan `docs/notes.md` TERLEBIH DAHULU UNTUK MEMAHAMI PROGRESS TERAKHIR.
-- AI AGENT WAJIB MENGECEK STRUKTUR FILE TERBARU (Membaca file codebase utama jika diperlukan) UNTUK MENYAMAKAN KONTEKS SEBELUM MENULIS KODE.
-- SETIAP KALI SELESAI MENGERJAKAN FITUR/TUGAS BERSAMA USER, AI AGENT WAJIB MENG-UPDATE `docs/to-do.md` DAN `docs/notes.md` AGAR PROGRESS TEREKAM UNTUK SESI BERIKUTNYA.
+### 1) 🧠 SESSION BOOTSTRAP & CONTEXT (WAJIB)
+- Saat mulai sesi baru, WAJIB baca: `README.md`, `docs/to-do.md`, `docs/notes.md`, `docs/Guide.md`, dan `docs/AI/AGENTS.md`.
+- WAJIB pahami progres terakhir sebelum menyentuh kode.
+- WAJIB cek struktur folder & file terkait scope task terlebih dahulu.
+- Jika task menyentuh area lintas fitur, lakukan mini-audit dampak ke file terkait sebelum edit.
+- Setiap selesai task, WAJIB update `docs/to-do.md` (status checklist) dan `docs/notes.md` (log teknis singkat).
 
-### 🛠 ATURAN KERJA & CODING
-- AI AGENTS DILARANG INISIATIF (kecuali ada ijin)
-- BERTANYA TERLEBIH DAHULU SEBELUM MEMBUAT APA PUN
-- SELALU KONFIRMASI SEBELUM MEMBUAT
-- SELALU MEMBACA FILE "guide.md" SEBELUM MEMBUAT APA PUN
-- SELALU MEMBACA FILE "design_system" SEBELUM MEMBUAT APA PUN
-- SELALU MEMBACA FILE "AGNETS.md" SEBELUM MEMBUAT APA PUN
-- AI AGENTS HANYA MEMBANTU PROSES CODING / PENULISAN KODE
-- AI AGENTS BUKAN PEMUTUS KEPUTUSAN AKHIR
-- SELALU PAKE RULES YANG SUDAH DI BUAT
-- SELALU MENGIKUTI TEMPLATE YANG SUDAH DI BUAT
-- SELALU MENGIKUTI TEMPLATE COMPONENT YANG SUDAH DI BUAT UNTUK MENCEGAH REDUNDANSI CODE (JADI HARUS MENGIKUTIN DESIGN SYSTEM).
-- **WAJIB MENGECEK `src/components/ui` SEBELUM MEMBUAT COMPONENT BARU.** Jika sudah ada (seperti `Button`, `Input`, `Icons`), gunakan yang sudah ada.
-- **DILARANG membuat styling manual untuk elemen yang sudah ada di template.** Contoh: Gunakan `<Button variant="danger">` daripada membuat button merah manual dengan Tailwind.
-- **IDENTIFIKASI POLA BERULANG**: Jika ada elemen UI yang digunakan di lebih dari satu halaman (misal: menu list, card produk), **WAJIB** mengekstraknya menjadi component template di `src/components/ui/`.
-- FOKUS DI UKURAN MOBILE TERLEBIH DAHULU (UKURAN HP) (PAKSA WIDESCREEN MEMAKAI UKURAN MOBILE)
-- SELALU UPDATE COMPONENT BARU SETIAP ADA TAMBAHAN DI test-components/page.tsx 
-- JIKA ADA COMPONENT CODING YANG BERULANG BUAT SARAN KE DEVELOPER AGAR MEMBUAT COMPONENT TEMPLATE AGAR MENCEGAH REDUNDANSI CODE
-- DILARANG menggunakan tag label manual untuk Input. WAJIB menggunakan prop 'label' yang tersedia di component Input.
-- IDENTIFIKASI pola UI yang berulang dan buatkan component template-nya (seperti AuthCard, Checkbox, dll) sebelum implementasi massal.
-- PASTIKAN aplikasi memiliki "Native App Feel" (APK Vibe) dengan mematikan seleksi teks dan drag gambar secara global (kecuali pada input).
-- **STRICT NEXT.JS ARCHITECTURE:** Selalu prioritaskan penggunaan Server Components pada `page.tsx`. Gunakan `"use client";` hanya pada komponen anak yang membutuhkan state/interaktivitas (ekstrak komponen ke file terpisah).
-- **STRICT TAILWIND STYLING:** DILARANG KERAS menggunakan *hardcoded hex colors* (misal `#4CB6C4`) atau *arbitrary values* yang tidak perlu (misal `shadow-[0_4px_4px_...]`). WAJIB menggunakan variabel CSS dari `globals.css` (misal `text-primary`, `bg-surface-light`, `shadow-soft`, `shadow-medium`).
-- **DUMMY DATA ENGINE:** Selalu gunakan struktur data objek atau record (`DUMMY_DATA`) untuk mensimulasikan data yang seharusnya berasal dari database. Hindari menulis nilai teks/angka statis langsung di dalam JSX untuk elemen yang bersifat dinamis (seperti harga, nama produk, detail seller). Hal ini mempermudah migrasi ke Appwrite/API di masa depan.
+### 2) 🤝 WORKFLOW EKSEKUSI (WAJIB)
+- DILARANG inisiatif implementasi tanpa instruksi user.
+- WAJIB konfirmasi scope sebelum perubahan besar/arsitektural.
+- Prioritaskan perubahan kecil, terukur, dan bisa diverifikasi.
+- Setiap perubahan wajib punya validasi minimal:
+  1. lint
+  2. build (untuk perubahan signifikan)
+  3. uji alur utama yang terdampak
+- Jika ada trade-off, tampilkan opsi + risiko secara ringkas.
+
+### 3) 🏗️ NEXT.JS ARCHITECTURE (STRICT)
+- `page.tsx` wajib diprioritaskan sebagai **Server Component**.
+- `"use client"` hanya untuk komponen yang butuh state/effect/browser API.
+- Pisahkan UI interaktif ke Client Component terpisah (hindari client-heavy page).
+- Untuk dynamic route pada static export, WAJIB siapkan `generateStaticParams` bila dibutuhkan.
+- Hindari fetch/data transform berulang di banyak komponen; sentralisasi di layer yang tepat (`lib/`, hooks, atau server boundary).
+
+### 4) 🧩 COMPONENT SYSTEM & REUSE (STRICT)
+- WAJIB cek `src/components/ui` sebelum membuat komponen baru.
+- DILARANG duplikasi komponen/pola UI yang sudah ada.
+- Jika pola UI dipakai >1 tempat, ekstrak jadi reusable component.
+- Setiap komponen baru WAJIB:
+  - typed props (tanpa `any`)
+  - punya varian bila ada lebih dari 1 gaya penggunaan
+  - konsisten naming & API props
+- Jika komponen baru dibuat, WAJIB tambahkan showcase minimal di `src/app/test-components/page.tsx`.
+
+### 5) 🎨 DESIGN SYSTEM & STYLING GOVERNANCE (STRICT)
+- DILARANG hardcoded hex (`#xxxxxx`) dan arbitrary value tidak perlu (`shadow-[...]`, dsb).
+- WAJIB gunakan token semantik dari `globals.css` / design system:
+  - contoh: `text-primary`, `bg-surface-light`, `shadow-soft`, `shadow-medium`.
+- DILARANG styling manual untuk elemen yang sudah punya template komponen.
+- Input wajib memakai komponen `Input` + prop `label` (tanpa label manual untuk field Input).
+- Mobile-first mandatory: layout widescreen tetap berperilaku seperti viewport mobile app.
+
+### 6) 🧾 DATA, TYPES, DAN DOMAIN RULES
+- Gunakan **DUMMY DATA ENGINE** (`DUMMY_DATA` object/record) untuk simulasi data dinamis.
+- DILARANG menaruh teks/angka dinamis hardcoded langsung di JSX.
+- Semua entitas domain WAJIB pakai type/interface dari shared types (`src/types`).
+- DILARANG penggunaan `any` kecuali ada alasan kuat dan disetujui.
+- Siapkan struktur agar migrasi ke Appwrite/API minim refactor (shape data konsisten).
+
+### 7) 🔐 SECURITY, PRIVACY, DAN CONFIG HYGIENE
+- DILARANG hardcode secret, token, API key, endpoint sensitif di source code.
+- Gunakan env variables (`.env.local`) dan abstraction di `lib/`.
+- Jangan logging data sensitif (email, token, credential, payload pribadi).
+- Validasi input user di boundary penting (form kritikal / transaksi / auth flow).
+
+### 8) ⚡ PERFORMANCE & UX STANDARDS
+- Gunakan `next/image` untuk aset gambar non-dekoratif utama.
+- Optimalkan render list panjang (batasi render berat, memoisasi saat perlu).
+- Pertahankan “Native App Feel”:
+  - minim text selection global (kecuali input/textarea),
+  - interaksi sentuh responsif,
+  - state loading/empty/error yang jelas.
+- Hindari layout shift mencolok; jaga konsistensi spacing dan skeleton/loading state.
+
+### 9) ✅ QUALITY GATES (DEFINITION OF DONE)
+Task dianggap selesai jika:
+1. Scope user terpenuhi.
+2. Tidak melanggar rules AI + design system.
+3. Lint lulus.
+4. Build lulus (jika perubahan signifikan/struktur).
+5. Dokumentasi progres di `docs/to-do.md` dan `docs/notes.md` terupdate.
+6. Tidak meninggalkan TODO kritikal tanpa catatan tindak lanjut.
+
+### 10) 🗂️ DOCUMENTATION & CHANGELOG DISCIPLINE
+- Setiap task selesai WAJIB menambah log ringkas di `docs/notes.md`:
+  - tanggal/jam sesi
+  - file yang diubah
+  - alasan perubahan
+  - hasil validasi (lint/build/test flow)
+- Update checklist di `docs/to-do.md` dengan status faktual (`[x]` / `[ ]`).
+- Jangan overwrite history lama; tambahkan entri baru agar jejak keputusan terjaga.
+
+### 11) 🚫 ANTI-PATTERN (DILARANG)
+- Duplikasi komponen/styling.
+- Menambah dependency tanpa alasan jelas.
+- Refactor besar tanpa approval user.
+- Mengubah behavior lintas halaman tanpa impact check.
+- Menghapus code/documentation yang masih relevan tanpa catatan migrasi.
+- Memperbaiki gejala tanpa menyentuh akar masalah (root cause).
+
+### 12) 🧭 PRIORITAS SAAT KONFLIK
+Jika ada konflik prioritas, urutan keputusan:
+1. Keamanan & data integrity
+2. Kebenaran bisnis/flow
+3. Stabilitas build/lint
+4. Konsistensi design system
+5. Kecepatan implementasi
+
 <!-- END:nextjs-agent-rules -->

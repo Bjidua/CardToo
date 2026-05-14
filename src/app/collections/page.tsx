@@ -67,7 +67,7 @@ export default function CollectionsPage() {
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
-        <StickyHeader title="Koleksi Anda" variant="logo" size="lg" />
+        <StickyHeader title="Collections" variant="logo" size="lg" />
         <GuestEmptyState 
           title="Login untuk Mengelola Koleksi" 
           description="Simpan dan kelompokkan kartu impian Anda ke dalam koleksi pribadi dengan masuk ke akun Anda."
@@ -113,7 +113,7 @@ export default function CollectionsPage() {
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Icons.Plus size={20} className="text-primary" />
             </div>
-            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Tambah</span>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Tambah</span>
           </motion.button>
 
           {filteredCollections.map((item) => (
@@ -145,7 +145,7 @@ export default function CollectionsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative w-full max-w-[440px] bg-white rounded-[32px] p-8 shadow-2xl"
             >
-              <h2 className="text-xl font-black text-text-main mb-2">Buat Koleksi Baru</h2>
+              <h2 className="text-xl font-bold text-text-main mb-2">Buat Koleksi Baru</h2>
               <p className="text-sm text-text-sub mb-8">Beri nama folder untuk mengelompokkan kartu kesayanganmu.</p>
               
               <div className="flex flex-col gap-6">
@@ -174,7 +174,7 @@ export default function CollectionsPage() {
       {filteredCollections.length === 0 && searchTerm && (
         <div className="flex flex-col items-center justify-center py-20 text-text-sub">
           <Icons.Search size={40} className="opacity-20 mb-4" />
-          <p className="text-sm font-bold">Koleksi "{searchTerm}" tidak ditemukan</p>
+          <p className="text-sm font-bold">Koleksi {`"`}{searchTerm}{`"`} tidak ditemukan</p>
         </div>
       )}
     </main>
