@@ -1,6 +1,31 @@
 #### 📅 Update: 14 Mei 2026 (Sesi Dev God Mode Utility untuk QA Internal)
 **Waktu Eksekusi:** Siang (14:20 WIB)
 
+
+#### Update: 15 Mei 2026 (Sesi Audit Kepatuhan Repo & Design System)
+**Waktu Eksekusi:** Malam
+
+**1. Perbaikan Arsitektur & Routing**
+- Menghapus route duplikat anomali pada path `src/app/collections/ [id]/page.tsx` yang sebelumnya memicu route build tidak valid `/collections/ [id]`.
+- Merapikan beberapa halaman sederhana agar tidak bergantung pada client handler yang tidak diperlukan (`login`, `register`, `forgot-password`, `reset`, `about`, `help`, `privacy`).
+
+**2. Normalisasi Design System**
+- Menyelaraskan page-layer prioritas ke token semantik project:
+  - `src/app/about/page.tsx`
+  - `src/app/help/page.tsx`
+  - `src/app/privacy/page.tsx`
+  - `src/app/test-components/page.tsx`
+- Mengurangi penggunaan warna mentah `gray` / `black` pada halaman demo dan halaman informasional agar lebih konsisten dengan `globals.css` dan `docs/design_system`.
+- Mengganti input manual pada halaman bantuan dengan komponen `Input` reusable sesuai aturan project.
+
+**3. Konsistensi Flow Auth**
+- Menyesuaikan halaman forgot-password agar tombol back tetap mengikuti frame mobile saat dibuka di desktop.
+- Membersihkan callback debug `console.log` pada halaman verifikasi forgot-password.
+
+**4. Validasi**
+- `npm run lint` - lulus
+
+---
 **🧪 1. Implementasi God Mode (Development Only)**
 - Menambahkan mode bypass auth internal di `src/context/AuthContext.tsx` untuk kebutuhan QA flow tanpa login berulang.
 - God Mode dikunci ketat dengan 2 lapis guard:

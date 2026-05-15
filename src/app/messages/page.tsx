@@ -27,7 +27,7 @@ export default function MessagesPage() {
 
   if (isGuest) {
     return (
-      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
+      <main className="flex-1 flex flex-col min-h-screen bg-background">
         <StickyHeader title="Messages" variant="logo" size="lg" />
         <GuestEmptyState 
           title="Login untuk Mulai Obrolan" 
@@ -48,8 +48,8 @@ export default function MessagesPage() {
             placeholder="Cari pesan atau toko..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            startIcon={<Icons.Search size={20} />}
-            className="bg-white/50 backdrop-blur-sm shadow-soft"
+            startIcon={<Icons.Search size={23} />}
+            className="bg-white/50 shadow-soft"
           />
 
           <div className="flex gap-2">

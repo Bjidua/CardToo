@@ -12,7 +12,7 @@ export default function VerifyCodePage() {
   return (
     <main className="relative min-h-screen w-full bg-white px-6 pb-8 flex flex-col items-center">
       {/* Back Button */}
-      <div className="fixed left-[33px] top-[66px]">
+      <div className="absolute left-6 top-[66px] z-10">
         <BackButton variant="primary" />
       </div>
 
@@ -37,7 +37,7 @@ export default function VerifyCodePage() {
           Enter the code sent to
         </p>
         <p className="text-[16px] font-bold text-black">
-          veir@gmail.com
+          [EMAIL_ADDRESS]
         </p>
       </div>
 
@@ -50,7 +50,7 @@ export default function VerifyCodePage() {
           </button>
         </div>
 
-        <OTPInput length={4} onComplete={(code) => console.log("OTP Complete:", code)} />
+        <OTPInput length={4} onComplete={() => {}} />
 
         <p className="mt-4 text-[14px] text-black text-center px-4">
           can’t find the email? Check your spam folder

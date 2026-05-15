@@ -40,7 +40,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             primary: "bg-primary text-white hover:brightness-110",
             secondary: "bg-secondary text-white hover:brightness-110",
             danger: "bg-danger text-white hover:brightness-110",
-            ghost: "bg-surface-light text-black shadow-none border border-transparent hover:bg-gray-100", // "Cancel" variant
+            ghost: "bg-background text-black shadow-none border border-transparent hover:bg-gray-100", // "Cancel" variant
             outline: "bg-transparent text-primary border-2 border-primary shadow-none hover:bg-primary/5",
         };
 

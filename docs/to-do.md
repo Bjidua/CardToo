@@ -49,3 +49,9 @@
 - [x] Tambahkan panel toggle internal (`DevGodModePanel`) yang hanya aktif di development + `NEXT_PUBLIC_ENABLE_GOD_MODE=true`.
 - [x] Terapkan hard-stop keamanan production: God Mode auto nonaktif total di `NODE_ENV=production`.
 - [ ] Lanjutkan cleanup route anomali `/collections/ [id]` setelah utilitas testing stabil.
+
+## Fase 7: Audit Kepatuhan Repo (15 Mei 2026)
+- [x] Hapus route duplikat anomali `src/app/collections/ [id]/page.tsx` dari tree App Router.
+- [x] Rapikan page statis/auth sederhana agar lebih dekat ke aturan server-first dan tidak memakai handler client yang tidak perlu.
+- [x] Normalisasi page-layer prioritas (`about`, `help`, `privacy`, `test-components`) ke token design system semantik.
+- [x] Rapikan flow forgot-password agar positioning back button tetap mengikuti frame mobile di desktop.
