@@ -106,7 +106,7 @@ export const NotificationCard = ({
           <div className="flex items-center gap-2">
             <span className={cn(
               "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full",
-              isRead ? "bg-black/5 text-text-sub" : `${config.color} brightness-95`
+              isRead ? "bg-surface-hover text-text-sub" : `${config.color} brightness-95`
             )}>
               {label || type}
             </span>

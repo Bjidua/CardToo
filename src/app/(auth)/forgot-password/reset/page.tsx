@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
       </div>
 
       <div className="mt-8">
-        <h1 className="text-[32px] font-bold text-black text-center leading-tight">
+        <h1 className="text-[32px] font-bold text-text-main text-center leading-tight">
           Reset Password
         </h1>
       </div>

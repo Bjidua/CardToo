@@ -254,6 +254,25 @@ export interface NotificationRow {
   is_read: boolean;
 }
 
+export interface FavoriteRow {
+  user_id: string;
+  product_id: string;
+}
+
+export interface CollectionRow {
+  user_id: string;
+  title: string;
+}
+
+export interface CollectionItemRow {
+  collection_id: string;
+  product_id: string | null;
+  custom_title: string;
+  price_snapshot: number;
+  condition: ProductConditionValue;
+  image_url: string | null;
+}
+
 export interface BuyerOrderItem {
   id: string;
   orderId: string;
@@ -371,6 +390,12 @@ export interface UpdateProductInput {
   coverFile?: File | null;
 }
 
+export interface UpdateStoreInput {
+  storeName: string;
+  description?: string;
+  bannerFile?: File | null;
+}
+
 export interface Order {
   id: string;
   shopName: string;
@@ -455,17 +480,29 @@ export interface NotificationGroup {
 }
 
 export interface Collection {
-  id: number;
+  id: string;
   title: string;
   count: number;
 }
 
 export interface FavoriteItem {
   id: string;
+  productId: string;
+  storeId?: string;
   title: string;
   shopName: string;
   price: number;
-  image?: string;
+  image?: string | null;
+}
+
+export interface CollectionItem {
+  id: string;
+  collectionId: string;
+  productId?: string | null;
+  title: string;
+  price: number;
+  condition: ProductCondition;
+  image?: string | null;
 }
 
 export interface TransactionDetail {

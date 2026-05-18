@@ -154,7 +154,7 @@ function OrderStatusItem({ icon, label, href = "#" }: { icon: React.ReactNode; l
       <div className="w-11 h-11 rounded-card bg-surface-hover flex items-center justify-center text-accent group-active:scale-95 transition-all">
         {icon}
       </div>
-      <span className="text-[13px] font-medium text-black text-center whitespace-nowrap">
+      <span className="text-center whitespace-nowrap text-[13px] font-medium text-text-main">
         {label}
       </span>
     </Link>

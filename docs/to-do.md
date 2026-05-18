@@ -34,8 +34,9 @@
 - [x] **Review Persistence V1.7**: Table `reviews`, submit ulasan, dan summary rating produk/toko sudah terhubung ke Appwrite.
 - [x] **Messaging Persistence V1.8**: Inbox, room chat, percakapan buyer-seller, dan pengiriman pesan sudah terhubung ke Appwrite.
 - [x] **Notification Persistence V1.9**: Halaman notifikasi dan event order/chat/review sudah terhubung ke Appwrite.
-- [ ] **Data Fetching Lanjutan**: Migrasikan halaman tersisa yang masih memakai state placeholder ke data Appwrite nyata, terutama analytics/report dan beberapa metadata profil toko.
-- [ ] **Storage Integration Lanjutan**: Sambungkan upload avatar, logo toko, dan banner toko ke bucket Appwrite.
+- [x] **Seller Analytics & Store Settings V2.0**: Laporan penjualan seller, detail transaksi, rating toko, dan update metadata banner/nama/deskripsi toko sudah membaca/menulis Appwrite nyata.
+- [ ] **Data Fetching Lanjutan**: Migrasikan halaman tersisa yang masih memakai state placeholder ke data Appwrite nyata, terutama metadata profil toko minor dan area informasional non-transaksional.
+- [ ] **Storage Integration Lanjutan**: Sambungkan upload avatar dan logo toko ke bucket Appwrite.
 - [ ] **Permission Hardening Lanjutan**: Rapikan permission row/table untuk flow buyer-seller lanjutan setelah QA integrasi dasar selesai.
 
 ## Fase 4: Audit Kepatuhan UI Rules (14 Mei 2026)
@@ -62,3 +63,13 @@
 - [x] Rapikan page statis/auth sederhana agar lebih dekat ke aturan server-first dan tidak memakai handler client yang tidak perlu.
 - [x] Normalisasi page-layer prioritas (`about`, `help`, `privacy`, `test-components`) ke token design system semantik.
 - [x] Rapikan flow forgot-password agar positioning back button tetap mengikuti frame mobile di desktop.
+
+## Fase 8: Audit Flow, Coverage, & Maintainability (18 Mei 2026)
+- [x] Audit coverage Appwrite vs seluruh route utama dan identifikasi gap nyata pada profile, favorites, collections, dan route dummy lama.
+- [x] Phase 1: Rapikan blocker flow nyata (`profile/edit`, `profile/settings`, `profile/security`) dan hapus route dummy `messages/[id]` yang tidak lagi dipakai.
+- [x] Phase 2: Sambungkan fitur non-core yang masih placeholder ke Appwrite (`favorites`, `collections`, `collection_items`) dan pindahkan detail koleksi runtime ke route statis berbasis query param.
+- [x] Phase 3: Jadikan halaman utility account lebih production-like (`security/password`, `security/devices`, `security/2fa`, `security/pin`, `payments`, `language`) tanpa CTA palsu dan link mati.
+- [x] Phase 4A: Rapikan debt design-system pada shared components prioritas (`Button`, `Input`, `StickyHeader`, `AuthCard`, `SocialButton`, `MenuListItem`, `FavoriteItemCard`, `MessageCard`, `CategoryList`, `Separator`, `Checkbox`) dan auth pages utama.
+- [x] Phase 5A: Hapus shim mati `src/lib/appwrite.js` dan finalkan inventory Appwrite + route audit matrix di dokumentasi.
+- [x] Phase 4B: Hardening design-system debt lanjutan pada page/component legacy yang masih banyak memakai token `black/gray` mentah.
+- [ ] Phase 5B: Maintainability sweep terakhir untuk helper/shape lokal tersisa dan finalisasi label `out of scope` per fitur minor.

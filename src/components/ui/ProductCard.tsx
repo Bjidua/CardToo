@@ -73,13 +73,13 @@ export const ProductCard = ({
             draggable={false}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-black/10 font-bold text-xs uppercase">
+          <div className="w-full h-full flex items-center justify-center text-text-sub/30 font-bold text-xs uppercase">
             No Image
           </div>
         )}
 
         {/* Condition Badge (Improvement) */}
-        <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded-full">
+        <div className="absolute left-2 top-2 rounded-full bg-text-main/50 px-2 py-0.5 backdrop-blur-md">
           <span className="text-[8px] font-bold text-white uppercase tracking-wider">
             {condition}
           </span>
@@ -97,7 +97,7 @@ export const ProductCard = ({
             size={12}
             className={cn(
               "transition-colors",
-              isWishlisted ? "fill-danger text-danger" : "text-black/40"
+              isWishlisted ? "fill-danger text-danger" : "text-text-sub/60"
             )}
           />
         </button>
@@ -105,7 +105,7 @@ export const ProductCard = ({
 
       {/* Info Section */}
       <div className="flex flex-col gap-1 px-2 w-full">
-        <h3 className="text-[14px] font-bold text-black line-clamp-2 leading-[1.2] h-[34px]">
+        <h3 className="text-[14px] font-bold text-text-main line-clamp-2 leading-[1.2] h-[34px]">
           {title}
         </h3>
         <p className={cn(
@@ -117,7 +117,7 @@ export const ProductCard = ({
       </div>
 
       {/* Bottom Subtle Bar (Native feel) */}
-      <div className="absolute bottom-1 left-4 right-4 h-1 bg-black/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute bottom-1 left-4 right-4 h-1 rounded-full bg-text-main/5 opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.div>
   );
 };

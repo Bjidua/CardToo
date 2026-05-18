@@ -25,10 +25,10 @@ export default function ForgotPasswordPage() {
       </div>
 
       <div className="mt-8 flex flex-col items-center text-center gap-2">
-        <h1 className="text-[32px] font-bold text-black leading-tight">
+        <h1 className="text-[32px] font-bold text-text-main leading-tight">
           Forgot Password
         </h1>
-        <p className="text-base text-black max-w-[272px]">
+        <p className="text-base text-text-sub max-w-[272px]">
           Forgot your account? Remember it now
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
         />
 
         <div className="flex justify-center items-center gap-1">
-          <span className="text-[14px] text-black">Remember Now?</span>
+          <span className="text-[14px] text-text-main">Remember Now?</span>
           <Link
             href="/login"
             className="text-[14px] font-bold text-secondary hover:underline"

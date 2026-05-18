@@ -37,7 +37,7 @@ export const CategoryList = ({
     <div className={cn("w-full flex flex-col gap-4", className)}>
       {/* Header Section */}
       <div className="flex items-center justify-between px-6">
-        <h2 className="text-[20px] font-bold text-black tracking-tight">
+        <h2 className="text-[20px] font-bold text-text-main tracking-tight">
           Categories
         </h2>
         <Link href="/categories">
@@ -57,8 +57,8 @@ export const CategoryList = ({
               className={cn(
                 "whitespace-nowrap flex-shrink-0 relative px-6 py-2.5 rounded-full text-[14px] font-bold transition-all duration-300 select-none",
                 activeCategory === category
-                  ? "bg-white text-black shadow-medium"
-                  : "bg-transparent text-black/40 hover:text-black/60"
+                  ? "bg-white text-text-main shadow-medium"
+                  : "bg-transparent text-text-sub hover:text-text-main"
               )}
             >
               {category}

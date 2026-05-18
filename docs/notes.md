@@ -1356,3 +1356,278 @@ src/middleware.ts
 - `npm run lint` - lulus
 - `npm run build` - lulus
 - Static export tetap stabil di 88 routes.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Seller Analytics & Store Settings)
+**Waktu Eksekusi:** Siang
+
+**1. Seller Reports Nyata**
+- `src/app/seller/reports/page.tsx`
+  - laporan seller sekarang membaca order nyata dari Appwrite
+  - omzet, profit, jumlah order, grafik penjualan, best seller, dan export CSV dihitung dari data live
+- `src/app/seller/reports/detail/page.tsx`
+  - detail transaksi sekarang membaca item pesanan seller nyata
+  - halaman diamankan dengan `ProtectedRoute` seller agar konsisten dengan portal seller lain
+
+**2. Store Settings Nyata**
+- `src/app/seller/settings/page.tsx`
+  - form pengaturan toko sekarang memuat data store nyata tanpa pola sinkronisasi effect yang melanggar lint React
+  - update nama toko, deskripsi, dan banner sekarang menulis ke Appwrite lewat `storeService.updateStore`
+  - preview banner dibersihkan dengan revoke object URL saat unmount untuk mencegah leak kecil pada sesi edit berulang
+- `src/lib/services/store.ts`
+  - update toko sudah mendukung upload banner ke bucket `store-assets` dan menyimpan `banner_file_id` + `banner_url`
+
+**3. Catatan Scope**
+- Desain visual seller report dan seller settings tidak diubah; perubahan hanya pada wiring data dan hardening state.
+- Field `location` pada settings masih bersifat lokal karena schema store v1 belum memiliki kolom lokasi terpisah.
+- Metadata `response time` masih placeholder ringan (`Aktif`) sampai ada basis data/perhitungan SLA chat yang lebih formal.
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - pending setelah sesi ini dijalankan ulang
+
+#### Update: 18 Mei 2026 (Audit Menyeluruh - Phase 1 Flow & Dead Route Cleanup)
+**Waktu Eksekusi:** Sore
+
+**1. Hasil Audit Baseline**
+- Core commerce Appwrite sudah hidup untuk auth, store, products, cart, checkout, orders, reviews, chat, dan notifications.
+- Masih ada gap non-core yang belum setara:
+  - `profile/edit` masih hardcoded + `console.log`
+  - `profile/settings` logout masih mock
+  - `profile/security` masih punya menu menuju path yang tidak ada
+  - `messages/[id]` masih route dummy warisan sebelum migrasi ke `/messages/room`
+  - `favorites` dan `collections` masih placeholder lokal, belum Appwrite-backed
+- Ditemukan juga debt design-system lanjutan pada banyak page/component legacy yang masih memakai utilitas `text-black/*`, `border-black/*`, `bg-black/*`, dan `gray`.
+
+**2. Perbaikan Phase 1 yang Dikerjakan**
+- `src/app/profile/edit/page.tsx`
+  - diubah menjadi flow nyata berbasis `ProtectedRoute`
+  - data profil sekarang mengambil `profile`/`user` dari `AuthContext`
+  - simpan perubahan sekarang memanggil `profileService.updateProfile`
+- `src/lib/services/profile.ts`
+  - `updateProfile` diperluas agar mendukung update `username`
+- `src/app/profile/settings/page.tsx`
+  - halaman diamankan dengan `ProtectedRoute`
+  - tombol logout sekarang memanggil `logout()` nyata dari `AuthContext`
+  - penyesuaian token semantik awal pada section headings/border
+- `src/app/profile/security/page.tsx`
+  - menghapus menu yang mengarah ke route tidak ada (`biometric`, `history`)
+  - menyelaraskan token warna dasar ke semantik project
+- `src/app/messages/[id]/page.tsx`
+  - route dummy lama dihapus karena seluruh flow chat aktif sekarang memakai `/messages/room`
+
+**3. Rekomendasi Phase Berikutnya**
+- Phase 2: putuskan dan implement `favorites` + `collections` ke Appwrite atau keluarkan dari scope deliverable final.
+- Phase 3: normalisasi design system lintas page/component legacy dan audit maintainability lanjutan.
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - pending setelah sesi ini dijalankan ulang
+
+#### Update: 18 Mei 2026 (Audit Menyeluruh - Phase 2 Favorites, Collections, & Utility Account)
+**Waktu Eksekusi:** Malam
+
+**1. Appwrite Coverage Diperluas**
+- Menambahkan table live baru di Appwrite:
+  - `favorites`
+  - `collections`
+  - `collection_items`
+- Inventory table Appwrite aktif sekarang:
+  - `user_profiles`
+  - `stores`
+  - `products`
+  - `addresses`
+  - `cart_items`
+  - `orders`
+  - `order_items`
+  - `reviews`
+  - `conversations`
+  - `chat_messages`
+  - `notifications`
+  - `favorites`
+  - `collections`
+  - `collection_items`
+
+**2. Favorites Sudah Appwrite-backed**
+- `src/lib/services/favorite.ts`
+  - service Appwrite untuk list, add, remove, dan toggle wishlist
+- `src/hooks/useFavorites.ts`
+  - hook client untuk sinkronisasi state favorit user
+- Halaman/fitur yang sudah memakai source nyata:
+  - `src/app/profile/favorites/page.tsx`
+  - `src/app/home/page.tsx`
+  - `src/app/search/page.tsx`
+  - `src/app/categories/[slug]/CategoryProductsClient.tsx`
+  - `src/app/store/[id]/StoreProfileClient.tsx`
+  - `src/app/product/[id]/ProductDetailClient.tsx`
+- Guest yang menekan tombol favorit sekarang diarahkan ke login agar flow konsisten.
+
+**3. Collections Sudah Appwrite-backed**
+- `src/lib/services/collection.ts`
+  - service Appwrite untuk list koleksi, create koleksi, load detail koleksi, tambah item manual, dan hapus item
+- `src/app/collections/page.tsx`
+  - create/list koleksi sekarang membaca Appwrite nyata
+- `src/components/collections/CollectionDetailClient.tsx`
+  - isi folder koleksi sekarang membaca Appwrite nyata
+  - tambah item manual sekarang menyimpan row `collection_items`
+  - hapus item koleksi sekarang benar-benar menghapus row
+- `src/app/collections/detail/page.tsx`
+  - route statis baru berbasis query param untuk kompatibilitas `output: export`
+- `src/app/collections/[id]/page.tsx`
+  - route legacy dihapus agar tidak lagi mengandalkan ID dummy statis yang menyesatkan
+
+**4. Utility Account Dibuat Jujur & Production-like**
+- `src/app/profile/security/password/page.tsx`
+  - ganti password nyata via Appwrite `account.updatePassword`
+- `src/app/profile/security/devices/page.tsx`
+  - daftar sesi/perangkat nyata via Appwrite `listSessions`
+  - logout sesi individual dan logout semua sesi tersedia
+- `src/app/profile/security/2fa/page.tsx`
+  - diubah menjadi informational state yang jujur (`Belum tersedia`)
+- `src/app/profile/security/pin/page.tsx`
+  - diubah menjadi informational state yang jujur (`Belum tersedia`)
+- `src/app/profile/payments/page.tsx`
+  - diubah menjadi read-only empty state, tanpa CTA palsu tambah kartu/rekening
+- `src/app/profile/language/page.tsx`
+  - preferensi bahasa sekarang tersimpan konsisten di `localStorage`
+- `src/app/profile/security/page.tsx`
+  - sub-label halaman security diselaraskan agar tidak lagi misleading
+
+**5. Flow Integrity Tambahan**
+- `src/app/orders/[id]/track/TrackClient.tsx`
+  - tombol "Hubungi Seller" tidak lagi memakai `window.location.href`
+  - sekarang langsung mengarah ke `/messages/room` dengan `sellerId` dan `storeId` nyata
+
+**6. Status Audit Saat Ini**
+- Guest flow:
+  - onboarding, login/register, proteksi halaman private, dan redirect ke login sudah konsisten
+- Buyer flow:
+  - home → search → product → favorite → collection → cart → checkout → order → review → chat → notifications sudah Appwrite-backed
+- Seller flow:
+  - onboarding seller → dashboard → product CRUD → seller orders → reports → settings toko sudah Appwrite-backed
+- Area yang masih butuh phase berikutnya:
+  - debt design-system lintas page/component legacy
+  - audit final matriks route: `live`, `read-only`, `intentional placeholder/out of scope`
+
+**7. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export stabil di 82 routes setelah route dummy lama dibuang dan route query-based baru dipakai untuk runtime collections
+
+#### Update: 18 Mei 2026 (Audit Menyeluruh - Phase 4A Design System & Route Matrix)
+**Waktu Eksekusi:** Larut Malam
+
+**1. Shared Component Cleanup**
+- Komponen reusable prioritas dibersihkan dari token mentah `black/gray` ke token semantik project:
+  - `src/components/ui/Button.tsx`
+  - `src/components/ui/Input.tsx`
+  - `src/components/layout/StickyHeader.tsx`
+  - `src/components/layout/AuthCard.tsx`
+  - `src/components/ui/SocialButton.tsx`
+  - `src/components/ui/MenuListItem.tsx`
+  - `src/components/ui/FavoriteItemCard.tsx`
+  - `src/components/ui/MessageCard.tsx`
+  - `src/components/ui/CategoryList.tsx`
+  - `src/components/ui/Separator.tsx`
+  - `src/components/ui/Checkbox.tsx`
+- Dampaknya:
+  - halaman auth, settings/profile, favorite, message, home, dan beberapa list utama ikut lebih konsisten terhadap `docs/design_system`.
+
+**2. Auth & Utility Visual Hardening**
+- Auth pages utama ikut dirapikan agar memakai `text-text-main` / `text-text-sub`:
+  - `src/app/(auth)/login/page.tsx`
+  - `src/app/(auth)/register/page.tsx`
+  - `src/app/(auth)/forgot-password/page.tsx`
+  - `src/app/(auth)/forgot-password/reset/page.tsx`
+  - `src/app/(auth)/forgot-password/verify/page.tsx`
+- Copy mojibake di halaman verifikasi email juga dibersihkan.
+
+**3. Dead Code / Shim Cleanup**
+- `src/lib/appwrite.js` dihapus karena seluruh repo sudah memakai:
+  - `src/lib/appwrite/client.ts`
+  - `src/lib/appwrite/config.ts`
+- Ini mengurangi kebingungan maintainability karena tidak ada lagi entry Appwrite ganda yang tidak dipakai.
+
+**4. Route Audit Matrix (Status Faktual Saat Ini)**
+- **Live + Appwrite-backed**
+  - `/login`, `/register`
+  - `/home`, `/search`, `/categories/[slug]`
+  - `/product/[id]`, `/store/[id]`
+  - `/cart`, `/checkout`, `/checkout/payment`
+  - `/orders`, `/orders/track`, `/orders/review`, `/orders/[id]/track`, `/orders/[id]/review`
+  - `/messages`, `/messages/room`
+  - `/notifications`
+  - `/profile`, `/profile/address`, `/profile/edit`, `/profile/favorites`, `/profile/settings`
+  - `/collections`, `/collections/detail`
+  - `/seller/dashboard`, `/seller/products`, `/seller/products/add`, `/seller/products/edit/[id]`
+  - `/seller/orders`, `/seller/orders/detail`, `/seller/orders/[id]`
+  - `/seller/reports`, `/seller/reports/detail`, `/seller/settings`
+- **Read-only / honest utility**
+  - `/profile/payments`
+  - `/profile/security/2fa`
+  - `/profile/security/pin`
+  - `/profile/language`
+- **Informational / static**
+  - `/`, `/about`, `/help`, `/privacy`, `/onboarding`
+  - `/forgot-password`, `/forgot-password/verify`, `/forgot-password/reset`
+- **Internal / dev**
+  - `/test-components`
+
+**5. Status Kepatuhan Rules**
+- Terhadap `docs/AI/AGENTS.md`:
+  - core workflow, docs update, lint/build, shared types, dan Appwrite service separation sudah jauh lebih patuh
+  - masih ada debt lanjutan di sebagian page legacy yang memakai token warna mentah
+- Terhadap `docs/design_system`:
+  - komponen bersama prioritas sudah mulai dinormalkan
+  - debt terbesar tersisa ada di page-level legacy dan beberapa state/overlay visual lama
+
+**6. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export tetap stabil di 82 routes
+
+#### Update: 18 Mei 2026 (Audit Menyeluruh - Phase 4B Design System Sweep)
+**Waktu Eksekusi:** Larut Malam
+
+**1. Penyapuan Token Page-Level Legacy**
+- Menyelesaikan penyapuan token `black/gray` mentah yang masih tersisa di area `src/app` dan `src/components`.
+- File yang dirapikan pada sesi ini:
+  - `src/app/onboarding/page.tsx`
+  - `src/app/profile/page.tsx`
+  - `src/app/profile/address/page.tsx`
+  - `src/app/profile/language/page.tsx`
+  - `src/app/collections/page.tsx`
+  - `src/app/checkout/page.tsx`
+  - `src/app/search/page.tsx`
+  - `src/app/seller/dashboard/page.tsx`
+  - `src/app/seller/reports/page.tsx`
+  - `src/app/seller/products/add/page.tsx`
+  - `src/app/seller/products/edit/[id]/EditProductClient.tsx`
+  - `src/app/store/[id]/StoreProfileClient.tsx`
+  - `src/app/test-components/page.tsx`
+  - `src/components/collections/CollectionDetailClient.tsx`
+  - `src/components/ui/OTPInput.tsx`
+  - `src/components/ui/NotificationCard.tsx`
+  - `src/components/ui/ProductCard.tsx`
+
+**2. Hasil Audit Token**
+- Pencarian lanjutan pada `src/app` dan `src/components` untuk pola:
+  - `text-black`
+  - `bg-black`
+  - `border-black`
+  - `text-gray`
+  - `bg-gray`
+  - `border-gray`
+  - `black/`
+  - `gray-`
+  kini tidak mengembalikan hasil apa pun.
+- Overlay dan placeholder visual yang sebelumnya memakai token mentah sekarang dipindah ke token semantik seperti `text-text-main`, `text-text-sub`, dan turunan opacity berbasis token.
+
+**3. Catatan Maintainability**
+- Masih ada fallback slug generator berbasis `Date.now()` di service Appwrite:
+  - `src/lib/services/store.ts`
+  - `src/lib/services/product.ts`
+- Ini bukan dummy UI residue, tetapi masih dicatat sebagai bagian dari sweep maintainability fase berikutnya.
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - pending rerun akhir setelah update dokumentasi

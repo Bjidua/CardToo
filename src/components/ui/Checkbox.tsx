@@ -21,7 +21,7 @@ const Checkbox = ({ label, className, ...props }: CheckboxProps) => {
           <path d="M1 5L4 8L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      {label && <span className="text-[14px] text-black select-none">{label}</span>}
+      {label && <span className="text-[14px] text-text-main select-none">{label}</span>}
     </label>
   );
 };

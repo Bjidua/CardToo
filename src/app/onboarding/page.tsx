@@ -52,7 +52,7 @@ export default function OnboardingPage() {
       <div className="absolute top-10 right-6 z-20">
         <button
           onClick={completeOnboarding}
-          className="text-base font-semibold text-black/30 hover:text-black transition-colors"
+          className="text-base font-semibold text-text-sub/60 transition-colors hover:text-text-main"
         >
           Skip
         </button>
@@ -100,10 +100,10 @@ export default function OnboardingPage() {
 
               {/* Title & Description */}
               <div className="w-full flex flex-col items-center space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <h1 className="text-[26px] font-bold text-black tracking-tight leading-tight">
+                <h1 className="text-[26px] font-bold tracking-tight leading-tight text-text-main">
                   {item.title}
                 </h1>
-                <p className="text-[15px] text-black/50 max-w-[300px] leading-relaxed font-medium">
+                <p className="max-w-[300px] text-[15px] font-medium leading-relaxed text-text-sub">
                   {item.description}
                 </p>
               </div>

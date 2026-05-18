@@ -94,7 +94,7 @@ function SellerDashboardContent() {
         <div className="w-full bg-linear-to-br bg-secondary to-secondary/15 rounded-[24px] p-6 text-white shadow-medium mb-6 relative overflow-hidden">
           {/* Decorative Pattern */}
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-          <div className="absolute -left-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-xl" />
+          <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-text-main/10 blur-xl" />
           
           <div className="relative z-10 flex flex-col gap-1">
             <div className="flex items-center justify-between mb-2">

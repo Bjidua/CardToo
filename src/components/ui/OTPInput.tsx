@@ -62,7 +62,7 @@ const OTPInput = ({ label, error, length = 4, onComplete }: OTPInputProps) => {
             onChange={(e) => handleChange(e.target.value, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={cn(
-              "w-[64px] h-[64px] bg-surface rounded-[24px] text-center text-xl font-bold text-black outline-none transition-all",
+              "h-[64px] w-[64px] rounded-[24px] bg-surface text-center text-xl font-bold text-text-main outline-none transition-all",
               "focus:ring-2 focus:ring-primary/50",
               error && "ring-2 ring-danger/50",
               "select-none"

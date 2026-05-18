@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
@@ -10,16 +11,20 @@ import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Product } from "@/types";
 import { productService } from "@/lib/services/product";
+import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function SearchPage() {
+  const router = useRouter();
+  const { isGuest, user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Terkait");
-  const [wishlistedIds, setWishlistedIds] = useState<string[]>([]);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
   const tabs = ["Terkait", "Terbaru", "Terlaris", "Harga"];
   const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Played"];
@@ -41,12 +46,6 @@ export default function SearchPage() {
   const toggleCondition = (cond: string) => {
     setSelectedConditions(prev =>
       prev.includes(cond) ? prev.filter(c => c !== cond) : [...prev, cond]
-    );
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlistedIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
 
@@ -91,13 +90,13 @@ export default function SearchPage() {
 
       <main className="flex-1 flex flex-col">
         {/* Search Input Section */}
-        <div className="px-6 pt-4 pb-2 bg-white/80 backdrop-blur-xl sticky top-[72px] z-30 border-b border-black/5 shadow-xs">
+        <div className="px-6 pt-4 pb-2 bg-white/80 backdrop-blur-xl sticky top-[72px] z-30 border-b border-surface-muted shadow-soft">
           <div className="relative group">
             <Input
               placeholder="Cari kartu favoritmu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              startIcon={<Icons.Search size={20} className="text-black/30 group-focus-within:text-primary transition-colors" />}
+              startIcon={<Icons.Search size={20} className="text-text-sub group-focus-within:text-primary transition-colors" />}
               className="shadow-soft bg-surface-light! border-none h-[48px] rounded-2xl group-focus-within:ring-2 group-focus-within:ring-primary/10 transition-all"
               autoFocus
             />
@@ -113,7 +112,7 @@ export default function SearchPage() {
                     onClick={() => setActiveTab(tab)}
                     className={cn(
                       "relative py-3 text-[15px] font-medium transition-all whitespace-nowrap",
-                      activeTab === tab ? "text-primary font-bold scale-105" : "text-black/40 hover:text-black/60"
+                      activeTab === tab ? "text-primary font-bold scale-105" : "text-text-sub hover:text-text-main"
                     )}
                   >
                     {tab}
@@ -127,14 +126,14 @@ export default function SearchPage() {
                   </button>
                 ))}
               </div>
-              <div className="w-px h-6 bg-black/5 ml-2" />
+              <div className="w-px h-6 bg-surface-muted ml-2" />
               <button
                 onClick={() => setShowFilter(true)}
                 className={cn(
                   "flex items-center gap-2 py-3 text-[14px] ml-4 transition-all active:scale-95 whitespace-nowrap px-3 rounded-xl",
                   selectedConditions.length > 0 || priceRange.min || priceRange.max
                     ? "text-white bg-primary font-bold shadow-md shadow-primary/20"
-                    : "text-black/60 bg-black/5 hover:bg-black/10"
+                    : "text-text-sub bg-surface-hover hover:bg-surface-muted"
                 )}
               >
                 <Icons.Filter size={16} />
@@ -150,13 +149,13 @@ export default function SearchPage() {
               {/* Toko Berkaitan — akan di-render dari hasil query Appwrite */}
 
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5 text-black/40 text-[14px] font-medium">
-                  <div className="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center">
-                    <Icons.Search size={14} className="text-black/30" />
+                <div className="flex items-center gap-2.5 text-text-sub text-[14px] font-medium">
+                  <div className="w-8 h-8 bg-surface-hover rounded-full flex items-center justify-center">
+                    <Icons.Search size={14} className="text-text-sub" />
                   </div>
                   <span>Hasil pencarian untuk <span className="text-primary font-bold">{`"`}{searchQuery}{`"`}</span></span>
                 </div>
-                <span className="text-[12px] font-bold text-black/20">{filteredProducts.length} Kartu ditemukan</span>
+                <span className="text-[12px] font-bold text-text-sub/60">{filteredProducts.length} Kartu ditemukan</span>
               </div>
 
               {isLoading ? (
@@ -181,8 +180,14 @@ export default function SearchPage() {
                           condition={product.condition}
                           image={product.image || undefined}
                           href={`/product/${product.id}`}
-                          isWishlisted={wishlistedIds.includes(product.id)}
-                          onWishlistToggle={() => toggleWishlist(product.id)}
+                          isWishlisted={isFavorite(product.id)}
+                          onWishlistToggle={() => {
+                            if (isGuest || !user) {
+                              router.push("/login");
+                              return;
+                            }
+                            void toggleFavorite(product.id);
+                          }}
                         />
                       </motion.div>
                     ))}
@@ -192,17 +197,17 @@ export default function SearchPage() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center py-24 text-center bg-white/50 backdrop-blur-sm rounded-[32px] border border-white shadow-soft"
+                  className="flex flex-col items-center justify-center py-24 text-center bg-white/50 backdrop-blur-sm rounded-[32px] border border-surface-muted shadow-soft"
                 >
-                  <div className="w-24 h-24 bg-black/5 rounded-full flex items-center justify-center mb-6 relative">
-                    <Icons.Search size={44} className="text-black/10" />
+                  <div className="w-24 h-24 bg-surface-hover rounded-full flex items-center justify-center mb-6 relative">
+                    <Icons.Search size={44} className="text-text-sub/30" />
                     <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
                       <Icons.X size={16} className="text-danger/40" />
                     </div>
                   </div>
-                  <h3 className="text-[18px] font-bold text-black mb-2">Tidak Ada Hasil</h3>
-                  <p className="text-black/30 text-[14px] max-w-[220px] leading-relaxed">
-                    Maaf, kartu <span className="text-black font-bold">{`"`}{searchQuery}{`"`}</span> tidak ditemukan. Coba kata kunci lain atau hapus filter.
+                  <h3 className="text-[18px] font-bold text-text-main mb-2">Tidak Ada Hasil</h3>
+                  <p className="text-text-sub text-[14px] max-w-[220px] leading-relaxed">
+                    Maaf, kartu <span className="text-text-main font-bold">{`"`}{searchQuery}{`"`}</span> tidak ditemukan. Coba kata kunci lain atau hapus filter.
                   </p>
                   <button
                     onClick={() => {
@@ -227,8 +232,8 @@ export default function SearchPage() {
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-primary/20 backdrop-blur-xl rounded-full animate-pulse" />
                 <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-accent/20 backdrop-blur-xl rounded-full" />
               </div>
-              <h3 className="text-[20px] font-bold text-black mb-3 tracking-tight">Cari Kartu Impianmu</h3>
-              <p className="text-black/30 text-[15px] max-w-[240px] leading-relaxed">
+              <h3 className="text-[20px] font-bold text-text-main mb-3 tracking-tight">Cari Kartu Impianmu</h3>
+              <p className="text-text-sub text-[15px] max-w-[240px] leading-relaxed">
                 Temukan koleksi kartu TCG terlengkap dari ribuan toko di Indonesia.
               </p>
             </motion.div>
@@ -245,7 +250,7 @@ export default function SearchPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowFilter(false)}
-              className="fixed inset-0 bg-black/40 z-50 backdrop-blur-xs"
+              className="fixed inset-0 z-50 bg-text-main/20 backdrop-blur-xs"
             />
             <motion.div
               initial={{ y: "100%" }}
@@ -255,16 +260,16 @@ export default function SearchPage() {
               className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white rounded-t-[40px] z-50 p-8 pb-12 shadow-medium overflow-hidden"
             >
               {/* Drag Handle */}
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-black/5 rounded-full" />
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-surface-muted rounded-full" />
 
               <div className="flex justify-between items-center mb-10 mt-2">
                 <div className="flex flex-col">
-                  <h2 className="text-[20px] font-bold text-black tracking-tight">Filter</h2>
-                  <p className="text-[12px] text-black/30 font-medium">Saring pencarian sesuai kebutuhanmu</p>
+                  <h2 className="text-[20px] font-bold text-text-main tracking-tight">Filter</h2>
+                  <p className="text-[12px] text-text-sub font-medium">Saring pencarian sesuai kebutuhanmu</p>
                 </div>
                 <button
                   onClick={() => setShowFilter(false)}
-                  className="w-10 h-10 flex items-center justify-center bg-black/5 rounded-full text-black/40 hover:text-black hover:bg-black/10 transition-all active:scale-90"
+                  className="w-10 h-10 flex items-center justify-center bg-surface-hover rounded-full text-text-sub hover:text-text-main hover:bg-surface-muted transition-all active:scale-90"
                 >
                   <Icons.X size={20} />
                 </button>
@@ -274,7 +279,7 @@ export default function SearchPage() {
                 {/* Condition Filter */}
                 <div>
                   <div className="flex justify-between items-end mb-5">
-                    <h4 className="text-[15px] font-bold text-black uppercase tracking-wider">Kondisi Kartu</h4>
+                    <h4 className="text-[15px] font-bold text-text-main uppercase tracking-wider">Kondisi Kartu</h4>
                     {selectedConditions.length > 0 && (
                       <span className="text-[11px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-sm">
                         {selectedConditions.length} Terpilih
@@ -290,7 +295,7 @@ export default function SearchPage() {
                           "px-5 py-2.5 rounded-2xl text-[14px] font-bold transition-all duration-300",
                           selectedConditions.includes(cond)
                             ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
-                            : "bg-surface-muted text-black/40 hover:bg-black/5"
+                            : "bg-surface-muted text-text-sub hover:bg-surface-hover"
                         )}
                       >
                         {cond}
@@ -301,27 +306,27 @@ export default function SearchPage() {
 
                 {/* Price Filter */}
                 <div>
-                  <h4 className="text-[15px] font-bold text-black mb-5 uppercase tracking-wider">Rentang Harga (IDR)</h4>
+                  <h4 className="text-[15px] font-bold text-text-main mb-5 uppercase tracking-wider">Rentang Harga (IDR)</h4>
                   <div className="flex items-center gap-4">
                     <div className="flex-1 relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-black/20">Rp</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-text-sub/60">Rp</span>
                       <input
                         type="number"
                         placeholder="Min"
                         value={priceRange.min}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-text-main outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     </div>
-                    <div className="w-4 h-[2px] bg-black/10 rounded-full" />
+                    <div className="w-4 h-[2px] bg-surface-muted rounded-full" />
                     <div className="flex-1 relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-black/20">Rp</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-text-sub/60">Rp</span>
                       <input
                         type="number"
                         placeholder="Max"
                         value={priceRange.max}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-black outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="w-full h-[52px] bg-surface-muted rounded-2xl pl-10 pr-4 text-[15px] font-bold text-text-main outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     </div>
                   </div>
@@ -334,7 +339,7 @@ export default function SearchPage() {
                     setSelectedConditions([]);
                     setPriceRange({ min: "", max: "" });
                   }}
-                  className="flex-1 h-[58px] bg-white border-2 border-black/5 rounded-[22px] text-[16px] font-bold text-black/60 hover:bg-black/5 hover:border-black/10 active:scale-95 transition-all"
+                  className="flex-1 h-[58px] bg-white border-2 border-surface-muted rounded-[22px] text-[16px] font-bold text-text-sub hover:bg-surface-hover hover:border-surface-hover active:scale-95 transition-all"
                 >
                   Reset
                 </button>

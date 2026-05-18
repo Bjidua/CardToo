@@ -87,10 +87,10 @@ export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-[65px] h-[65px] bg-white shadow-medium border border-white rounded-full flex items-center justify-center active:bg-gray-100 transition-all relative overflow-hidden group"
+            className="w-[65px] h-[65px] bg-white shadow-medium border border-white rounded-full flex items-center justify-center active:bg-surface-hover transition-all relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Icons.Search size={36} className="text-black/80 group-hover:text-primary transition-colors" />
+            <Icons.Search size={36} className="text-text-main group-hover:text-primary transition-colors" />
           </motion.button>
         </Link>
       </nav>

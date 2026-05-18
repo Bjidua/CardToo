@@ -30,23 +30,23 @@ export const MenuListItem = ({
         <div className="w-10 h-10 rounded-card bg-surface-hover flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
           {icon}
         </div>
-        <span className="text-[16px] font-medium text-black">{label}</span>
+        <span className="text-[16px] font-medium text-text-main">{label}</span>
       </div>
       <div className="flex items-center gap-2">
         {subValue && (
-          <span className="text-[14px] text-black/40 font-medium">{subValue}</span>
+          <span className="text-[14px] text-text-sub font-medium">{subValue}</span>
         )}
         <Icons.ChevronRight
           size={18}
-          className="text-black/40 group-hover:translate-x-1 transition-transform"
+          className="text-text-sub group-hover:translate-x-1 transition-transform"
         />
       </div>
     </>
   );
 
   const containerClasses = cn(
-    "flex items-center justify-between p-5 hover:bg-black/[0.02] transition-colors group",
-    showBorder && "border-b border-black/5",
+    "flex items-center justify-between p-5 hover:bg-surface-hover/40 transition-colors group",
+    showBorder && "border-b border-surface-muted",
     className
   );
 

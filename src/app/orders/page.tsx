@@ -121,7 +121,7 @@ function OrdersContent() {
       <main className="flex-1 flex flex-col pb-20">
         {/* Main Tabs Wrapper */}
         <div className="px-6 pt-6 bg-white/20">
-          <div className="relative w-full h-[52px] bg-black/5 rounded-card p-1.5 flex items-center mb-6">
+          <div className="relative w-full h-[52px] bg-surface-hover rounded-card p-1.5 flex items-center mb-6">
             <motion.div
               layoutId="activeTabBg"
               className="absolute h-[40px] bg-white rounded-button shadow-soft z-0"
@@ -155,7 +155,7 @@ function OrdersContent() {
         </div>
 
         {/* Sub-Filters Bar (Refined Shopee Style) */}
-        <div className="w-full bg-white/60 backdrop-blur-xl sticky top-[72px] z-30 border-b border-black/5 shadow-xs">
+        <div className="w-full bg-white/60 backdrop-blur-xl sticky top-[72px] z-30 border-b border-surface-muted shadow-soft">
           <div className="flex overflow-x-auto scrollbar-hide px-6">
             <div className="flex gap-8 py-4 min-w-max relative">
               {currentFilters.map((filter) => (
@@ -214,7 +214,7 @@ function OrdersContent() {
               >
                 <div className="relative group">
                   <div className="w-[110px] h-[110px] bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center shadow-soft border border-white/50 group-hover:scale-105 transition-transform">
-                    <Icons.Collection size={52} className="text-black/10" />
+                    <Icons.Collection size={52} className="text-text-sub/30" />
                   </div>
                   <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-primary/20 backdrop-blur-xl rounded-full animate-pulse" />
                 </div>

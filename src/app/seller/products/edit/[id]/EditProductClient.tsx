@@ -124,12 +124,12 @@ export default function EditProductClient({ id }: { id: string }) {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full aspect-4/3 bg-surface-muted rounded-[24px] border-2 border-secondary/20 flex cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden shadow-inner relative group"
                 >
-                  <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 transition-opacity z-10 group-hover:opacity-100">
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-text-main/10 opacity-0 transition-opacity group-hover:opacity-100">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-secondary">
                       <Icons.Plus size={24} />
                     </div>
                   </div>
-                  <div className="flex h-full w-full items-center justify-center text-4xl font-bold uppercase tracking-tighter italic text-black/10">
+                  <div className="flex h-full w-full items-center justify-center text-4xl font-bold uppercase tracking-tighter italic text-text-main/10">
                     {formData.name.split(" ")[0] || "TCG"}
                   </div>
                 </div>
@@ -219,7 +219,7 @@ export default function EditProductClient({ id }: { id: string }) {
                       description: event.target.value,
                     }))
                   }
-                  className="min-h-[120px] w-full resize-none rounded-[24px] border-none bg-surface-muted p-6 text-base text-text-main shadow-inner outline-none placeholder:text-black/30 focus:ring-2 focus:ring-secondary/30"
+                  className="min-h-[120px] w-full resize-none rounded-[24px] border-none bg-surface-muted p-6 text-base text-text-main shadow-inner outline-none placeholder:text-text-sub/60 focus:ring-2 focus:ring-secondary/30"
                   placeholder="Jelaskan detail kartu, minus jika ada, dll..."
                 />
               </div>

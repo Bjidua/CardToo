@@ -63,4 +63,40 @@ export const authService = {
       throw new Error(normalizeError(error));
     }
   },
+
+  async updatePassword(password: string, oldPassword: string) {
+    try {
+      await account.updatePassword({
+        password,
+        oldPassword,
+      });
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async listSessions() {
+    try {
+      const result = await account.listSessions();
+      return result.sessions;
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async logoutSession(sessionId: string) {
+    try {
+      await account.deleteSession({ sessionId });
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async logoutAllSessions() {
+    try {
+      await account.deleteSessions();
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
 };

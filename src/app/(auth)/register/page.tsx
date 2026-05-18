@@ -50,8 +50,8 @@ export default function RegisterPage() {
   return (
     <main className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-white">
       <div className="bg-linear-to-b from-white via-white to-primary/2 px-6 pb-8 pt-[70px] text-center">
-        <h1 className="text-[32px] font-bold leading-tight text-black">Sign Up</h1>
-        <p className="mt-2 text-base text-black opacity-70">
+        <h1 className="text-[32px] font-bold leading-tight text-text-main">Sign Up</h1>
+        <p className="mt-2 text-base text-text-sub">
           Let&apos;s create your account
         </p>
       </div>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
         </form>
 
         <div className="mt-auto flex items-center justify-center gap-1 pt-10">
-          <span className="text-[14px] text-black">Have an account?</span>
+          <span className="text-[14px] text-text-main">Have an account?</span>
           <Link
             href="/login"
             className="text-[14px] font-bold text-secondary hover:underline"

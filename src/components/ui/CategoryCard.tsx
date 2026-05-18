@@ -29,13 +29,13 @@ export const CategoryCard = ({ name, icon, onClick, className }: CategoryCardPro
         </div>
         
         {/* Label */}
-        <span className="text-[18px] font-normal text-black font-dm-sans">
+        <span className="text-[18px] font-normal text-text-main font-dm-sans">
           {name}
         </span>
       </div>
 
       {/* Chevron */}
-      <ChevronRight size={20} className="text-black" />
+      <ChevronRight size={20} className="text-text-main" />
     </motion.button>
   );
 };
