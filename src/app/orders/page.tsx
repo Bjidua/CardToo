@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -10,12 +10,12 @@ import { OrderItemCard, type OrderItem } from "@/components/ui/OrderItemCard";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
-
-const ALL_ORDERS: OrderItem[] = [];
+import { formatBuyerOrderStatus, orderService } from "@/lib/services/order";
+import type { BuyerOrder } from "@/types";
 
 function OrdersContent() {
   const searchParams = useSearchParams();
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const initialStatus = searchParams.get("status");
 
   const initialTabAndFilter = useMemo(() => {
@@ -28,14 +28,47 @@ function OrdersContent() {
 
   const [activeTab, setActiveTab] = useState<"Order" | "History">(initialTabAndFilter.tab);
   const [subFilter, setSubFilter] = useState(initialTabAndFilter.filter);
+  const [orders, setOrders] = useState<BuyerOrder[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const orderFilters = ["Semua", "Belum Bayar", "Dikemas", "Dikirim"];
   const historyFilters = ["Semua", "Selesai", "Dibatalkan"];
 
   const currentFilters = activeTab === "Order" ? orderFilters : historyFilters;
 
+  useEffect(() => {
+    if (!user || isGuest) return;
+
+    const loadOrders = async () => {
+      try {
+        setIsLoading(true);
+        const nextOrders = await orderService.listBuyerOrders(user.id);
+        setOrders(nextOrders);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadOrders();
+  }, [isGuest, user]);
+
   const filteredOrders = useMemo(() => {
-    return ALL_ORDERS.filter((order) => {
+    const uiOrders: OrderItem[] = orders.map((order) => ({
+      id: order.id,
+      shopName: order.storeName || "Toko CardToo",
+      productTitle:
+        order.items.length > 1
+          ? `${order.items[0]?.productTitle || "Pesanan"} +${order.items.length - 1} item`
+          : order.items[0]?.productTitle || "Pesanan",
+      productImage: order.items[0]?.productImage || undefined,
+      condition: order.items[0]?.condition || "-",
+      quantity: order.items.reduce((sum, item) => sum + item.quantity, 0),
+      totalPrice: order.total,
+      status: formatBuyerOrderStatus(order.status),
+      date: order.paidAt || undefined,
+    }));
+
+    return uiOrders.filter((order) => {
       const isMainTabMatch = activeTab === "Order" 
         ? ["Belum Bayar", "Dikemas", "Dikirim"].includes(order.status)
         : ["Selesai", "Dibatalkan"].includes(order.status);
@@ -44,7 +77,14 @@ function OrdersContent() {
       if (subFilter === "Semua") return true;
       return order.status === subFilter;
     });
-  }, [activeTab, subFilter]);
+  }, [activeTab, orders, subFilter]);
+
+  const handleCompleteOrder = async (orderId: string) => {
+    await orderService.markOrderAsCompleted(orderId);
+    if (!user) return;
+    const nextOrders = await orderService.listBuyerOrders(user.id);
+    setOrders(nextOrders);
+  };
 
   const handleMainTabChange = (tab: "Order" | "History") => {
     setActiveTab(tab);
@@ -143,8 +183,13 @@ function OrdersContent() {
 
         {/* Content List Section */}
         <div className="px-6 pt-6 flex-1">
+          {isLoading && (
+            <div className="flex items-center justify-center py-16">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+          )}
           <AnimatePresence mode="wait">
-            {filteredOrders.length > 0 ? (
+            {!isLoading && filteredOrders.length > 0 ? (
               <motion.div
                 key={activeTab + subFilter}
                 initial={{ opacity: 0, y: 15 }}
@@ -153,10 +198,14 @@ function OrdersContent() {
                 className="flex flex-col gap-5"
               >
                 {filteredOrders.map((order) => (
-                  <OrderItemCard key={order.id} order={order} />
+                  <OrderItemCard
+                    key={order.id}
+                    order={order}
+                    onComplete={(orderId) => void handleCompleteOrder(orderId)}
+                  />
                 ))}
               </motion.div>
-            ) : (
+            ) : !isLoading ? (
               <motion.div
                 key="empty"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -176,7 +225,7 @@ function OrdersContent() {
                   </p>
                 </div>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </main>

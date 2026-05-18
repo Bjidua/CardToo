@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Icons } from "@/components/ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Product } from "@/types";
-
-const DUMMY_PRODUCTS: Product[] = [];
+import { productService } from "@/lib/services/product";
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,9 +18,25 @@ export default function SearchPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const tabs = ["Terkait", "Terbaru", "Terlaris", "Harga"];
   const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Played"];
+
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const nextProducts = await productService.listPublishedProducts();
+        setProducts(nextProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadProducts();
+  }, []);
 
   const toggleCondition = (cond: string) => {
     setSelectedConditions(prev =>
@@ -37,25 +52,33 @@ export default function SearchPage() {
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    let products = DUMMY_PRODUCTS.filter((product) =>
+    let visibleProducts = products.filter((product) =>
       product.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Filter by Condition
     if (selectedConditions.length > 0) {
-      products = products.filter(p => p.condition && selectedConditions.includes(p.condition));
+      visibleProducts = visibleProducts.filter(
+        (product) => product.condition && selectedConditions.includes(product.condition)
+      );
     }
 
-    // Filter by Price
-    if (priceRange.min) products = products.filter(p => p.price >= Number(priceRange.min));
-    if (priceRange.max) products = products.filter(p => p.price <= Number(priceRange.max));
+    if (priceRange.min) {
+      visibleProducts = visibleProducts.filter(
+        (product) => product.price >= Number(priceRange.min)
+      );
+    }
 
-    // Sort logic
-    if (activeTab === "Terbaru") return [...products].reverse();
-    if (activeTab === "Harga") return [...products].sort((a, b) => a.price - b.price);
+    if (priceRange.max) {
+      visibleProducts = visibleProducts.filter(
+        (product) => product.price <= Number(priceRange.max)
+      );
+    }
 
-    return products;
-  }, [searchQuery, activeTab, selectedConditions, priceRange]);
+    if (activeTab === "Terbaru") return [...visibleProducts].reverse();
+    if (activeTab === "Harga") return [...visibleProducts].sort((a, b) => a.price - b.price);
+
+    return visibleProducts;
+  }, [activeTab, priceRange, products, searchQuery, selectedConditions]);
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint">
@@ -136,7 +159,11 @@ export default function SearchPage() {
                 <span className="text-[12px] font-bold text-black/20">{filteredProducts.length} Kartu ditemukan</span>
               </div>
 
-              {filteredProducts.length > 0 ? (
+              {isLoading ? (
+                <div className="flex items-center justify-center py-24">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                </div>
+              ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 gap-x-4 gap-y-6 justify-items-center">
                   <AnimatePresence mode="popLayout">
                     {filteredProducts.map((product) => (
@@ -152,6 +179,8 @@ export default function SearchPage() {
                           title={product.title}
                           price={product.price}
                           condition={product.condition}
+                          image={product.image || undefined}
+                          href={`/product/${product.id}`}
                           isWishlisted={wishlistedIds.includes(product.id)}
                           onWishlistToggle={() => toggleWishlist(product.id)}
                         />

@@ -3,6 +3,7 @@
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import Image from "next/image";
+import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
 import { getAssetPath } from "@/lib/utils";
 
@@ -33,9 +34,9 @@ export default function AboutPage() {
         </p>
 
         <div className="w-full flex flex-col gap-4">
-          <SocialButton icon={<Icons.Message size={20} />} label="Instagram" value="@cardtoo.official" />
-          <SocialButton icon={<Icons.Search size={20} />} label="Website" value="www.cardtoo.com" />
-          <SocialButton icon={<Icons.Profile size={20} />} label="Discord Community" value="CardToo HQ" />
+          <SocialButton icon={<Icons.Message size={20} />} label="Instagram" value="@cardtoo.official" href="https://www.instagram.com/cardtoo.official" />
+          <SocialButton icon={<Icons.Search size={20} />} label="Website" value="www.cardtoo.com" href="https://www.cardtoo.com" />
+          <SocialButton icon={<Icons.Profile size={20} />} label="Discord Community" value="CardToo HQ" href="https://www.discord.com/cardtoohq" />
         </div>
 
         <div className="mt-auto pt-10 text-center">
@@ -50,9 +51,24 @@ export default function AboutPage() {
   );
 }
 
-function SocialButton({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function SocialButton({
+  icon,
+  label,
+  value,
+  href,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href: string;
+}) {
   return (
-    <div className="bg-white p-5 rounded-card shadow-soft border border-surface-muted flex items-center justify-between group active:scale-[0.98] transition-all">
+    <Link
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="bg-white p-5 rounded-card shadow-soft border border-surface-muted flex items-center justify-between group active:scale-[0.98] transition-all"
+    >
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-card bg-surface-hover flex items-center justify-center text-accent">
           {icon}
@@ -63,6 +79,6 @@ function SocialButton({ icon, label, value }: { icon: React.ReactNode; label: st
         </div>
       </div>
       <Icons.ChevronRight size={18} className="text-text-sub/50" />
-    </div>
+    </Link>
   );
 }

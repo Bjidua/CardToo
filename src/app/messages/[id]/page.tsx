@@ -13,7 +13,11 @@ export function generateStaticParams() {
 
 export default async function ChatRoomPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  const chatInfo = DUMMY_CHATS.find(c => c.id === resolvedParams.id) || { name: "Unknown User" };
-  
-  return <ChatClient id={resolvedParams.id} name={chatInfo.name} />;
+  const chatInfo = DUMMY_CHATS.find(c => c.id === resolvedParams.id);
+
+  return (
+    <ChatClient
+      conversationId={chatInfo ? resolvedParams.id : undefined}
+    />
+  );
 }

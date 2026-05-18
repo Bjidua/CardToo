@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -8,22 +8,19 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Address {
-  id: string;
-  label: string;
-  name: string;
-  phone: string;
-  details: string;
-  isPrimary: boolean;
-}
-
-const INITIAL_ADDRESSES: Address[] = [];
+import { useRouter } from "next/navigation";
+import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
+import { useAuth } from "@/context/AuthContext";
+import { addressService } from "@/lib/services/address";
+import type { Address } from "@/types";
 
 export default function AddressPage() {
-  const [addresses, setAddresses] = useState<Address[]>(INITIAL_ADDRESSES);
+  const router = useRouter();
+  const { isGuest, user } = useAuth();
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [selectedId, setSelectedId] = useState("1");
+  const [selectedId, setSelectedId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form State
   const [newLabel, setNewLabel] = useState("");
@@ -31,32 +28,90 @@ export default function AddressPage() {
   const [newPhone, setNewPhone] = useState("");
   const [newDetails, setNewDetails] = useState("");
 
-  const handleSetPrimary = (id: string) => {
-    setAddresses(prev => prev.map(addr => ({
-      ...addr,
-      isPrimary: addr.id === id
-    })));
+  useEffect(() => {
+    if (!user || isGuest) return;
+
+    const loadAddresses = async () => {
+      try {
+        setIsLoading(true);
+        const nextAddresses = await addressService.listAddresses(user.id);
+        setAddresses(nextAddresses);
+        const primary = nextAddresses.find((address) => address.isPrimary);
+        setSelectedId(primary?.id || nextAddresses[0]?.id || "");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadAddresses();
+  }, [isGuest, user]);
+
+  const handleSetPrimary = async (id: string) => {
+    if (!user) return;
+    await addressService.setPrimaryAddress(user.id, id);
+    setAddresses((prev) =>
+      prev.map((addr) => ({
+        ...addr,
+        isPrimary: addr.id === id,
+      }))
+    );
+    setSelectedId(id);
   };
 
-  const handleDelete = (id: string) => {
-    setAddresses(prev => prev.filter(addr => addr.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!user) return;
+    await addressService.deleteAddress(user.id, id);
+    const nextAddresses = await addressService.listAddresses(user.id);
+    setAddresses(nextAddresses);
+    const primary = nextAddresses.find((address) => address.isPrimary);
+    setSelectedId(primary?.id || nextAddresses[0]?.id || "");
   };
 
-  const handleAddAddress = () => {
+  const handleAddAddress = async () => {
+    if (!user) return;
     if (!newName || !newDetails) return;
-    const newAddr: Address = {
-      id: Math.random().toString(),
+    const newAddr = await addressService.createAddress(user.id, {
       label: newLabel || "Lainnya",
       name: newName,
       phone: newPhone,
       details: newDetails,
       isPrimary: addresses.length === 0,
-    };
-    setAddresses([newAddr, ...addresses]);
+    });
+    const nextAddresses = await addressService.listAddresses(user.id);
+    setAddresses(nextAddresses);
+    setSelectedId(newAddr.id);
     setIsAdding(false);
     // Reset form
     setNewLabel(""); setNewName(""); setNewPhone(""); setNewDetails("");
   };
+
+  const handleConfirmAddress = async () => {
+    if (!user || !selectedId) {
+      router.back();
+      return;
+    }
+
+    await handleSetPrimary(selectedId);
+    router.back();
+  };
+
+  if (isGuest) {
+    return (
+      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
+        <StickyHeader
+          title="Daftar Alamat"
+          variant="minimal"
+          size="sm"
+          leftAction={<BackButton variant="primary" />}
+        />
+        <GuestEmptyState
+          title="Login untuk Kelola Alamat"
+          description="Alamat pengiriman hanya tersedia untuk pengguna yang sudah masuk."
+          icon={<Icons.MapPin size={48} />}
+        />
+      </main>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint pb-32">
@@ -76,6 +131,11 @@ export default function AddressPage() {
       />
 
       <main className="px-6 pt-6 flex flex-col gap-5">
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        )}
         <AnimatePresence mode="popLayout">
           {addresses.map((addr) => (
             <motion.div
@@ -139,7 +199,7 @@ export default function AddressPage() {
           ))}
         </AnimatePresence>
 
-        {addresses.length === 0 && !isAdding && (
+        {!isLoading && addresses.length === 0 && !isAdding && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mb-4">
               <Icons.MapPin size={32} className="text-primary/20" />
@@ -162,7 +222,7 @@ export default function AddressPage() {
         <Button 
           variant="primary" 
           className="w-full h-15 rounded-2xl text-[16px] font-bold shadow-lg shadow-primary/30 uppercase tracking-widest"
-          onClick={() => window.history.back()}
+          onClick={() => void handleConfirmAddress()}
         >
           Konfirmasi Alamat
         </Button>
@@ -210,7 +270,7 @@ export default function AddressPage() {
               <Button 
                 variant="primary" 
                 className="w-full h-14 rounded-2xl font-bold uppercase tracking-widest mt-2"
-                onClick={handleAddAddress}
+                onClick={() => void handleAddAddress()}
               >
                 Simpan Alamat
               </Button>
