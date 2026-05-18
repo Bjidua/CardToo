@@ -8,6 +8,10 @@ import { MenuListItem } from "@/components/ui/MenuListItem";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { productService } from "@/lib/services/product";
+import { orderService, formatSellerOrderStatus } from "@/lib/services/order";
+import type { SellerOrder } from "@/types";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -21,7 +25,46 @@ export default function SellerDashboardPage() {
 
 function SellerDashboardContent() {
   const router = useRouter();
+  const { store } = useAuth();
   const [isWithdrawing, setIsWithdrawing] = React.useState(false);
+  const [productCount, setProductCount] = React.useState(0);
+  const [sellerOrders, setSellerOrders] = React.useState<SellerOrder[]>([]);
+
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      if (!store?.id) {
+        setProductCount(0);
+        return;
+      }
+
+      try {
+        const products = await productService.listSellerProducts(store.id);
+        setProductCount(products.length);
+      } catch {
+        setProductCount(0);
+      }
+    };
+
+    void loadProducts();
+  }, [store?.id]);
+
+  React.useEffect(() => {
+    const loadOrders = async () => {
+      if (!store?.ownerUserId) {
+        setSellerOrders([]);
+        return;
+      }
+
+      try {
+        const orders = await orderService.listSellerOrders(store.ownerUserId);
+        setSellerOrders(orders);
+      } catch {
+        setSellerOrders([]);
+      }
+    };
+
+    void loadOrders();
+  }, [store?.ownerUserId]);
 
   const handleWithdraw = () => {
     setIsWithdrawing(true);
@@ -31,6 +74,10 @@ function SellerDashboardContent() {
       setIsWithdrawing(false);
     }, 1500);
   };
+
+  const pendingCount = sellerOrders.filter((order) => order.status === "packed").length;
+  const shippedCount = sellerOrders.filter((order) => order.status === "shipped").length;
+  const recentSales = sellerOrders.slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
@@ -51,7 +98,9 @@ function SellerDashboardContent() {
           
           <div className="relative z-10 flex flex-col gap-1">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[14px] font-medium text-white/80">Saldo Penghasilan</span>
+              <span className="text-[14px] font-medium text-white/80">
+                {store?.name || "Saldo Penghasilan"}
+              </span>
               <Icons.Wallet size={20} className="text-white/80" />
             </div>
             <h2 className="text-[32px] font-bold tracking-tight leading-none mb-4">Rp 0</h2>
@@ -75,13 +124,13 @@ function SellerDashboardContent() {
         {/* Order Status Stats */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           <Link href="/seller/orders?tab=Pending">
-            <StatBox icon={<Icons.Cart size={20} />} title="Pesanan Baru" count={0} />
+            <StatBox icon={<Icons.Cart size={20} />} title="Pesanan Baru" count={pendingCount} />
           </Link>
           <Link href="/seller/orders?tab=Processing">
-            <StatBox icon={<Icons.MapPin size={20} />} title="Dikirim" count={0} />
+            <StatBox icon={<Icons.MapPin size={20} />} title="Dikirim" count={shippedCount} />
           </Link>
-          <Link href="/seller/orders?tab=Completed">
-            <StatBox icon={<Icons.Collection size={20} />} title="Selesai" count={0} />
+          <Link href="/seller/products">
+            <StatBox icon={<Icons.Collection size={20} />} title="Produk" count={productCount} />
           </Link>
         </div>
 
@@ -101,9 +150,21 @@ function SellerDashboardContent() {
         </div>
         
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col items-center justify-center py-8 bg-white/50 rounded-card border border-dashed border-surface-muted text-text-sub">
-            <span className="text-[12px] font-medium italic">Belum ada penjualan terbaru</span>
-          </div>
+          {recentSales.length > 0 ? (
+            recentSales.map((sale) => (
+              <RecentSaleItem
+                key={sale.id}
+                title={sale.items[0]?.title || "Pesanan"}
+                price={sale.totalPrice}
+                status={formatSellerOrderStatus(sale.status)}
+                date={new Date(sale.date).toLocaleDateString("id-ID")}
+              />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 bg-white/50 rounded-card border border-dashed border-surface-muted text-text-sub">
+              <span className="text-[12px] font-medium italic">Belum ada penjualan terbaru</span>
+            </div>
+          )}
         </div>
 
       </main>

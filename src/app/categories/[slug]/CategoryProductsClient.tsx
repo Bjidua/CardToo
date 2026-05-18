@@ -5,16 +5,8 @@ import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { motion } from "framer-motion";
-
-interface CategoryProduct {
-  id: number;
-  title: string;
-  price: number;
-  condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
-  category: string;
-}
-
-const DUMMY_PRODUCTS: CategoryProduct[] = [];
+import type { Product } from "@/types";
+import { normalizeProductCategory, productService } from "@/lib/services/product";
 
 interface CategoryProductsClientProps {
   slug: string;
@@ -22,22 +14,44 @@ interface CategoryProductsClientProps {
 
 export default function CategoryProductsClient({ slug }: CategoryProductsClientProps) {
   const categoryName = decodeURIComponent(slug);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      const normalizedCategory = normalizeProductCategory(categoryName);
+
+      try {
+        setIsLoading(true);
+        const nextProducts = normalizedCategory
+          ? await productService.listPublishedProducts({ category: normalizedCategory })
+          : [];
+        setProducts(nextProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadProducts();
+  }, [categoryName]);
 
   const filteredProducts = useMemo(() => {
-    return DUMMY_PRODUCTS.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
-  }, [categoryName]);
+    return products.filter(
+      (product) => product.category?.toLowerCase() === categoryName.toLowerCase()
+    );
+  }, [categoryName, products]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    show: { opacity: 1, y: 0 },
   };
 
   return (
@@ -48,7 +62,11 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
       />
 
       <main className="flex-1 px-6 pt-6 pb-20">
-        {filteredProducts.length > 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -61,15 +79,17 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
                   title={product.title}
                   price={product.price}
                   condition={product.condition}
+                  image={product.image || undefined}
+                  href={`/product/${product.id}`}
                 />
               </motion.div>
             ))}
           </motion.div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-black/40 text-[16px]">
-                Belum ada produk untuk kategori {`"`}{categoryName}{`"`}.
-              </p>
+            <p className="text-[16px] text-black/40">
+              Belum ada produk untuk kategori {`"`}{categoryName}{`"`}.
+            </p>
           </div>
         )}
       </main>

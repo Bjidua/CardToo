@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/Input";
@@ -12,12 +9,10 @@ import bigLogo from "../../../../public/assets/big-logo.svg";
 export default function ForgotPasswordPage() {
   return (
     <main className="relative min-h-screen w-full bg-background px-6 pb-8 flex flex-col items-center">
-      {/* Back Button */}
-      <div className="fixed left-[33px] top-[66px]">
+      <div className="absolute left-6 top-[66px] z-10">
         <BackButton variant="primary" />
       </div>
 
-      {/* Illustration Section */}
       <div className="mt-[155px] relative w-[180px] h-[164px] flex items-center justify-center">
         <Image
           src={bigLogo}
@@ -29,7 +24,6 @@ export default function ForgotPasswordPage() {
         />
       </div>
 
-      {/* Title & Description */}
       <div className="mt-8 flex flex-col items-center text-center gap-2">
         <h1 className="text-[32px] font-bold text-black leading-tight">
           Forgot Password
@@ -39,9 +33,7 @@ export default function ForgotPasswordPage() {
         </p>
       </div>
 
-      {/* Form Section */}
-      <form className="mt-8 w-full flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
-        {/* Menggunakan prop label bawaan template */}
+      <form className="mt-8 w-full flex flex-col gap-6">
         <Input
           label="Email"
           type="email"
@@ -59,7 +51,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="mt-4">
-          <Button type="submit" variant="primary">
+          <Button type="button" variant="primary">
             Continue
           </Button>
         </div>

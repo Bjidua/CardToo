@@ -5,6 +5,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/Icons";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export interface OrderItem {
   id: string;
@@ -20,9 +21,16 @@ export interface OrderItem {
 interface OrderItemCardProps {
   order: OrderItem;
   className?: string;
+  onComplete?: (orderId: string) => void;
 }
 
-export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
+export const OrderItemCard = ({
+  order,
+  className,
+  onComplete,
+}: OrderItemCardProps) => {
+  const router = useRouter();
+
   const getStatusColor = (status: OrderItem["status"]) => {
     switch (status) {
       case "Belum Bayar": return "text-warning bg-warning/10";
@@ -95,7 +103,7 @@ export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
       <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-black/5">
         {order.status === "Belum Bayar" && (
           <button 
-            onClick={() => window.location.href = "/checkout/payment"}
+            onClick={() => router.push(`/checkout/payment?orderId=${order.id}`)}
             className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all"
           >
             Bayar Sekarang
@@ -103,11 +111,14 @@ export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
         )}
         {order.status === "Dikirim" && (
           <>
-            <button className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all">
+            <button
+              onClick={() => onComplete?.(order.id)}
+              className="px-4 h-[36px] bg-primary text-white text-[13px] font-bold rounded-full active:scale-95 transition-all"
+            >
               Terima Pesanan
             </button>
             <button 
-              onClick={() => window.location.href = `/orders/${order.id}/track`}
+              onClick={() => router.push(`/orders/track?orderId=${order.id}`)}
               className="px-4 h-[36px] border border-primary text-primary text-[13px] font-bold rounded-full active:scale-95 transition-all"
             >
               Lacak
@@ -120,7 +131,7 @@ export const OrderItemCard = ({ order, className }: OrderItemCardProps) => {
               Beli Lagi
             </button>
             <button 
-              onClick={() => window.location.href = `/orders/${order.id}/review`}
+              onClick={() => router.push(`/orders/review?orderId=${order.id}`)}
               className="px-4 h-[36px] bg-accent text-white text-[13px] font-bold rounded-full active:scale-95 transition-all"
             >
               Nilai

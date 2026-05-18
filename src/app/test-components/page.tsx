@@ -31,17 +31,17 @@ export default function TestComponentsPage() {
       <div className="flex items-center gap-4">
         <BackButton variant="primary" />
         <div>
-          <h1 className="text-2xl font-bold text-black">Component Lab</h1>
-          <p className="text-sm text-gray-500">Katalog component CardToo</p>
+          <h1 className="text-2xl font-bold text-text-main">Component Lab</h1>
+          <p className="text-sm text-text-sub">Katalog component CardToo</p>
         </div>
       </div>
 
       {/* App Layout Components */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">App Layout: Header</h2>
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">App Layout: Header</h2>
+        <div className="bg-white rounded-card border border-surface-muted overflow-hidden shadow-soft">
           <StickyHeader title="Home" />
-          <div className="h-20 flex items-center justify-center bg-gray-50 text-gray-400 text-xs italic">
+          <div className="h-20 flex items-center justify-center bg-surface-light text-text-sub text-xs italic">
             Halaman Content Area
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function TestComponentsPage() {
 
       {/* Input Section */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Inputs & OTP</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Inputs & OTP</h2>
         <Input
           label="Email Address"
           placeholder="Enter your email"
@@ -61,7 +61,7 @@ export default function TestComponentsPage() {
 
       {/* Button Section */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Buttons</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Buttons</h2>
         <div className="flex flex-col gap-3">
           <Button variant="primary" startIcon={<LogIn size={18} />}>
             Primary Button
@@ -76,22 +76,22 @@ export default function TestComponentsPage() {
             Ghost / Cancel Button
           </Button>
           
-          <p className="text-sm text-gray-500 mt-2">Separator Component:</p>
+          <p className="text-sm text-text-sub mt-2">Separator Component:</p>
           <Separator label="OR" />
         </div>
       </section>
 
       {/* Category Navigation */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Category Navigation</h2>
-        <div className="bg-white py-6 rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Category Navigation</h2>
+        <div className="bg-white py-6 rounded-card border border-surface-muted shadow-soft overflow-hidden">
           <CategoryList />
         </div>
       </section>
 
       {/* Product Catalog */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Product Catalog (172x250)</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Product Catalog (172x250)</h2>
         <div className="flex flex-wrap gap-4 justify-center">
           <ProductCard 
             title="Pikachu VMAX (Secret Rare) - Vivid Voltage" 
@@ -108,7 +108,7 @@ export default function TestComponentsPage() {
 
       {/* Promo & Banners */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Promo & Banners</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Promo & Banners</h2>
         <div className="flex flex-col gap-4 items-center">
           <SlideCard 
             title="Dapatkan Diskon 50%" 
@@ -125,22 +125,22 @@ export default function TestComponentsPage() {
 
       {/* Profile & Avatar */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Profile & Avatar</h2>
-        <div className="flex items-center gap-6 p-4 bg-white rounded-xl border border-gray-100">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Profile & Avatar</h2>
+        <div className="flex items-center gap-6 p-4 bg-white rounded-card border border-surface-muted">
           <div className="flex flex-col items-center gap-2">
             <ProfilePicture />
-            <span className="text-[10px] text-gray-400 font-medium">Default</span>
+            <span className="text-[10px] text-text-sub font-medium">Default</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <ProfilePicture alt="Veir" />
-            <span className="text-[10px] text-gray-400 font-medium">Initial</span>
+            <span className="text-[10px] text-text-sub font-medium">Initial</span>
           </div>
         </div>
       </section>
 
       {/* Social Buttons */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Social Login</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Social Login</h2>
         <div className="flex flex-col gap-3">
           <SocialButton provider="google" />
           <SocialButton provider="apple" />
@@ -150,8 +150,8 @@ export default function TestComponentsPage() {
 
       {/* Messaging Section */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Messaging & Notifications</h2>
-        <div className="flex flex-col gap-4 items-center bg-gray-50 p-6 rounded-xl">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Messaging & Notifications</h2>
+        <div className="flex flex-col gap-4 items-center bg-surface-light p-6 rounded-card">
           <MessageCard 
             userName="CardMaster99" 
             message="Ready for trade? I have the Pikachu VMAX you're looking for!" 
@@ -168,8 +168,8 @@ export default function TestComponentsPage() {
 
       {/* List Items */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Profile & Settings: List Items</h2>
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Profile & Settings: List Items</h2>
+        <div className="bg-white rounded-card border border-surface-muted overflow-hidden shadow-soft">
           <MenuListItem icon={<Icons.Store size={20} />} label="Toko Saya" href="#" showBorder />
           <MenuListItem icon={<Icons.Lock size={20} />} label="Keamanan" href="#" subValue="Kuat" />
         </div>
@@ -177,9 +177,9 @@ export default function TestComponentsPage() {
 
       {/* Cart & Wishlist */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Shopping: Cart & Wishlist</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Shopping: Cart & Wishlist</h2>
         <div className="flex flex-col gap-4">
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Cart Item:</p>
+          <p className="text-xs text-text-sub font-bold uppercase tracking-wider">Cart Item:</p>
           <CartItemCard 
             title="Pikachu VMAX (Secret Rare)"
             shopName="PokeShop Official"
@@ -188,7 +188,7 @@ export default function TestComponentsPage() {
             quantity={1}
           />
           
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-4">Favorite Item:</p>
+          <p className="text-xs text-text-sub font-bold uppercase tracking-wider mt-4">Favorite Item:</p>
           <FavoriteItemCard 
             id="1"
             title="Charizard GX"
@@ -201,7 +201,7 @@ export default function TestComponentsPage() {
 
       {/* Order Tracking */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Orders: History & Tracking</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Orders: History & Tracking</h2>
         <div className="flex flex-col gap-4">
           <OrderItemCard 
             order={{
@@ -220,8 +220,8 @@ export default function TestComponentsPage() {
 
       {/* Collections Section */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Collections & Folders</h2>
-        <div className="grid grid-cols-2 gap-4 bg-gray-50 p-6 rounded-xl">
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Collections & Folders</h2>
+        <div className="grid grid-cols-2 gap-4 bg-surface-light p-6 rounded-card">
           <CollectionCard 
             title="Pokemon VMAX" 
             count={124} 
@@ -235,11 +235,11 @@ export default function TestComponentsPage() {
 
       {/* Icons & Navigation */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Custom Navigation</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Custom Navigation</h2>
         <div className="flex flex-col gap-6">
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">Custom SVG Icons (Active/Inactive):</p>
-            <div className="flex gap-4 p-4 bg-white rounded-xl border border-gray-100">
+            <p className="text-sm text-text-sub">Custom SVG Icons (Active/Inactive):</p>
+            <div className="flex gap-4 p-4 bg-white rounded-card border border-surface-muted">
               <Icons.Home active={true} size={32} className="text-primary" />
               <Icons.Message active={true} size={32} className="text-primary" />
               <Icons.Collection active={true} size={32} className="text-primary" />
@@ -251,8 +251,8 @@ export default function TestComponentsPage() {
           </div>
           
           <div className="space-y-2 pb-10">
-            <p className="text-sm text-gray-500">Bottom Navigation (Dynamic Pill):</p>
-            <div className="relative h-[150px] bg-gray-50 rounded-xl overflow-hidden border border-dashed border-gray-300 flex items-center justify-center">
+            <p className="text-sm text-text-sub">Bottom Navigation (Dynamic Pill):</p>
+            <div className="relative h-[150px] bg-surface-light rounded-card overflow-hidden border border-dashed border-surface-hover flex items-center justify-center">
               <BottomNav isDemo={true} />
             </div>
           </div>
@@ -260,10 +260,10 @@ export default function TestComponentsPage() {
       </section>
       {/* Product Detail Components */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold border-b pb-2">Product Detail: UI Atoms</h2>
+        <h2 className="text-lg font-semibold text-text-main border-b border-surface-muted pb-2">Product Detail: UI Atoms</h2>
         <div className="flex flex-col gap-6">
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3">Detail Box (Grid Style):</p>
+            <p className="text-xs text-text-sub font-bold uppercase tracking-wider mb-3">Detail Box (Grid Style):</p>
             <div className="grid grid-cols-2 gap-3">
               <DetailBox label="Card Number" value="033/106 RR" />
               <DetailBox label="HP" value="200" />
@@ -271,7 +271,7 @@ export default function TestComponentsPage() {
           </div>
           
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Accordion System:</p>
+            <p className="text-xs text-text-sub font-bold uppercase tracking-wider mb-1">Accordion System:</p>
             <Accordion 
               title="Informasi Pengiriman" 
               isOpen={true} 

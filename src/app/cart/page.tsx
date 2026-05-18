@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { CartItemCard } from "@/components/ui/CartItemCard";
@@ -8,26 +8,17 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { Icons } from "@/components/ui/Icons";
-
-interface CartItem {
-  id: string;
-  title: string;
-  shopName: string;
-  price: number;
-  quantity: number;
-  isChecked: boolean;
-}
-
-const INITIAL_CART: CartItem[] = [];
+import { cartService } from "@/lib/services/cart";
+import type { CartItem } from "@/types";
 
 export default function CartPage() {
   const router = useRouter();
-  const { isGuest } = useAuth();
-  const [items, setItems] = useState(INITIAL_CART);
+  const { isGuest, user } = useAuth();
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const groupedItems = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -37,37 +28,77 @@ export default function CartPage() {
     }, {} as Record<string, typeof items>);
   }, [items]);
 
-  const toggleCheck = (id: string, checked: boolean) => {
-    setItems(items.map(item => item.id === id ? { ...item, isChecked: checked } : item));
+  useEffect(() => {
+    if (!user || isGuest) return;
+
+    const loadItems = async () => {
+      try {
+        setIsLoading(true);
+        const nextItems = await cartService.listItems(user.id);
+        setItems(nextItems);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadItems();
+  }, [isGuest, user]);
+
+  const toggleCheck = async (id: string, checked: boolean) => {
+    setItems((current) =>
+      current.map((item) => (item.id === id ? { ...item, selected: checked } : item))
+    );
+    await cartService.setSelected(id, checked);
   };
 
-  const toggleStore = (shopName: string, checked: boolean) => {
-    setItems(items.map(item => item.shopName === shopName ? { ...item, isChecked: checked } : item));
+  const toggleStore = async (shopName: string, checked: boolean) => {
+    const targetItems = items.filter((item) => item.shopName === shopName);
+    setItems((current) =>
+      current.map((item) =>
+        item.shopName === shopName ? { ...item, selected: checked } : item
+      )
+    );
+    await Promise.all(
+      targetItems.map((item) => cartService.setSelected(item.id, checked))
+    );
   };
 
-  const toggleAll = (checked: boolean) => {
-    setItems(items.map(item => ({ ...item, isChecked: checked })));
+  const toggleAll = async (checked: boolean) => {
+    if (!user) return;
+    setItems((current) => current.map((item) => ({ ...item, selected: checked })));
+    await cartService.setAllSelected(user.id, checked);
   };
 
-  const updateQuantity = (id: string, delta: number) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-    ));
+  const updateQuantity = async (id: string, delta: number) => {
+    const target = items.find((item) => item.id === id);
+    if (!target) return;
+
+    const nextQuantity = Math.max(1, target.quantity + delta);
+    setItems((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, quantity: nextQuantity } : item
+      )
+    );
+    await cartService.updateQuantity(id, nextQuantity);
   };
 
-  const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
+  const removeItem = async (id: string) => {
+    setItems((current) => current.filter((item) => item.id !== id));
+    await cartService.removeItem(id);
   };
 
   const handleCheckout = () => {
     router.push("/checkout");
   };
 
-  const subtotal = items.reduce((acc, item) => item.isChecked ? acc + (item.price * item.quantity) : acc, 0);
+  const subtotal = items.reduce(
+    (acc, item) => (item.selected ? acc + item.price * item.quantity : acc),
+    0
+  );
   const fee = subtotal > 0 ? 5000 : 0;
   const total = subtotal + fee;
-  const isAllChecked = items.length > 0 && items.every(item => item.isChecked);
-  const selectedCount = items.filter(item => item.isChecked).length;
+  const isAllChecked = items.length > 0 && items.every((item) => item.selected);
+  const selectedCount = items.filter((item) => item.selected).length;
 
   if (isGuest) {
     return (
@@ -113,7 +144,7 @@ export default function CartPage() {
         <div className="flex flex-col gap-10">
           <AnimatePresence mode="popLayout">
             {Object.entries(groupedItems).map(([shopName, shopItems]) => {
-              const isStoreChecked = shopItems.every(i => i.isChecked);
+              const isStoreChecked = shopItems.every((item) => item.selected);
               return (
                 <motion.div 
                   key={shopName}
@@ -143,12 +174,13 @@ export default function CartPage() {
                         title={item.title}
                         shopName={item.shopName}
                         price={item.price}
+                        image={item.image || undefined}
                         quantity={item.quantity}
-                        isChecked={item.isChecked}
-                        onCheck={(checked) => toggleCheck(item.id, checked)}
-                        onIncrement={() => updateQuantity(item.id, 1)}
-                        onDecrement={() => updateQuantity(item.id, -1)}
-                        onRemove={() => removeItem(item.id)}
+                        isChecked={item.selected}
+                        onCheck={(checked) => void toggleCheck(item.id, checked)}
+                        onIncrement={() => void updateQuantity(item.id, 1)}
+                        onDecrement={() => void updateQuantity(item.id, -1)}
+                        onRemove={() => void removeItem(item.id)}
                       />
                     ))}
                   </div>
@@ -157,7 +189,13 @@ export default function CartPage() {
             })}
           </AnimatePresence>
 
-          {items.length === 0 && (
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+          )}
+
+          {!isLoading && items.length === 0 && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

@@ -1,15 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { NotificationCard } from "@/components/ui/NotificationCard";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
+import { notificationService } from "@/lib/services/notification";
 import type { NotificationGroup, NotificationItem } from "@/types";
 
-const NOTIFICATIONS_DATA: NotificationGroup[] = [];
-
 export default function NotificationsPage() {
+  const router = useRouter();
+  const { isGuest, user } = useAuth();
+  const [groups, setGroups] = useState<NotificationGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -25,6 +32,40 @@ export default function NotificationsPage() {
     visible: { opacity: 1, y: 0 },
   };
 
+  useEffect(() => {
+    if (!user || isGuest) return;
+
+    const loadNotifications = async () => {
+      try {
+        setIsLoading(true);
+        const nextGroups = await notificationService.listNotificationGroups(user.id);
+        setGroups(nextGroups);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadNotifications();
+  }, [isGuest, user]);
+
+  if (isGuest) {
+    return (
+      <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white">
+        <StickyHeader
+          title="Notifikasi"
+          variant="minimal"
+          size="sm"
+          leftAction={<BackButton variant="primary" />}
+        />
+        <GuestEmptyState
+          title="Login untuk Lihat Notifikasi"
+          description="Kabar terbaru soal pesanan, chat, dan aktivitas akun akan muncul setelah kamu masuk."
+          icon={<Icons.History size={48} className="opacity-20" />}
+        />
+      </main>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-20">
       <StickyHeader
@@ -35,14 +76,18 @@ export default function NotificationsPage() {
       />
 
       <main className="flex-1 px-6 pt-6">
-        {NOTIFICATIONS_DATA.length > 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : groups.length > 0 ? (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             className="flex flex-col gap-8"
           >
-            {NOTIFICATIONS_DATA.map((group) => (
+            {groups.map((group) => (
               <div key={group.group} className="flex flex-col gap-4">
                 <h2 className="text-[14px] font-bold text-text-sub uppercase tracking-widest px-2">
                   {group.group}
@@ -50,7 +95,20 @@ export default function NotificationsPage() {
                 <div className="flex flex-col gap-3">
                   {group.items.map((item: NotificationItem) => (
                     <motion.div key={item.id} variants={itemVariants}>
-                      <NotificationCard {...item} />
+                      <NotificationCard
+                        label={item.label}
+                        title={item.title}
+                        description={item.description}
+                        time={item.time}
+                        type={item.type}
+                        isRead={item.read}
+                        onClick={() => {
+                          void notificationService.markAsRead(item.id);
+                          if (item.actionUrl) {
+                            router.push(item.actionUrl);
+                          }
+                        }}
+                      />
                     </motion.div>
                   ))}
                 </div>

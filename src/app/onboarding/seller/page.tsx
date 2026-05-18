@@ -16,6 +16,18 @@ export default function SellerRegistrationPage() {
   const router = useRouter();
   const { becomeSeller } = useAuth();
   const [step, setStep] = useState(0); // 0: Welcome, 1: Store Info, 2: KYC, 3: Success
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [storeForm, setStoreForm] = useState({
+    storeName: "",
+    storeSlug: "",
+    description: "",
+  });
+  const [kycForm, setKycForm] = useState({
+    fullName: "",
+    phone: "",
+    birthDate: "",
+  });
 
   const steps = [
     { title: "Info Toko", icon: <Icons.Store size={20} /> },
@@ -23,8 +35,33 @@ export default function SellerRegistrationPage() {
     { title: "Selesai", icon: <Icons.Plus size={20} className="rotate-45" /> },
   ];
 
-  const handleRegistrationComplete = () => {
-    becomeSeller(); // Update AuthContext to seller status and redirect
+  const handleRegistrationComplete = async () => {
+    if (!storeForm.storeName.trim()) {
+      setError("Nama toko wajib diisi.");
+      setStep(1);
+      return;
+    }
+
+    try {
+      setError("");
+      setIsSubmitting(true);
+      await becomeSeller({
+        storeName: storeForm.storeName,
+        preferredSlug: storeForm.storeSlug,
+        description: storeForm.description,
+        fullName: kycForm.fullName,
+        phone: kycForm.phone,
+      });
+      setStep(3);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Pendaftaran seller gagal. Coba lagi."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -74,9 +111,34 @@ export default function SellerRegistrationPage() {
 
         <AnimatePresence mode="wait">
           {step === 0 && <WelcomeStep key="welcome" onStart={() => setStep(1)} />}
-          {step === 1 && <StoreInfoStep key="store" onNext={() => setStep(2)} />}
-          {step === 2 && <KYCStep key="kyc" onNext={() => setStep(3)} />}
-          {step === 3 && <SuccessStep key="success" onComplete={handleRegistrationComplete} />}
+          {step === 1 && (
+            <StoreInfoStep
+              key="store"
+              data={storeForm}
+              onChange={setStoreForm}
+              onNext={() => {
+                if (!storeForm.storeName.trim()) {
+                  setError("Nama toko wajib diisi.");
+                  return;
+                }
+                setError("");
+                setStep(2);
+              }}
+            />
+          )}
+          {step === 2 && (
+            <KYCStep
+              key="kyc"
+              data={kycForm}
+              onChange={setKycForm}
+              onNext={handleRegistrationComplete}
+              isSubmitting={isSubmitting}
+              error={error}
+            />
+          )}
+          {step === 3 && (
+            <SuccessStep key="success" onComplete={() => router.push("/seller/dashboard")} />
+          )}
         </AnimatePresence>
       </main>
     </main>
@@ -112,7 +174,25 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
   );
 }
 
-function StoreInfoStep({ onNext }: { onNext: () => void }) {
+function StoreInfoStep({
+  data,
+  onChange,
+  onNext,
+}: {
+  data: {
+    storeName: string;
+    storeSlug: string;
+    description: string;
+  };
+  onChange: React.Dispatch<
+    React.SetStateAction<{
+      storeName: string;
+      storeSlug: string;
+      description: string;
+    }>
+  >;
+  onNext: () => void;
+}) {
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
@@ -132,14 +212,33 @@ function StoreInfoStep({ onNext }: { onNext: () => void }) {
         </div>
       </div>
 
-      <Input label="Nama Toko" placeholder="Contoh: CardMaster ID" />
-      <Input label="Link Toko" placeholder="cardtoo.com/store/nama-tokomu" startIcon={<Icons.Search size={16} />} />
+      <Input
+        label="Nama Toko"
+        placeholder="Contoh: CardMaster ID"
+        value={data.storeName}
+        onChange={(event) =>
+          onChange((prev) => ({ ...prev, storeName: event.target.value }))
+        }
+      />
+      <Input
+        label="Link Toko"
+        placeholder="cardtoo.com/store/nama-tokomu"
+        startIcon={<Icons.Search size={16} />}
+        value={data.storeSlug}
+        onChange={(event) =>
+          onChange((prev) => ({ ...prev, storeSlug: event.target.value }))
+        }
+      />
       
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-text-main ml-4">Deskripsi Toko</label>
         <textarea 
           className="w-full h-32 bg-surface-muted rounded-[26px] px-6 py-4 text-base outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           placeholder="Ceritakan tentang koleksi kartu yang kamu jual..."
+          value={data.description}
+          onChange={(event) =>
+            onChange((prev) => ({ ...prev, description: event.target.value }))
+          }
         />
       </div>
 
@@ -150,7 +249,29 @@ function StoreInfoStep({ onNext }: { onNext: () => void }) {
   );
 }
 
-function KYCStep({ onNext }: { onNext: () => void }) {
+function KYCStep({
+  data,
+  onChange,
+  onNext,
+  isSubmitting,
+  error,
+}: {
+  data: {
+    fullName: string;
+    phone: string;
+    birthDate: string;
+  };
+  onChange: React.Dispatch<
+    React.SetStateAction<{
+      fullName: string;
+      phone: string;
+      birthDate: string;
+    }>
+  >;
+  onNext: () => Promise<void>;
+  isSubmitting: boolean;
+  error: string;
+}) {
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
@@ -163,9 +284,32 @@ function KYCStep({ onNext }: { onNext: () => void }) {
         <p className="text-[14px] text-black/40">Pastikan data sesuai.</p>
       </div>
       
-      <Input label="Nama Lengkap" placeholder="Masukkan Nama Lengkap" />
-      <Input label="Nomor Telefon" placeholder="Masukkan Nomor Telefon" inputMode="numeric" />
-      <Input label="Tanggal Lahir" placeholder="Masukkan Tanggal Lahir" inputMode="numeric" />
+      <Input
+        label="Nama Lengkap"
+        placeholder="Masukkan Nama Lengkap"
+        value={data.fullName}
+        onChange={(event) =>
+          onChange((prev) => ({ ...prev, fullName: event.target.value }))
+        }
+      />
+      <Input
+        label="Nomor Telefon"
+        placeholder="Masukkan Nomor Telefon"
+        inputMode="numeric"
+        value={data.phone}
+        onChange={(event) =>
+          onChange((prev) => ({ ...prev, phone: event.target.value }))
+        }
+      />
+      <Input
+        label="Tanggal Lahir"
+        placeholder="Masukkan Tanggal Lahir"
+        inputMode="numeric"
+        value={data.birthDate}
+        onChange={(event) =>
+          onChange((prev) => ({ ...prev, birthDate: event.target.value }))
+        }
+      />
 
       <div className="bg-primary/5 p-4 rounded-card border border-primary/10 flex gap-3">
         <Icons.Lock size={20} className="text-primary shrink-0" />
@@ -174,8 +318,16 @@ function KYCStep({ onNext }: { onNext: () => void }) {
         </p>
       </div>
 
+      {error && (
+        <p className="px-2 text-center text-[12px] font-medium text-danger">
+          {error}
+        </p>
+      )}
+
       <div className="pt-6">
-        <Button onClick={onNext}>Kirim Pendaftaran</Button>
+        <Button onClick={() => void onNext()} isLoading={isSubmitting}>
+          Kirim Pendaftaran
+        </Button>
       </div>
     </motion.div>
   );

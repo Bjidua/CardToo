@@ -66,7 +66,7 @@ export default function CollectionsPage() {
 
   if (isGuest) {
     return (
-      <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
+      <main className="flex-1 flex flex-col min-h-screen bg-background">
         <StickyHeader title="Collections" variant="logo" size="lg" />
         <GuestEmptyState 
           title="Login untuk Mengelola Koleksi" 
@@ -88,8 +88,8 @@ export default function CollectionsPage() {
             placeholder="Cari koleksi..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            startIcon={<Icons.Search size={18} />}
-            className="h-[52px] bg-white shadow-soft"
+            startIcon={<Icons.Search size={23} />}
+            className="bg-white/50 shadow-soft"
           />
         </div>
       </div>

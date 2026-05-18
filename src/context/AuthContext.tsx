@@ -1,15 +1,31 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { authService } from "@/lib/services/auth";
+import { profileService } from "@/lib/services/profile";
+import { storeService } from "@/lib/services/store";
+import type {
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+  SellerOnboardingInput,
+  Store,
+  UserProfile,
+} from "@/types";
 
 type AuthStatus = "loading" | "guest" | "user";
 
 interface AuthContextType {
   status: AuthStatus;
-  login: (token: string, isSeller?: boolean) => void;
-  logout: () => void;
-  becomeSeller: () => void;
+  user: AuthUser | null;
+  profile: UserProfile | null;
+  store: Store | null;
+  login: (input: LoginInput) => Promise<void>;
+  register: (input: RegisterInput) => Promise<void>;
+  logout: () => Promise<void>;
+  becomeSeller: (input: SellerOnboardingInput) => Promise<void>;
+  refreshAuth: () => Promise<void>;
   isLoading: boolean;
   isGuest: boolean;
   isAuthenticated: boolean;
@@ -21,82 +37,125 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_TOKEN_KEY = "auth_token";
-const AUTH_SELLER_KEY = "is_seller";
 const GOD_MODE_KEY = "dev_god_mode_enabled";
 const IS_DEV = process.env.NODE_ENV !== "production";
-const IS_GOD_MODE_ALLOWED = IS_DEV && process.env.NEXT_PUBLIC_ENABLE_GOD_MODE === "true";
+const IS_GOD_MODE_ALLOWED =
+  IS_DEV && process.env.NEXT_PUBLIC_ENABLE_GOD_MODE === "true";
 
-/**
- * Temporary client auth storage.
- * TODO(Appwrite): replace these helpers with Appwrite Account session APIs.
- */
-const authStorage = {
-  getToken: () => (typeof window === "undefined" ? null : localStorage.getItem(AUTH_TOKEN_KEY)),
-  setToken: (token: string) => {
-    if (typeof window !== "undefined") localStorage.setItem(AUTH_TOKEN_KEY, token);
-  },
-  clearToken: () => {
-    if (typeof window !== "undefined") localStorage.removeItem(AUTH_TOKEN_KEY);
-  },
-  getIsSeller: () => (typeof window === "undefined" ? false : localStorage.getItem(AUTH_SELLER_KEY) === "true"),
-  setIsSeller: (value: boolean) => {
-    if (typeof window !== "undefined") localStorage.setItem(AUTH_SELLER_KEY, value ? "true" : "false");
-  },
-  clearIsSeller: () => {
-    if (typeof window !== "undefined") localStorage.removeItem(AUTH_SELLER_KEY);
-  },
-  getGodMode: () => {
+const godModeStorage = {
+  get: () => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(GOD_MODE_KEY) === "true";
   },
-  setGodMode: (value: boolean) => {
-    if (typeof window !== "undefined") localStorage.setItem(GOD_MODE_KEY, value ? "true" : "false");
+  set: (value: boolean) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(GOD_MODE_KEY, value ? "true" : "false");
+    }
   },
-  clearGodMode: () => {
-    if (typeof window !== "undefined") localStorage.removeItem(GOD_MODE_KEY);
-  }
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [status, setStatus] = useState<AuthStatus>(() => {
-    if (typeof window === "undefined") return "loading";
-    return authStorage.getToken() ? "user" : "guest";
-  });
-
-  const [isSeller, setIsSeller] = useState(() => authStorage.getIsSeller());
-  const [isGodModeEnabled, setIsGodModeEnabled] = useState(() => {
-    if (!IS_GOD_MODE_ALLOWED) return false;
-    return authStorage.getGodMode();
-  });
-
   const router = useRouter();
+  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [store, setStore] = useState<Store | null>(null);
+  const [isGodModeEnabled, setIsGodModeEnabled] = useState(() =>
+    IS_GOD_MODE_ALLOWED ? godModeStorage.get() : false
+  );
 
-  const login = (token: string, sellerStatus: boolean = false) => {
-    authStorage.setToken(token);
-    authStorage.setIsSeller(sellerStatus);
+  const loadAuthenticatedState = async () => {
+    const currentUser = await authService.getCurrentAccount();
+
+    if (!currentUser) {
+      setUser(null);
+      setProfile(null);
+      setStore(null);
+      setStatus("guest");
+      return;
+    }
+
+    const currentProfile = await profileService.getProfile(currentUser.id);
+    const currentStore = await storeService.getStoreByOwnerUserId(currentUser.id);
+
+    setUser(currentUser);
+    setProfile(currentProfile);
+    setStore(currentStore);
     setStatus("user");
-    setIsSeller(sellerStatus);
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        await loadAuthenticatedState();
+      } finally {
+        if (isMounted) {
+          setStatus((current) => (current === "loading" ? "guest" : current));
+        }
+      }
+    };
+
+    void initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const refreshAuth = async () => {
+    setStatus("loading");
+    await loadAuthenticatedState();
+  };
+
+  const login = async (input: LoginInput) => {
+    await authService.login(input);
+    await refreshAuth();
     router.push("/home");
   };
 
-  const becomeSeller = () => {
-    authStorage.setIsSeller(true);
-    setIsSeller(true);
-    router.push("/seller/dashboard");
+  const register = async (input: RegisterInput) => {
+    const createdUser = await authService.register(input);
+    await profileService.createProfile({
+      userId: createdUser.id,
+      username: input.username,
+      email: input.email,
+    });
+    await refreshAuth();
+    router.push("/home");
   };
 
-  const logout = () => {
-    authStorage.clearToken();
-    authStorage.clearIsSeller();
+  const becomeSeller = async (input: SellerOnboardingInput) => {
+    if (!user || !profile) {
+      throw new Error("Kamu harus login dulu sebelum membuka toko.");
+    }
+
+    const updatedProfile = await profileService.updateProfile(user.id, {
+      role: "seller",
+      full_name: input.fullName?.trim() || profile.full_name,
+      phone: input.phone?.trim() || profile.phone,
+    });
+
+    const createdStore = await storeService.createStore(user.id, input);
+
+    setProfile(updatedProfile);
+    setStore(createdStore);
+    setStatus("user");
+  };
+
+  const logout = async () => {
+    await authService.logout();
+    setUser(null);
+    setProfile(null);
+    setStore(null);
     setStatus("guest");
-    setIsSeller(false);
     router.push("/login");
   };
 
   const setGodMode = (enabled: boolean) => {
     if (!IS_GOD_MODE_ALLOWED) return;
-    authStorage.setGodMode(enabled);
+    godModeStorage.set(enabled);
     setIsGodModeEnabled(enabled);
   };
 
@@ -107,29 +166,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const effectiveAuth = useMemo(() => {
     const godMode = IS_GOD_MODE_ALLOWED && isGodModeEnabled;
     const authenticated = status === "user" || godMode;
+    const seller = profile?.role === "seller" || Boolean(store) || godMode;
+
     return {
       godMode,
       authenticated,
       guest: !authenticated,
-      seller: isSeller || godMode
+      seller,
     };
-  }, [status, isSeller, isGodModeEnabled]);
+  }, [status, profile?.role, store, isGodModeEnabled]);
 
   return (
-    <AuthContext.Provider value={{
-      status,
-      login,
-      logout,
-      becomeSeller,
-      isLoading: status === "loading",
-      isGuest: effectiveAuth.guest,
-      isAuthenticated: effectiveAuth.authenticated,
-      isSeller: effectiveAuth.seller,
-      isGodModeEnabled: effectiveAuth.godMode,
-      setGodMode,
-      toggleGodMode
-    }}>
-
+    <AuthContext.Provider
+      value={{
+        status,
+        user,
+        profile,
+        store,
+        login,
+        register,
+        logout,
+        becomeSeller,
+        refreshAuth,
+        isLoading: status === "loading",
+        isGuest: effectiveAuth.guest,
+        isAuthenticated: effectiveAuth.authenticated,
+        isSeller: effectiveAuth.seller,
+        isGodModeEnabled: effectiveAuth.godMode,
+        setGodMode,
+        toggleGodMode,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

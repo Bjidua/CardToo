@@ -10,16 +10,8 @@ import { SlideCard } from "@/components/ui/SlideCard";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-interface HomeProduct {
-  id: number;
-  title: string;
-  price: number;
-  condition: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played" | undefined;
-  category: string;
-}
-
-const HOME_DUMMY_PRODUCTS: HomeProduct[] = [];
+import type { Product } from "@/types";
+import { productService } from "@/lib/services/product";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -27,20 +19,39 @@ function HomeContent() {
   
   const [selectedCategory, setSelectedCategory] = React.useState(categoryParam);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [wishlistedIds, setWishlistedIds] = React.useState<number[]>([1, 4]);
+  const [wishlistedIds, setWishlistedIds] = React.useState<string[]>([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const nextProducts = await productService.listPublishedProducts();
+        setProducts(nextProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadProducts();
+  }, []);
 
 
   const filteredProducts = React.useMemo(() => {
-    return HOME_DUMMY_PRODUCTS.filter(p => {
-      const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
-      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === "All" || product.category === selectedCategory;
+      const matchesSearch = product.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [products, searchQuery, selectedCategory]);
 
-  const toggleWishlist = (id: number) => {
-    setWishlistedIds(prev => 
-      prev.includes(id) ? prev.filter(wid => wid !== id) : [...prev, id]
+  const toggleWishlist = (id: string) => {
+    setWishlistedIds((prev) =>
+      prev.includes(id) ? prev.filter((wishlistedId) => wishlistedId !== id) : [...prev, id]
     );
   };
 
@@ -135,30 +146,38 @@ function HomeContent() {
       </section>
 
       <section className="px-6 pt-6">
-        <motion.div 
-          key={selectedCategory}
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 gap-x-4 gap-y-6 justify-items-center"
-        >
-          {filteredProducts.map((product) => (
-            <motion.div key={product.id} variants={itemVariants} className="w-full flex justify-center">
-              <ProductCard
-                title={product.title}
-                price={product.price}
-                condition={product.condition}
-                isWishlisted={wishlistedIds.includes(product.id)}
-                onWishlistToggle={() => toggleWishlist(product.id)}
-              />
-            </motion.div>
-          ))}
-          {filteredProducts.length === 0 && (
-            <div className="col-span-2 py-10 text-center text-black/40">
-              Tidak ada produk 
-            </div>
-          )}
-        </motion.div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : (
+          <motion.div 
+            key={selectedCategory}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 gap-x-4 gap-y-6 justify-items-center"
+          >
+            {filteredProducts.map((product) => (
+              <motion.div key={product.id} variants={itemVariants} className="w-full flex justify-center">
+                <ProductCard
+                  title={product.title}
+                  price={product.price}
+                  condition={product.condition}
+                  image={product.image || undefined}
+                  href={`/product/${product.id}`}
+                  isWishlisted={wishlistedIds.includes(product.id)}
+                  onWishlistToggle={() => toggleWishlist(product.id)}
+                />
+              </motion.div>
+            ))}
+            {filteredProducts.length === 0 && (
+              <div className="col-span-2 py-10 text-center text-black/40">
+                Tidak ada produk
+              </div>
+            )}
+          </motion.div>
+        )}
       </section>
     </main>
   );

@@ -1,6 +1,31 @@
 #### 📅 Update: 14 Mei 2026 (Sesi Dev God Mode Utility untuk QA Internal)
 **Waktu Eksekusi:** Siang (14:20 WIB)
 
+
+#### Update: 15 Mei 2026 (Sesi Audit Kepatuhan Repo & Design System)
+**Waktu Eksekusi:** Malam
+
+**1. Perbaikan Arsitektur & Routing**
+- Menghapus route duplikat anomali pada path `src/app/collections/ [id]/page.tsx` yang sebelumnya memicu route build tidak valid `/collections/ [id]`.
+- Merapikan beberapa halaman sederhana agar tidak bergantung pada client handler yang tidak diperlukan (`login`, `register`, `forgot-password`, `reset`, `about`, `help`, `privacy`).
+
+**2. Normalisasi Design System**
+- Menyelaraskan page-layer prioritas ke token semantik project:
+  - `src/app/about/page.tsx`
+  - `src/app/help/page.tsx`
+  - `src/app/privacy/page.tsx`
+  - `src/app/test-components/page.tsx`
+- Mengurangi penggunaan warna mentah `gray` / `black` pada halaman demo dan halaman informasional agar lebih konsisten dengan `globals.css` dan `docs/design_system`.
+- Mengganti input manual pada halaman bantuan dengan komponen `Input` reusable sesuai aturan project.
+
+**3. Konsistensi Flow Auth**
+- Menyesuaikan halaman forgot-password agar tombol back tetap mengikuti frame mobile saat dibuka di desktop.
+- Membersihkan callback debug `console.log` pada halaman verifikasi forgot-password.
+
+**4. Validasi**
+- `npm run lint` - lulus
+
+---
 **🧪 1. Implementasi God Mode (Development Only)**
 - Menambahkan mode bypass auth internal di `src/context/AuthContext.tsx` untuk kebutuhan QA flow tanpa login berulang.
 - God Mode dikunci ketat dengan 2 lapis guard:
@@ -1016,3 +1041,318 @@ src/middleware.ts
 
 
 
+#### Update: 18 Mei 2026 (Sesi Integrasi Appwrite V1 - Auth, Store, Products)
+**Waktu Eksekusi:** Malam
+
+**1. Wiring Appwrite di Repo**
+- Menambahkan config Appwrite modular di `src/lib/appwrite/config.ts` dan `src/lib/appwrite/client.ts`.
+- Menambahkan service domain:
+  - `src/lib/services/auth.ts`
+  - `src/lib/services/profile.ts`
+  - `src/lib/services/store.ts`
+  - `src/lib/services/product.ts`
+- Memperluas `src/types/index.ts` agar sinkron dengan schema Appwrite v1 (`user_profiles`, `stores`, `products`).
+
+**2. AuthContext Nyata (Bukan Mock)**
+- `src/context/AuthContext.tsx` diubah dari basis `localStorage` mock menjadi state nyata berbasis Appwrite Auth + TablesDB.
+- Register sekarang:
+  - membuat Auth user
+  - membuat row `user_profiles` dengan row ID = Auth user ID
+- Login sekarang:
+  - membuat email/password session Appwrite
+  - menarik profil dan toko dari Appwrite
+- Seller onboarding sekarang:
+  - mengubah role profile menjadi `seller`
+  - membuat row `stores`
+
+**3. Integrasi UI Tanpa Mengubah Desain**
+- Halaman auth tetap mempertahankan layout yang sudah ada, tetapi sekarang submit ke backend nyata:
+  - `src/app/(auth)/login/page.tsx`
+  - `src/app/(auth)/register/page.tsx`
+- Halaman berikut sekarang membaca/menulis data Appwrite tanpa mengubah struktur visual utama:
+  - `src/app/home/page.tsx`
+  - `src/app/search/page.tsx`
+  - `src/app/categories/[slug]/CategoryProductsClient.tsx`
+  - `src/app/product/[id]/ProductDetailClient.tsx`
+  - `src/app/store/[id]/StoreProfileClient.tsx`
+  - `src/app/profile/page.tsx`
+  - `src/app/onboarding/seller/page.tsx`
+  - `src/app/seller/dashboard/page.tsx`
+  - `src/app/seller/products/page.tsx`
+  - `src/app/seller/products/add/page.tsx`
+  - `src/app/seller/products/edit/[id]/EditProductClient.tsx`
+
+**4. Live Appwrite Permission Hardening**
+- Menyalakan `rowSecurity = true` pada table:
+  - `user_profiles`
+  - `stores`
+  - `products`
+- Mengatur permission table:
+  - `user_profiles`: `create("users")`
+  - `stores`: `read("any")`, `create("users")`
+  - `products`: `read("any")`, `create("users")`
+- Mengatur bucket inti menjadi `fileSecurity = true`:
+  - `profile-avatars`
+  - `store-assets`
+  - `product-images`
+- Permission bucket saat ini:
+  - `create("users")`
+- Permission file produk dibuat per-file saat upload:
+  - `read("any")`
+  - `update("user:<owner>")`
+  - `delete("user:<owner>")`
+
+**5. Catatan Teknis Penting**
+- Appwrite Tables saat ini tidak menerima default value pada column `required`; default logis dipindahkan ke application layer saat create row.
+- `user_profiles.$id` dipakai sebagai identity user aplikasi.
+- `stores.$id` dipakai sebagai `store_id`.
+- `products.store_id` mengarah ke `stores.$id`.
+
+**6. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export berhasil menghasilkan 84 routes.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Buyer Commerce V1.5)
+**Waktu Eksekusi:** Larut Malam
+
+**1. Schema Buyer Commerce di Appwrite**
+- Menambahkan table baru di Appwrite untuk flow buyer:
+  - `addresses`
+  - `cart_items`
+  - `orders`
+  - `order_items`
+- Menambahkan index query inti agar list buyer dan checkout tetap efisien:
+  - `addresses.user_id_index`
+  - `cart_items.user_id_index`
+  - `cart_items.store_id_index`
+  - `cart_items.user_product_unique`
+  - `cart_items.user_selected_index`
+  - `orders.order_code_index`
+  - `orders.buyer_user_id_index`
+  - `orders.seller_user_id_index`
+  - `orders.store_id_index`
+  - `orders.buyer_status_index`
+  - `orders.seller_status_index`
+  - `order_items.order_id_index`
+  - `order_items.product_id_index`
+
+**2. Service Layer Baru**
+- Menambahkan service domain baru:
+  - `src/lib/services/address.ts`
+  - `src/lib/services/cart.ts`
+  - `src/lib/services/order.ts`
+- Menambahkan ID table baru di `src/lib/appwrite/config.ts`.
+- Memperluas type di `src/types/index.ts` untuk:
+  - alamat
+  - cart item
+  - order buyer
+  - order item
+  - shipping method
+  - input create order
+
+**3. Wiring UI Tanpa Mengubah Desain**
+- Halaman buyer berikut sekarang sudah terhubung ke Appwrite nyata tanpa mengubah layout visual utama:
+  - `src/app/cart/page.tsx`
+  - `src/app/checkout/page.tsx`
+  - `src/app/checkout/payment/page.tsx`
+  - `src/app/profile/address/page.tsx`
+  - `src/app/orders/page.tsx`
+  - `src/app/product/[id]/ProductDetailClient.tsx`
+- Detail implementasi:
+  - tombol `Add to Cart` pada product detail sekarang membuat/memperbarui row cart Appwrite
+  - tombol `Buy Now` sekarang memilih item checkout aktif lalu masuk ke `/checkout`
+  - halaman checkout membaca item terpilih + alamat utama dari Appwrite
+  - pembayaran QRIS membaca order nyata dan mengubah status order saat user menekan aksi bayar
+  - daftar pesanan buyer membaca order + order item nyata dari Appwrite
+  - daftar alamat sekarang create/update primary/delete ke Appwrite
+
+**4. Aturan Data & Scope**
+- Checkout masih mengikuti keputusan v1:
+  - satu transaksi hanya untuk satu toko / satu seller
+- Field default Appwrite yang tidak didukung pada required column tetap di-handle pada application layer.
+- `products.store_id` tetap menjadi jembatan utama antara produk, toko, cart, dan order.
+
+**5. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Build produksi tetap menghasilkan 84 routes.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Seller Orders & Runtime-Safe Tracking)
+**Waktu Eksekusi:** Menjelang Pagi
+
+**1. Seller Orders Nyata**
+- Menyambungkan flow seller ke data order Appwrite melalui perluasan `src/lib/services/order.ts`.
+- Menambahkan kemampuan baru:
+  - list order seller
+  - detail order seller
+  - update status pesanan dari `packed` ke `shipped`
+- Halaman berikut sekarang sudah membaca status order nyata:
+  - `src/app/seller/orders/page.tsx`
+  - `src/app/seller/orders/[id]/OrderDetailClient.tsx`
+  - `src/app/seller/dashboard/page.tsx`
+
+**2. Tracking Buyer Nyata**
+- `src/app/orders/[id]/track/TrackClient.tsx` sekarang membaca data order Appwrite nyata dan membangun timeline berdasarkan:
+  - `$createdAt`
+  - `paid_at`
+  - `status`
+- Halaman review buyer juga sekarang membaca brief produk nyata dari pesanan:
+  - `src/app/orders/[id]/review/ReviewClient.tsx`
+
+**3. Route Runtime-Safe untuk Static Export**
+- Karena project memakai `output: export`, order ID nyata yang lahir saat runtime tidak aman jika hanya mengandalkan dynamic route statis.
+- Menambahkan route statis berbasis query param agar flow transaksi tetap aman untuk deploy statis:
+  - `src/app/orders/track/page.tsx`
+  - `src/app/orders/review/page.tsx`
+  - `src/app/seller/orders/detail/page.tsx`
+- Navigasi UI diperbarui agar order nyata diarahkan ke route statis tersebut tanpa mengubah desain.
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Jumlah route statis naik dari 84 menjadi 87 setelah penambahan halaman statis tracking/review/detail seller.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Review Persistence)
+**Waktu Eksekusi:** Pagi Dini Hari
+
+**1. Schema Review di Appwrite**
+- Menambahkan table baru `reviews` dengan `rowSecurity = true`.
+- Struktur inti:
+  - `order_id`
+  - `product_id`
+  - `store_id`
+  - `user_id`
+  - `rating`
+  - `review_text`
+- Index yang dibuat:
+  - `order_id_unique`
+  - `product_id_index`
+  - `store_id_index`
+  - `user_id_index`
+
+**2. Service Layer Review**
+- Menambahkan `src/lib/services/review.ts`.
+- Fitur yang dicakup:
+  - cek review per order
+  - list review per produk
+  - list review per toko
+  - summary rating (average + breakdown)
+  - create review dengan validasi satu review per order
+
+**3. Wiring UI Review**
+- `src/app/orders/[id]/review/ReviewClient.tsx`
+  - sekarang membaca order nyata
+  - mencegah submit ulang jika order sudah pernah diulas
+  - submit sekarang menyimpan rating dan teks ulasan ke Appwrite
+- `src/app/product/[id]/ProductDetailClient.tsx`
+  - menampilkan rating rata-rata produk dari Appwrite
+  - menampilkan daftar ulasan terbaru bila tersedia
+- `src/app/store/[id]/StoreProfileClient.tsx`
+  - menampilkan summary rating toko dari Appwrite
+  - menampilkan ulasan publik terbaru pada tab `Ulasan`
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export tetap stabil dengan 87 routes.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Messaging Persistence)
+**Waktu Eksekusi:** Pagi
+
+**1. Schema Chat di Appwrite**
+- Menambahkan table baru:
+  - `conversations`
+  - `chat_messages`
+- Struktur inti `conversations`:
+  - `buyer_user_id`
+  - `seller_user_id`
+  - `store_id`
+  - `last_message`
+  - `last_message_at`
+  - `last_sender_id`
+  - `buyer_last_read_at`
+  - `seller_last_read_at`
+- Struktur inti `chat_messages`:
+  - `conversation_id`
+  - `sender_user_id`
+  - `receiver_user_id`
+  - `message_text`
+  - `is_read`
+
+**2. Service Layer Chat**
+- Menambahkan `src/lib/services/chat.ts`.
+- Fitur yang dicakup:
+  - find/create conversation buyer-seller
+  - list inbox conversations
+  - load room messages
+  - mark messages as read
+  - send message dan update summary conversation
+
+**3. Wiring UI Tanpa Ubah Desain**
+- `src/app/messages/page.tsx`
+  - inbox sekarang membaca conversation nyata dari Appwrite
+- `src/components/chat/ChatClient.tsx`
+  - room chat sekarang membaca dan mengirim pesan nyata
+- Menambahkan route statis runtime-safe:
+  - `src/app/messages/room/page.tsx`
+- Tombol chat pada:
+  - `src/app/product/[id]/ProductDetailClient.tsx`
+  - `src/app/store/[id]/StoreProfileClient.tsx`
+  kini mengarah ke room chat statis berbasis query param agar tetap aman untuk `output: export`
+
+**4. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export naik dari 87 menjadi 88 routes karena penambahan `/messages/room`.
+
+#### Update: 18 Mei 2026 (Lanjutan Integrasi Appwrite - Notification Persistence)
+**Waktu Eksekusi:** Pagi Menjelang Siang
+
+**1. Schema Notification di Appwrite**
+- Menambahkan table baru `notifications` dengan `rowSecurity = true`.
+- Struktur inti:
+  - `user_id`
+  - `title`
+  - `description`
+  - `type`
+  - `label`
+  - `action_url`
+  - `is_read`
+- Index yang dibuat:
+  - `user_id_index`
+  - `user_read_index`
+  - `type_index`
+
+**2. Service Layer Notification**
+- Menambahkan `src/lib/services/notification.ts`.
+- Fitur yang dicakup:
+  - create notification
+  - list notifications
+  - group notifications berdasarkan waktu
+  - mark as read
+
+**3. Wiring Event Nyata**
+- `src/lib/services/order.ts`
+  - seller mendapat notifikasi saat ada order baru
+  - seller mendapat notifikasi saat pembayaran buyer terkonfirmasi
+  - buyer mendapat notifikasi saat pesanan dikirim
+  - buyer mendapat notifikasi saat pesanan selesai dan siap direview
+- `src/lib/services/chat.ts`
+  - user penerima mendapat notifikasi saat pesan baru masuk
+- `src/lib/services/review.ts`
+  - seller mendapat notifikasi saat pembeli mengirim ulasan
+
+**4. Wiring UI Notifikasi**
+- `src/app/notifications/page.tsx`
+  - sekarang membaca notifikasi nyata dari Appwrite
+  - mendukung group waktu (`Hari Ini`, `Kemarin`, `Minggu Ini`, `Sebelumnya`)
+  - mendukung aksi klik untuk mark-as-read dan pindah ke route terkait
+
+**5. Perbaikan Build Terselubung**
+- Merapikan `src/app/about/page.tsx` agar `SocialButton` benar-benar menerima prop `href` dan memakai `Link`, sehingga build TypeScript kembali hijau.
+
+**6. Validasi**
+- `npm run lint` - lulus
+- `npm run build` - lulus
+- Static export tetap stabil di 88 routes.
