@@ -4,12 +4,19 @@ import {
   Permission,
   Query,
   Role,
+  storage,
   tablesDB,
 } from "@/lib/appwrite/client";
-import { appwriteConfig } from "@/lib/appwrite/config";
-import type { SellerOnboardingInput, Store, StoreRow } from "@/types";
+import { appwriteConfig, getFileViewUrl } from "@/lib/appwrite/config";
+import type {
+  SellerOnboardingInput,
+  Store,
+  StoreRow,
+  UpdateStoreInput,
+} from "@/types";
 
 const tableId = appwriteConfig.tables.stores;
+const bucketId = appwriteConfig.buckets.storeAssets;
 type StoreRecord = Models.Row & StoreRow;
 
 const normalizeError = (error: unknown) =>
@@ -64,6 +71,24 @@ const ensureUniqueSlug = async (baseSlug: string) => {
     slug = `${baseSlug}-${suffix}`;
     suffix += 1;
   }
+};
+
+const uploadStoreAsset = async (file: File, ownerUserId: string) => {
+  const uploaded = await storage.createFile({
+    bucketId,
+    fileId: ID.unique(),
+    file,
+    permissions: [
+      Permission.read(Role.any()),
+      Permission.update(Role.user(ownerUserId)),
+      Permission.delete(Role.user(ownerUserId)),
+    ],
+  });
+
+  return {
+    fileId: uploaded.$id,
+    url: getFileViewUrl(bucketId, uploaded.$id),
+  };
 };
 
 export const storeService = {
@@ -126,6 +151,44 @@ export const storeService = {
           Permission.update(Role.user(ownerUserId)),
           Permission.delete(Role.user(ownerUserId)),
         ],
+      });
+
+      return toStore(row);
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async updateStore(
+    ownerUserId: string,
+    storeId: string,
+    input: UpdateStoreInput
+  ) {
+    try {
+      const existing = await tablesDB.getRow<StoreRecord>({
+        databaseId: appwriteConfig.databaseId,
+        tableId,
+        rowId: storeId,
+      });
+
+      if (existing.owner_user_id !== ownerUserId) {
+        throw new Error("Anda tidak memiliki akses ke toko ini.");
+      }
+
+      const uploadedBanner = input.bannerFile
+        ? await uploadStoreAsset(input.bannerFile, ownerUserId)
+        : null;
+
+      const row = await tablesDB.updateRow<StoreRecord>({
+        databaseId: appwriteConfig.databaseId,
+        tableId,
+        rowId: storeId,
+        data: {
+          store_name: input.storeName.trim(),
+          description: input.description?.trim() || null,
+          banner_file_id: uploadedBanner?.fileId || existing.banner_file_id,
+          banner_url: uploadedBanner?.url || existing.banner_url,
+        },
       });
 
       return toStore(row);

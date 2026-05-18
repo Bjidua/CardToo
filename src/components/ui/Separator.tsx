@@ -11,11 +11,11 @@ interface SeparatorProps {
 export const Separator = ({ label, className }: SeparatorProps) => {
   return (
     <div className={cn("w-full flex items-center gap-4 py-2", className)}>
-      <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
+      <div className="h-px flex-1 bg-surface-muted border-t border-dashed border-surface-hover" />
       {label && (
-        <span className="text-base text-black/50 font-medium">{label}</span>
+        <span className="text-base text-text-sub font-medium">{label}</span>
       )}
-      <div className="h-px flex-1 bg-black/10 border-t border-dashed border-black/30" />
+      <div className="h-px flex-1 bg-surface-muted border-t border-dashed border-surface-hover" />
     </div>
   );
 };

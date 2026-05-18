@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -8,8 +9,18 @@ import { Button } from "@/components/ui/Button";
 import { MenuListItem } from "@/components/ui/MenuListItem";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SettingsPage() {
+  return (
+    <ProtectedRoute>
+      <SettingsContent />
+    </ProtectedRoute>
+  );
+}
+
+function SettingsContent() {
+  const { logout } = useAuth();
   const [pushNotif, setPushNotif] = useState(true);
 
   const containerVariants = {
@@ -38,8 +49,8 @@ export default function SettingsPage() {
         >
           {/* Section: Account & Security */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-black/40 uppercase tracking-wider px-2">Akun & Keamanan</h3>
-            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Akun & Keamanan</h3>
+            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
               <MenuListItem icon={<Icons.Profile size={20} />} label="Edit Profil" href="/profile/edit" showBorder />
               <MenuListItem icon={<Icons.MapPin size={20} />} label="Alamat Saya" href="/profile/address" showBorder />
               <MenuListItem icon={<Icons.Wallet size={20} />} label="Rekening Bank / Kartu" href="/profile/payments" showBorder />
@@ -49,20 +60,20 @@ export default function SettingsPage() {
 
           {/* Section: Settings */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-black/40 uppercase tracking-wider px-2">Pengaturan</h3>
-            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
-              <div className="flex items-center justify-between p-5 border-b border-black/5">
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Pengaturan</h3>
+            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
+              <div className="flex items-center justify-between p-5 border-b border-surface-muted">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-card bg-surface-hover flex items-center justify-center text-accent">
                     <Icons.Notification size={20} />
                   </div>
-                  <span className="text-[16px] font-medium text-black">Notifikasi</span>
+                  <span className="text-[16px] font-medium text-text-main">Notifikasi</span>
                 </div>
                 <button 
                   onClick={() => setPushNotif(!pushNotif)}
                   className={cn(
                     "w-12 h-6 rounded-full transition-colors relative",
-                    pushNotif ? "bg-primary" : "bg-black/10"
+                    pushNotif ? "bg-primary" : "bg-surface-hover"
                   )}
                 >
                   <motion.div 
@@ -77,8 +88,8 @@ export default function SettingsPage() {
 
           {/* Section: Support */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-black/40 uppercase tracking-wider px-2">Bantuan & Info</h3>
-            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Bantuan & Info</h3>
+            <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
               <MenuListItem icon={<Icons.Help size={20} />} label="Pusat Bantuan" href="/help" showBorder />
               <MenuListItem icon={<Icons.Privacy size={20} />} label="Kebijakan Privasi" href="/privacy" showBorder />
               <MenuListItem icon={<Icons.Info size={20} />} label="Tentang CardToo" href="/about" />
@@ -90,7 +101,7 @@ export default function SettingsPage() {
             <Button 
               variant="danger" 
               startIcon={<Icons.Logout size={22} />}
-              onClick={() => console.log("Logout clicked")}
+              onClick={() => void logout()}
             >
               Logout
             </Button>

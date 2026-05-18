@@ -231,7 +231,7 @@ export default function CheckoutPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase text-black/10">
+                    <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase text-text-main/10">
                       No Image
                     </div>
                   )}

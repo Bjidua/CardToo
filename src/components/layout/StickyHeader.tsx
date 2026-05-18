@@ -25,9 +25,9 @@ export const StickyHeader = ({
   return (
     <div className={cn(
       "sticky top-0 z-40 w-full max-w-[440px] mx-auto overflow-hidden transition-all duration-300",
-      variant === "logo" && "bg-white/40 backdrop-blur-xl border-b border-black/5 rounded-b-[32px] shadow-lg",
-      variant === "minimal" && "bg-white/90 backdrop-blur-md border-b border-black/5",
-      variant === "solid" && "bg-white border-b border-black/5 shadow-sm",
+      variant === "logo" && "bg-white/40 backdrop-blur-xl border-b border-surface-muted rounded-b-[32px] shadow-medium",
+      variant === "minimal" && "bg-white/90 backdrop-blur-md border-b border-surface-muted",
+      variant === "solid" && "bg-white border-b border-surface-muted shadow-soft",
       className
     )}>
       {/* Background Pattern for 'logo' variant */}
@@ -57,7 +57,7 @@ export const StickyHeader = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "font-bold text-black tracking-tight leading-tight",
+                "font-bold text-text-main tracking-tight leading-tight",
                 size === "lg" 
                   ? (title.length > 15 ? "text-[24px]" : "text-[32px]")
                   : "text-[18px]"

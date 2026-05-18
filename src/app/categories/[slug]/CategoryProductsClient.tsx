@@ -1,21 +1,27 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { motion } from "framer-motion";
 import type { Product } from "@/types";
 import { normalizeProductCategory, productService } from "@/lib/services/product";
+import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface CategoryProductsClientProps {
   slug: string;
 }
 
 export default function CategoryProductsClient({ slug }: CategoryProductsClientProps) {
+  const router = useRouter();
+  const { isGuest, user } = useAuth();
   const categoryName = decodeURIComponent(slug);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
   React.useEffect(() => {
     const loadProducts = async () => {
@@ -81,13 +87,21 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
                   condition={product.condition}
                   image={product.image || undefined}
                   href={`/product/${product.id}`}
+                  isWishlisted={isFavorite(product.id)}
+                  onWishlistToggle={() => {
+                    if (isGuest || !user) {
+                      router.push("/login");
+                      return;
+                    }
+                    void toggleFavorite(product.id);
+                  }}
                 />
               </motion.div>
             ))}
           </motion.div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-[16px] text-black/40">
+            <p className="text-[16px] text-text-sub">
               Belum ada produk untuk kategori {`"`}{categoryName}{`"`}.
             </p>
           </div>

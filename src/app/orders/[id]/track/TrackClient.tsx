@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
@@ -86,6 +87,7 @@ const buildTrackingSteps = (order: BuyerOrder): TrackingStep[] => {
 };
 
 export default function TrackClient({ id }: { id: string }) {
+  const router = useRouter();
   const { user, isGuest } = useAuth();
   const [order, setOrder] = useState<BuyerOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -216,7 +218,13 @@ export default function TrackClient({ id }: { id: string }) {
                 Ada kendala dengan pengiriman?
               </p>
               <button
-                onClick={() => (window.location.href = "/messages")}
+                onClick={() =>
+                  router.push(
+                    `/messages/room?sellerId=${encodeURIComponent(
+                      order.sellerUserId
+                    )}&storeId=${encodeURIComponent(order.storeId)}`
+                  )
+                }
                 className="text-[12px] font-bold text-primary uppercase tracking-widest bg-white px-6 py-2 rounded-full shadow-soft"
               >
                 Hubungi Seller

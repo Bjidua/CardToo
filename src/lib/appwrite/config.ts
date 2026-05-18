@@ -13,6 +13,9 @@ const fallback = {
   conversationsTableId: "conversations",
   chatMessagesTableId: "chat_messages",
   notificationsTableId: "notifications",
+  favoritesTableId: "favorites",
+  collectionsTableId: "collections",
+  collectionItemsTableId: "collection_items",
   profileAvatarsBucketId: "profile-avatars",
   storeAssetsBucketId: "store-assets",
   productImagesBucketId: "product-images",
@@ -55,6 +58,15 @@ export const appwriteConfig = {
     notifications:
       process.env.NEXT_PUBLIC_APPWRITE_TABLE_NOTIFICATIONS_ID ||
       fallback.notificationsTableId,
+    favorites:
+      process.env.NEXT_PUBLIC_APPWRITE_TABLE_FAVORITES_ID ||
+      fallback.favoritesTableId,
+    collections:
+      process.env.NEXT_PUBLIC_APPWRITE_TABLE_COLLECTIONS_ID ||
+      fallback.collectionsTableId,
+    collectionItems:
+      process.env.NEXT_PUBLIC_APPWRITE_TABLE_COLLECTION_ITEMS_ID ||
+      fallback.collectionItemsTableId,
   },
   buckets: {
     profileAvatars:

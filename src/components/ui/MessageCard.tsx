@@ -47,14 +47,14 @@ export const MessageCard = ({
         <h4 className="text-[16px] font-semibold text-primary truncate">
           {userName}
         </h4>
-        <p className="text-[14px] text-black/60 font-normal line-clamp-2 leading-tight">
+        <p className="text-[14px] text-text-sub font-normal line-clamp-2 leading-tight">
           {message}
         </p>
       </div>
 
       {/* Meta Info */}
       <div className="flex flex-col items-end justify-between h-full py-1 shrink-0">
-        <span className="text-[11px] font-light text-black/40">
+        <span className="text-[11px] font-light text-text-sub">
           {time}
         </span>
         

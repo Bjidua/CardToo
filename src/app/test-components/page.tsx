@@ -244,9 +244,9 @@ export default function TestComponentsPage() {
               <Icons.Message active={true} size={32} className="text-primary" />
               <Icons.Collection active={true} size={32} className="text-primary" />
               <Icons.Profile active={true} size={32} className="text-primary" />
-              <Icons.Notification size={32} className="text-black" />
-              <Icons.Cart size={32} className="text-black" />
-              <Icons.Search size={32} className="text-black" />
+              <Icons.Notification size={32} className="text-text-main" />
+              <Icons.Cart size={32} className="text-text-main" />
+              <Icons.Search size={32} className="text-text-main" />
             </div>
           </div>
           

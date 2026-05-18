@@ -87,7 +87,7 @@ export default function MessagesPage() {
                   "px-5 py-2 rounded-full text-[13px] font-bold transition-all",
                   activeFilter === filter
                     ? "bg-primary text-white shadow-lg shadow-primary/20"
-                    : "bg-white text-black/40 border border-black/5"
+                    : "bg-white text-text-sub border border-surface-muted"
                 )}
               >
                 {filter}
@@ -129,10 +129,10 @@ export default function MessagesPage() {
 
         {!isLoading && filteredMessages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center text-black/10 mb-4">
+            <div className="w-20 h-20 bg-surface-hover rounded-full flex items-center justify-center text-text-sub/30 mb-4">
               <Icons.Message size={40} />
             </div>
-            <p className="text-[14px] text-black/30 font-medium">
+            <p className="text-[14px] text-text-sub font-medium">
               Tidak ada pesan ditemukan
             </p>
           </div>

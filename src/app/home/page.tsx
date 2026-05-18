@@ -9,19 +9,24 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { SlideCard } from "@/components/ui/SlideCard";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import type { Product } from "@/types";
 import { productService } from "@/lib/services/product";
+import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 
 function HomeContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { isGuest, user } = useAuth();
   const categoryParam = searchParams.get("category") || "All";
   
   const [selectedCategory, setSelectedCategory] = React.useState(categoryParam);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [wishlistedIds, setWishlistedIds] = React.useState<string[]>([]);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
   React.useEffect(() => {
     const loadProducts = async () => {
@@ -48,13 +53,6 @@ function HomeContent() {
       return matchesCategory && matchesSearch;
     });
   }, [products, searchQuery, selectedCategory]);
-
-  const toggleWishlist = (id: string) => {
-    setWishlistedIds((prev) =>
-      prev.includes(id) ? prev.filter((wishlistedId) => wishlistedId !== id) : [...prev, id]
-    );
-  };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -166,13 +164,19 @@ function HomeContent() {
                   condition={product.condition}
                   image={product.image || undefined}
                   href={`/product/${product.id}`}
-                  isWishlisted={wishlistedIds.includes(product.id)}
-                  onWishlistToggle={() => toggleWishlist(product.id)}
+                  isWishlisted={isFavorite(product.id)}
+                  onWishlistToggle={() => {
+                    if (isGuest || !user) {
+                      router.push("/login");
+                      return;
+                    }
+                    void toggleFavorite(product.id);
+                  }}
                 />
               </motion.div>
             ))}
             {filteredProducts.length === 0 && (
-              <div className="col-span-2 py-10 text-center text-black/40">
+              <div className="col-span-2 py-10 text-center text-text-sub">
                 Tidak ada produk
               </div>
             )}

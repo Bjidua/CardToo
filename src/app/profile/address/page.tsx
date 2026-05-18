@@ -237,7 +237,7 @@ export default function AddressPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsAdding(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 z-50 bg-text-main/20 backdrop-blur-sm"
             />
             <motion.div
               initial={{ y: "100%" }}

@@ -31,7 +31,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "h-[50px] w-full border-none bg-surface-muted px-6 py-2 text-base text-text-main transition-all outline-none",
               "rounded-[26px]", // Sesuai spek Figma
-              "placeholder:text-black/50",
+              "placeholder:text-text-sub/70",
               "focus:ring-2 focus:ring-primary/30",
               startIcon && "pl-14",
               endIcon && "pr-14",

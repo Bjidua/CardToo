@@ -33,12 +33,12 @@ export const SlideCard = ({
           {promotion}
         </span>
         {title && (
-          <h3 className="text-[20px] font-bold text-black leading-tight">
+          <h3 className="text-[20px] font-bold text-text-main leading-tight">
             {title}
           </h3>
         )}
         {description && (
-          <p className="text-[12px] text-black/60 font-medium leading-normal">
+          <p className="text-[12px] text-text-sub font-medium leading-normal">
             {description}
           </p>
         )}
@@ -47,7 +47,7 @@ export const SlideCard = ({
       {image && (
         <div className="w-[120px] h-full relative">
           {/* Placeholder for Promo Image */}
-          <div className="absolute inset-0 bg-gray-100 rounded-lg animate-pulse" />
+          <div className="absolute inset-0 bg-surface-hover rounded-lg animate-pulse" />
         </div>
       )}
     </div>

@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import Image from "next/image";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
+import { reviewService } from "@/lib/services/review";
+import { storeService } from "@/lib/services/store";
+import type { Store } from "@/types";
 
 export default function SellerSettingsPage() {
   return (
@@ -21,19 +23,91 @@ export default function SellerSettingsPage() {
 }
 
 function SellerSettingsContent() {
-  const [storeName, setStoreName] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const { store, user, refreshAuth } = useAuth();
+  if (!store || !user) {
+    return (
+      <div className="flex flex-col min-h-screen bg-surface-tint">
+        <StickyHeader
+          title="Pengaturan Toko"
+          variant="minimal"
+          size="sm"
+          leftAction={<BackButton variant="secondary" />}
+        />
+        <main className="flex-1 flex items-center justify-center px-6">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
+        </main>
+      </div>
+    );
+  }
 
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      // TODO: Integrasi Appwrite — simpan data toko ke database
-      // Setelah integrasi, ganti dengan komponen Toast UI
+  return (
+    <SellerSettingsForm
+      key={`${store.id}:${store.name}:${store.bannerUrl ?? ""}:${store.description}`}
+      store={store}
+      userId={user.id}
+      refreshAuth={refreshAuth}
+    />
+  );
+}
+
+function SellerSettingsForm({
+  store,
+  userId,
+  refreshAuth,
+}: {
+  store: Store;
+  userId: string;
+  refreshAuth: () => Promise<void>;
+}) {
+  const [storeName, setStoreName] = useState(store.name);
+  const [description, setDescription] = useState(store.description);
+  const [location, setLocation] = useState(store.location || "Indonesia");
+  const [coverImage, setCoverImage] = useState<string | null>(
+    store.bannerUrl || store.coverImage || null
+  );
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [storeRating, setStoreRating] = useState("0.0");
+  const [responseTime] = useState("Aktif");
+
+  useEffect(() => {
+    return () => {
+      if (coverImage?.startsWith("blob:")) {
+        URL.revokeObjectURL(coverImage);
+      }
+    };
+  }, [coverImage]);
+
+  useEffect(() => {
+    if (!store.id) return;
+
+    const loadMetadata = async () => {
+      try {
+        const summary = await reviewService.getStoreReviewSummary(store.id);
+        setStoreRating(summary.averageRating.toFixed(1));
+      } catch {
+        setStoreRating("0.0");
+      }
+    };
+
+    void loadMetadata();
+  }, [store.id]);
+
+  const handleSave = async () => {
+    if (!store.id || !storeName.trim()) return;
+
+    try {
+      setIsSaving(true);
+      await storeService.updateStore(userId, store.id, {
+        storeName,
+        description,
+        bannerFile,
+      });
+      setBannerFile(null);
+      await refreshAuth();
+    } finally {
       setIsSaving(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -46,9 +120,10 @@ function SellerSettingsContent() {
       />
 
       <main className="px-6 pt-6 flex flex-col gap-8">
-        {/* Cover Image Settings */}
         <section className="flex flex-col gap-4">
-          <label className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">Banner Toko</label>
+          <label className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">
+            Banner Toko
+          </label>
           <div className="relative h-48 w-full rounded-[40px] overflow-hidden border-2 border-dashed border-secondary/20 bg-white shadow-soft group">
             {coverImage ? (
               <Image src={coverImage} alt="Cover" fill className="object-cover" />
@@ -65,38 +140,40 @@ function SellerSettingsContent() {
               className="absolute inset-0 opacity-0 cursor-pointer z-20"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) setCoverImage(URL.createObjectURL(file));
+                if (file) {
+                  setBannerFile(file);
+                  setCoverImage(URL.createObjectURL(file));
+                }
               }}
             />
           </div>
-          <p className="text-[11px] text-text-sub px-4 italic font-medium opacity-60">*Rekomendasi ukuran: 1200 x 400 pixel</p>
+          <p className="text-[11px] text-text-sub px-4 italic font-medium opacity-60">
+            *Rekomendasi ukuran: 1200 x 400 pixel
+          </p>
         </section>
 
-        {/* Store Detail Form */}
         <section className="bg-white rounded-[40px] p-8 shadow-medium border border-surface-muted flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
+          <Input
+            label="Nama Toko"
+            value={storeName}
+            onChange={(e) => setStoreName(e.target.value)}
+            className="bg-surface-tint border-none rounded-[24px]"
+          />
+
+          <div className="relative group">
             <Input
-              label="Nama Toko"
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
+              label="Lokasi"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              startIcon={<Icons.MapPin size={18} className="text-secondary" />}
               className="bg-surface-tint border-none rounded-[24px]"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="relative group">
-              <Input
-                label="Lokasi"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                startIcon={<Icons.MapPin size={18} className="text-secondary" />}
-                className="bg-surface-tint border-none rounded-[24px]"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <p className="text-[12px] font-medium text-text-sub uppercase tracking-wider ml-4">Deskripsi</p>
+            <p className="text-[12px] font-medium text-text-sub uppercase tracking-wider ml-4">
+              Deskripsi
+            </p>
             <textarea
               className="w-full h-32 bg-surface-tint rounded-[24px] p-6 text-[14px] text-text-main outline-none focus:ring-2 focus:ring-secondary/30 transition-all resize-none placeholder:text-text-sub/40 font-medium"
               value={description}
@@ -106,28 +183,30 @@ function SellerSettingsContent() {
           </div>
         </section>
 
-        {/* Store Stats (Read Only — akan di-fetch dari Appwrite) */}
         <section className="grid grid-cols-2 gap-4">
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
-            <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Waktu Balas</span>
-            <span className="text-[15px] font-bold text-text-main">-</span>
+            <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">
+              Waktu Balas
+            </span>
+            <span className="text-[15px] font-bold text-text-main">{responseTime}</span>
           </div>
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
-            <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Rating Toko</span>
+            <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">
+              Rating Toko
+            </span>
             <div className="flex items-center gap-1">
-              <span className="text-[15px] font-bold text-text-main">-</span>
+              <span className="text-[15px] font-bold text-text-main">{storeRating}</span>
               <Icons.Review size={12} className="text-warning fill-warning" />
             </div>
           </div>
         </section>
       </main>
 
-      {/* Bottom Action */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-surface-tint via-surface-tint/80 to-transparent z-40">
         <Button
           variant="secondary"
           className="w-full h-14 rounded-2xl text-[16px] font-bold shadow-lg shadow-secondary/30 uppercase tracking-widest"
-          onClick={handleSave}
+          onClick={() => void handleSave()}
           disabled={isSaving}
         >
           {isSaving ? "Menyimpan..." : "Simpan Perubahan"}

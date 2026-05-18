@@ -20,7 +20,7 @@ const AuthCard = ({ children, title, className }: AuthCardProps) => {
       }}
     >
       {title && (
-        <h2 className="text-[20px] font-bold text-center text-black mb-8">
+        <h2 className="text-[20px] font-bold text-center text-text-main mb-8">
           {title}
         </h2>
       )}

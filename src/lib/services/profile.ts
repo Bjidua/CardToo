@@ -76,7 +76,18 @@ export const profileService = {
 
   async updateProfile(
     userId: string,
-    data: Partial<Pick<UserProfileRow, "role" | "full_name" | "phone" | "avatar_file_id" | "avatar_url" | "is_active">>
+    data: Partial<
+      Pick<
+        UserProfileRow,
+        | "username"
+        | "role"
+        | "full_name"
+        | "phone"
+        | "avatar_file_id"
+        | "avatar_url"
+        | "is_active"
+      >
+    >
   ) {
     try {
       const row = await tablesDB.updateRow<UserProfileRecord>({

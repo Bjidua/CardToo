@@ -34,7 +34,7 @@ export const FavoriteItemCard = ({
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ y: -4 }}
       className={cn(
-        "relative flex items-center gap-4 p-4 w-full h-[120px] bg-white rounded-[20px] shadow-soft border border-black/5 overflow-hidden group",
+        "relative flex items-center gap-4 p-4 w-full h-[120px] bg-white rounded-[20px] shadow-soft border border-surface-muted overflow-hidden group",
         className
       )}
     >
@@ -43,7 +43,7 @@ export const FavoriteItemCard = ({
         {image ? (
           <Image src={image} alt={title} fill className="object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[10px] text-black/10 font-bold uppercase">No Image</div>
+          <div className="w-full h-full flex items-center justify-center text-[10px] text-text-sub/30 font-bold uppercase">No Image</div>
         )}
       </div>
 
@@ -51,7 +51,7 @@ export const FavoriteItemCard = ({
       <div className="flex-1 flex flex-col justify-between h-[90px] min-w-0">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-[18px] font-bold text-black truncate leading-tight">
+            <h3 className="text-[18px] font-bold text-text-main truncate leading-tight">
               {title}
             </h3>
             <button
@@ -61,9 +61,9 @@ export const FavoriteItemCard = ({
               <Icons.Favorite size={20} className="fill-current" />
             </button>
           </div>
-          <div className="flex items-center gap-1.5 opacity-60">
-            <Icons.Store size={14} className="text-black" />
-            <span className="text-[12px] font-medium text-black truncate">
+          <div className="flex items-center gap-1.5 opacity-80">
+            <Icons.Store size={14} className="text-text-sub" />
+            <span className="text-[12px] font-medium text-text-sub truncate">
               {shopName}
             </span>
           </div>

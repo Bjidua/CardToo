@@ -16,6 +16,7 @@ import { normalizeProductCondition } from "@/lib/services/product";
 import { productService } from "@/lib/services/product";
 import { reviewService } from "@/lib/services/review";
 import { storeService } from "@/lib/services/store";
+import { useFavorites } from "@/hooks/useFavorites";
 import type { Product, ReviewSummary, Store } from "@/types";
 
 interface ProductDetailClientProps {
@@ -31,9 +32,9 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSubmittingCart, setIsSubmittingCart] = React.useState(false);
   const [currentImage, setCurrentImage] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isShareProduct, shareProduct] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>("description");
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
   React.useEffect(() => {
     const loadProduct = async () => {
@@ -117,6 +118,12 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
     }
   };
 
+  const handleFavoriteToggle = () =>
+    handleAction(() => {
+      if (!user) return;
+      void toggleFavorite(id);
+    });
+
   const addCurrentProductToCart = async (mode: "cart" | "checkout") => {
     if (!user || !product || !store) {
       throw new Error("Produk atau data toko belum siap.");
@@ -181,15 +188,15 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
         rightAction={
           <div className="flex gap-3">
             <button
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={handleFavoriteToggle}
               className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90",
-                isFavorite
+                isFavorite(id)
                   ? "bg-secondary/10 text-secondary"
-                  : "bg-white text-black/60 shadow-soft border border-surface-muted"
+                  : "bg-white text-text-sub shadow-soft border border-surface-muted"
               )}
             >
-              <Icons.Favorite size={20} active={isFavorite} />
+              <Icons.Favorite size={20} active={isFavorite(id)} />
             </button>
             <button
               onClick={() => shareProduct(!isShareProduct)}
@@ -197,7 +204,7 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
                 "w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90",
                 isShareProduct
                   ? "bg-secondary/10 text-secondary"
-                  : "bg-white text-black/60 shadow-soft border border-surface-muted"
+                  : "bg-white text-text-sub shadow-soft border border-surface-muted"
               )}
             >
               <Icons.Share size={20} />
@@ -233,14 +240,14 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
                     onClick={() => setCurrentImage(index)}
                     className={cn(
                       "h-1.5 rounded-full transition-all duration-300",
-                      currentImage === index ? "w-6 bg-primary" : "w-1.5 bg-black/20"
+                      currentImage === index ? "w-6 bg-primary" : "w-1.5 bg-surface-hover"
                     )}
                   />
                 ))}
               </div>
             </>
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-black/10 font-bold uppercase">
+            <div className="flex h-full w-full items-center justify-center text-text-sub/30 font-bold uppercase">
               No Image
             </div>
           )}

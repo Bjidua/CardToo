@@ -38,7 +38,7 @@ export const OrderItemCard = ({
       case "Dikirim": return "text-accent bg-accent/10";
       case "Selesai": return "text-success bg-success/10";
       case "Dibatalkan": return "text-danger bg-danger/10";
-      default: return "text-black/40 bg-black/5";
+      default: return "text-text-sub bg-surface-hover";
     }
   };
 
@@ -56,16 +56,16 @@ export const OrderItemCard = ({
     <motion.div
       whileHover={{ y: -2 }}
       className={cn(
-        "bg-white rounded-card p-4 shadow-soft flex flex-col gap-4 border border-black/5",
+        "bg-white rounded-card p-4 shadow-soft flex flex-col gap-4 border border-surface-muted",
         className
       )}
     >
       {/* Header: Shop Name & Status */}
-      <div className="flex items-center justify-between border-b border-black/5 pb-3">
+      <div className="flex items-center justify-between border-b border-surface-muted pb-3">
         <div className="flex items-center gap-2">
-          <Icons.Store size={18} className="text-black/60" />
-          <span className="text-[14px] font-bold text-black">{order.shopName}</span>
-          <Icons.ChevronRight size={14} className="text-black/20" />
+          <Icons.Store size={18} className="text-text-sub" />
+          <span className="text-[14px] font-bold text-text-main">{order.shopName}</span>
+          <Icons.ChevronRight size={14} className="text-text-sub/60" />
         </div>
         <div className={cn(
           "px-2 py-1 rounded-full flex items-center gap-1.5",
@@ -82,16 +82,16 @@ export const OrderItemCard = ({
           {order.productImage ? (
             <Image src={order.productImage} alt={order.productTitle} fill className="object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[10px] text-black/10 font-bold uppercase">No Image</div>
+            <div className="w-full h-full flex items-center justify-center text-[10px] text-text-sub/30 font-bold uppercase">No Image</div>
           )}
         </div>
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h4 className="text-[14px] font-bold text-black line-clamp-1">{order.productTitle}</h4>
-            <p className="text-[12px] text-black/40">{order.condition}</p>
+            <h4 className="text-[14px] font-bold text-text-main line-clamp-1">{order.productTitle}</h4>
+            <p className="text-[12px] text-text-sub">{order.condition}</p>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[12px] text-black/60">x{order.quantity}</span>
+            <span className="text-[12px] text-text-sub">x{order.quantity}</span>
             <span className="text-[14px] font-bold text-primary">
               {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(order.totalPrice)}
             </span>
@@ -100,7 +100,7 @@ export const OrderItemCard = ({
       </div>
 
       {/* Footer: Actions */}
-      <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-black/5">
+      <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-surface-muted">
         {order.status === "Belum Bayar" && (
           <button 
             onClick={() => router.push(`/checkout/payment?orderId=${order.id}`)}
@@ -127,7 +127,7 @@ export const OrderItemCard = ({
         )}
         {order.status === "Selesai" && (
           <>
-            <button className="px-4 h-[36px] border border-black/10 text-black/60 text-[13px] font-bold rounded-full active:scale-95 transition-all">
+            <button className="px-4 h-[36px] border border-surface-muted text-text-sub text-[13px] font-bold rounded-full active:scale-95 transition-all">
               Beli Lagi
             </button>
             <button 

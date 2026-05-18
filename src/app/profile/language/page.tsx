@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icons } from "@/components/ui/Icons";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+
+const LANGUAGE_STORAGE_KEY = "cardtoo-language";
 
 const LANGUAGES = [
   { id: "id", name: "Indonesia", native: "Bahasa Indonesia" },
@@ -14,45 +17,72 @@ const LANGUAGES = [
 ];
 
 export default function LanguagePage() {
-  const [selected, setSelected] = useState("id");
+  return (
+    <ProtectedRoute>
+      <LanguageContent />
+    </ProtectedRoute>
+  );
+}
+
+function LanguageContent() {
+  const [selected, setSelected] = useState(() => {
+    if (typeof window === "undefined") {
+      return "id";
+    }
+
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return stored && LANGUAGES.some((language) => language.id === stored)
+      ? stored
+      : "id";
+  });
+
+  const handleSelect = (languageId: string) => {
+    setSelected(languageId);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageId);
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
+    <div className="flex min-h-screen flex-col bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
         title="Bahasa"
         leftAction={<BackButton variant="primary" />}
       />
 
-      <main className="flex-1 px-6 pt-6 pb-32">
-        <div className="bg-white rounded-card overflow-hidden shadow-soft border border-black/5">
+      <main className="flex-1 px-6 pb-32 pt-6">
+        <div className="overflow-hidden rounded-card border border-surface-muted bg-white shadow-soft">
           {LANGUAGES.map((lang, index) => (
             <button
               key={lang.id}
-              onClick={() => setSelected(lang.id)}
+              onClick={() => handleSelect(lang.id)}
               className={cn(
-                "w-full flex items-center justify-between p-6 transition-colors active:bg-black/[0.02]",
-                index !== LANGUAGES.length - 1 && "border-b border-black/5"
+                "flex w-full items-center justify-between p-6 transition-colors active:bg-text-main/[0.02]",
+                index !== LANGUAGES.length - 1 && "border-b border-surface-muted"
               )}
             >
               <div className="flex flex-col items-start">
-                <span className="text-[16px] font-bold text-black">{lang.name}</span>
-                <span className="text-[13px] text-black/40">{lang.native}</span>
+                <span className="text-[16px] font-bold text-text-main">
+                  {lang.name}
+                </span>
+                <span className="text-[13px] text-text-sub">{lang.native}</span>
               </div>
-              {selected === lang.id && (
-                <motion.div 
+              {selected === lang.id ? (
+                <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
                 >
-                  <Icons.Plus size={14} className="rotate-45 scale-125" />
+                  <Icons.Check size={14} />
                 </motion.div>
-              )}
+              ) : null}
             </button>
           ))}
         </div>
-        
-        <p className="mt-6 px-4 text-[13px] text-black/30 leading-relaxed text-center">
-          Bahasa yang kamu pilih akan diterapkan di seluruh aplikasi CardToo.
+
+        <p className="mt-6 px-4 text-center text-[13px] leading-relaxed text-text-sub">
+          Preferensi bahasa disimpan di perangkat ini agar tampilan tetap konsisten
+          saat kamu membuka CardToo kembali.
         </p>
       </main>
     </div>

@@ -197,7 +197,7 @@ function AddProductContent() {
                 description: event.target.value,
               }))
             }
-            className="min-h-[120px] w-full resize-none rounded-[24px] border-none bg-surface-muted p-6 text-base text-text-main shadow-inner outline-none placeholder:text-black/30 focus:ring-2 focus:ring-secondary/30"
+            className="min-h-[120px] w-full resize-none rounded-[24px] border-none bg-surface-muted p-6 text-base text-text-main shadow-inner outline-none placeholder:text-text-sub/60 focus:ring-2 focus:ring-secondary/30"
             placeholder="Jelaskan detail kartu, minus jika ada, dll..."
           />
         </div>

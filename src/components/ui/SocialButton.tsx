@@ -44,13 +44,13 @@ const SocialButton = ({ provider, className, ...props }: SocialButtonProps) => {
       className={cn(
         "flex w-full items-center justify-center gap-3 px-4 h-[55px]",
         "bg-background rounded-[32px] shadow-soft",
-        "transition-all active:scale-[0.98] hover:bg-gray-100",
+        "transition-all active:scale-[0.98] hover:bg-surface-hover",
         className
       )}
       {...props}
     >
       <span className="shrink-0">{icon}</span>
-      <span className="text-base font-bold text-black">{text}</span>
+      <span className="text-base font-bold text-text-main">{text}</span>
     </button>
   );
 };

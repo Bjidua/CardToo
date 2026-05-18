@@ -12,10 +12,13 @@ import Image from "next/image";
 import { productService } from "@/lib/services/product";
 import { reviewService } from "@/lib/services/review";
 import { storeService } from "@/lib/services/store";
+import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import type { Product, ReviewSummary, Store } from "@/types";
 
 export default function StoreProfileClient({ id }: { id: string }) {
   const router = useRouter();
+  const { isGuest, user } = useAuth();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("Produk");
   const [searchInStore, setSearchInStore] = useState("");
@@ -24,6 +27,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 100);
@@ -143,7 +147,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
       <div
         className={cn(
           "relative h-60 w-full overflow-hidden transition-colors duration-500",
-          store.coverImage ? "bg-black" : "bg-secondary"
+          store.coverImage ? "bg-text-main" : "bg-secondary"
         )}
       >
         {store.coverImage ? (
@@ -151,7 +155,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
         ) : (
           <div className="absolute inset-0 bg-linear-to-br from-secondary to-accent opacity-30" />
         )}
-        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-transparent z-10" />
+        <div className="absolute inset-0 z-10 bg-linear-to-b from-text-main/20 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-linear-to-t from-surface-tint via-surface-tint/40 to-transparent z-10" />
       </div>
 
@@ -266,6 +270,14 @@ export default function StoreProfileClient({ id }: { id: string }) {
                       condition={product.condition}
                       image={product.image || undefined}
                       href={`/product/${product.id}`}
+                      isWishlisted={isFavorite(product.id)}
+                      onWishlistToggle={() => {
+                        if (isGuest || !user) {
+                          router.push("/login");
+                          return;
+                        }
+                        void toggleFavorite(product.id);
+                      }}
                     />
                   ))}
                 </div>
