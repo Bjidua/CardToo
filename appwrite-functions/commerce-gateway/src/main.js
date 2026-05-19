@@ -978,16 +978,15 @@ const closeStore = async ({ actorId, adminTablesDB, dynamicKey }) => {
   const storeRows = await listAllRows(adminTablesDB, config.tables.stores, [
     Query.equal("owner_user_id", [actorId]),
   ]);
-  const targetStore = storeRows[0];
-  if (!targetStore) {
+  if (!storeRows.length) {
     throw new Error("Toko tidak ditemukan atau sudah ditutup.");
   }
 
   const storage = createStorageClient(dynamicKey);
-  const storeId = targetStore.$id;
+  const storeIds = storeRows.map((store) => store.$id);
 
   const products = await listAllRows(adminTablesDB, config.tables.products, [
-    Query.equal("store_id", [storeId]),
+    Query.equal("store_id", storeIds),
   ]);
   const productIds = products.map((product) => product.$id);
 
@@ -1037,7 +1036,7 @@ const closeStore = async ({ actorId, adminTablesDB, dynamicKey }) => {
     Query.equal("user_id", [actorId]),
   ]);
   await deleteRowsByQueries(adminTablesDB, config.tables.reviews, [
-    Query.equal("store_id", [storeId]),
+    Query.equal("store_id", storeIds),
   ]);
   await deleteRowsByQueries(adminTablesDB, config.tables.cartItems, [
     Query.equal("seller_user_id", [actorId]),
@@ -1073,20 +1072,17 @@ const closeStore = async ({ actorId, adminTablesDB, dynamicKey }) => {
     ])
   );
   await deleteRowsByQueries(adminTablesDB, config.tables.products, [
-    Query.equal("store_id", [storeId]),
+    Query.equal("store_id", storeIds),
   ]);
 
-  await deleteStorageFiles(storage, config.buckets.storeAssets, [
-    targetStore.logo_file_id,
-    targetStore.banner_file_id,
-  ]);
-  await adminTablesDB.deleteRow({
-    databaseId: config.databaseId,
-    tableId: config.tables.stores,
-    rowId: storeId,
-  });
+  await deleteStorageFiles(
+    storage,
+    config.buckets.storeAssets,
+    storeRows.flatMap((store) => [store.logo_file_id, store.banner_file_id])
+  );
+  await deleteRowsByIds(adminTablesDB, config.tables.stores, storeIds);
 
-  return { closedStoreId: storeId };
+  return { closedStoreId: storeIds[0], closedStoreCount: storeIds.length };
 };
 
 const deleteAccount = async ({ actorId, adminTablesDB, dynamicKey }) => {
