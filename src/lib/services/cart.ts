@@ -84,6 +84,10 @@ export const cartService = {
 
   async addItem(userId: string, input: AddCartItemInput) {
     try {
+      if (input.sellerUserId === userId) {
+        throw new Error("Anda tidak bisa membeli produk dari toko Anda sendiri.");
+      }
+
       const existing = await getRowByUserAndProduct(userId, input.productId);
       const nextQuantity = Math.max(1, input.quantity || 1);
       const shouldSelect = input.isSelected ?? true;

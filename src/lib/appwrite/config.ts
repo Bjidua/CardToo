@@ -19,6 +19,7 @@ const fallback = {
   profileAvatarsBucketId: "profile-avatars",
   storeAssetsBucketId: "store-assets",
   productImagesBucketId: "product-images",
+  commerceGatewayFunctionId: "commerce-gateway",
 } as const;
 
 export const appwriteConfig = {
@@ -78,6 +79,11 @@ export const appwriteConfig = {
     productImages:
       process.env.NEXT_PUBLIC_APPWRITE_BUCKET_PRODUCT_IMAGES_ID ||
       fallback.productImagesBucketId,
+  },
+  functions: {
+    commerceGateway:
+      process.env.NEXT_PUBLIC_APPWRITE_FUNCTION_COMMERCE_GATEWAY_ID ||
+      fallback.commerceGatewayFunctionId,
   },
 } as const;
 

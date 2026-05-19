@@ -17,6 +17,7 @@ import { productService } from "@/lib/services/product";
 import { reviewService } from "@/lib/services/review";
 import { storeService } from "@/lib/services/store";
 import { useFavorites } from "@/hooks/useFavorites";
+import { buildStoreDetailHref } from "@/lib/routes";
 import type { Product, ReviewSummary, Store } from "@/types";
 
 interface ProductDetailClientProps {
@@ -68,6 +69,10 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
     const merged = [product.image, ...(product.gallery || [])].filter(Boolean) as string[];
     return merged.length > 0 ? Array.from(new Set(merged)) : [];
   }, [product]);
+
+  const isOwnProduct = Boolean(
+    user && store?.ownerUserId && user.id === store.ownerUserId
+  );
 
   if (isLoading) {
     return (
@@ -127,6 +132,10 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
   const addCurrentProductToCart = async (mode: "cart" | "checkout") => {
     if (!user || !product || !store) {
       throw new Error("Produk atau data toko belum siap.");
+    }
+
+    if (store.ownerUserId === user.id) {
+      throw new Error("Anda tidak bisa membeli produk dari toko Anda sendiri.");
     }
 
     const normalizedCondition = normalizeProductCondition(product.condition || "Mint");
@@ -284,7 +293,9 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
               </div>
               <div
                 className="flex flex-col cursor-pointer hover:opacity-70 transition-opacity"
-                onClick={() => router.push(`/store/${product.storeId}`)}
+                onClick={() =>
+                  product.storeId && router.push(buildStoreDetailHref(product.storeId))
+                }
               >
                 <div className="flex items-center gap-1.5">
                   <span className="text-[14px] font-bold text-text-main leading-tight">
@@ -329,6 +340,13 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
               </div>
             </div>
           </div>
+
+          {isOwnProduct && (
+            <div className="rounded-[28px] border border-warning/20 bg-warning/8 px-4 py-3 text-[12px] font-medium text-warning">
+              Produk ini milik toko Anda sendiri. Untuk menjaga flow marketplace tetap wajar,
+              pembelian dari toko sendiri dinonaktifkan.
+            </div>
+          )}
 
           <div className="mt-2 flex flex-col gap-3">
             <h3 className="text-[14px] font-bold text-text-main uppercase tracking-wider px-2">
@@ -431,7 +449,7 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
         </button>
         <button
           onClick={handleAddToCart}
-          disabled={isSubmittingCart}
+          disabled={isSubmittingCart || isOwnProduct}
           className="flex-1 h-14 rounded-2xl border-2 border-primary text-primary font-bold active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
           <Icons.Cart size={20} />
@@ -439,7 +457,7 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
         </button>
         <button
           onClick={handleBuyNow}
-          disabled={isSubmittingCart}
+          disabled={isSubmittingCart || isOwnProduct}
           className="flex-1 h-14 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/30 active:scale-95 transition-transform"
         >
           Buy Now

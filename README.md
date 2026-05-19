@@ -1,98 +1,196 @@
 # CardToo
 
-Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
+CardToo adalah marketplace TCG web-based untuk jual beli kartu seperti Pokemon, One Piece, Boboiboy, Yu-Gi-Oh!, dan kategori lain yang relevan untuk tugas matkul kelompok.
 
----
+## Status Project
 
-## 🚀 Fitur Utama (akan diupdate)
-- Daftar fitur website (None)
-- Teknologi:  Next.Js, Tailwind CSS
-- Framework: React
+- Progress keseluruhan: sekitar `93%`
+- Core flow sudah hidup:
+  - guest onboarding + auth
+  - buyer catalog, favorite, collection, cart, checkout, orders, review, chat, notifications
+  - seller onboarding, dashboard, CRUD produk, seller orders, reports, store settings
+- Backend utama sudah terhubung ke Appwrite
+- Static export sudah di-hardening untuk runtime data lewat route query-based
 
-## 📂 Struktur Repo
-```plaintext
-📦 CardToo (Project Structure)
-├── public/                  # Aset statis akses langsung
-│   ├── images/              # Gambar
-│   └── favicon.ico          # Icon website
-│ 
-├── src/                     # Source code aplikasi
-│   ├── app/                 # Rute halaman web Next.js
-│   │   ├── (auth)/          # Rute autentikasi
-│   │   │   ├── login/       # Halaman Login
-│   │   │   ├── register/    # Halaman Register
-│   │   │   └── forgot-password/ # Alur Lupa Password
-│   │   │       ├── page.tsx     # Form Email
-│   │   │       ├── verify/      # Verifikasi OTP
-│   │   │       └── reset/       # Reset Password Baru
-│   │   ├── home/            # Halaman Dashboard Utama
-│   │   ├── cart/            # Halaman Keranjang Belanja
-│   │   ├── categories/      # Halaman Semua Kategori
-│   │   ├── search/          # Halaman Pencarian Produk
-│   │   ├── messages/        # Halaman Pesan
-│   │   ├── collections/     # Halaman Koleksi TCG
-│   │   ├── profile/         # Halaman Profil User
-│   │   ├── notifications/   # Halaman Notifikasi
-│   │   ├── onboarding/      # Halaman Onboarding awal
-│   │   ├── test-components/ # Laboratorium Component
-│   │   ├── layout.tsx       # Struktur kerangka aplikasi
-│   │   ├── page.tsx         # Halaman utama (Landing)
-│   │   ├── globals.css      # File utama Tailwind CSS v4
-│   │   └── products/        # Rute halaman daftar produk (blm ada)
-│   │ 
-│   └── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Atom components (CollectionCard, MessageCard, NotificationCard, CartItemCard, CategoryCard, Icons, ProfilePicture, BackgroundLogo, dll)
-│   │   └── layout/          # Organism components (StickyHeader, BottomNav, AuthCard)
-│   │ 
-│   └── lib/                 # Skrip eksternal pendukung
-│   │   ├── appwrite.ts      # Koneksi ke Appwrite
-│   │   └── utils.ts         # Utility functions (cn, dll)
-│   │ 
-│   └── hooks/               # Custom hooks
-│    
-├── docs/                    # Dokumentasi, panduan tugas, dsb
-│	├── design_system        # Guideline utama design project
-│   ├── feature_guide.md     # Panduan fitur ada apa aja
-│   ├── notes.md             # Catatan
-│   ├── to-do.md             # Fitur yang ingin di kerjakan
-│   └── guide.md             # Panduan kerja 
-│   
-├── .env.local               # Variabel environment\API Key Appwrite
-├── .gitignore               # File yang diabaikan oleh Git
-└── README.md                # Dokumentasi utama, petunjuk setup/progress kelompok
+## Tech Stack
+
+- `TypeScript`
+- `Next.js 16`
+- `React 19`
+- `Tailwind CSS v4`
+- `Appwrite` untuk auth, tables, dan storage
+- `Appwrite Functions` untuk trusted backend lintas buyer/seller
+- `Framer Motion` untuk motion/UI transitions
+
+## Appwrite Coverage
+
+### Tables aktif
+
+- `user_profiles`
+- `stores`
+- `products`
+- `addresses`
+- `cart_items`
+- `orders`
+- `order_items`
+- `reviews`
+- `conversations`
+- `chat_messages`
+- `notifications`
+- `favorites`
+- `collections`
+- `collection_items`
+
+### Buckets aktif
+
+- `profile-avatars`
+- `store-assets`
+- `product-images`
+
+### Function aktif
+
+- `commerce-gateway`
+
+## Route Model
+
+Project ini memakai `output: 'export'`, jadi runtime detail route yang bergantung pada ID Appwrite tidak diarahkan ke dynamic route build-time.
+
+Route runtime-safe yang dipakai in-app:
+
+- `/product/detail?productId=...`
+- `/store/detail?storeId=...`
+- `/seller/products/edit?productId=...`
+- `/messages/room?...`
+- `/orders/track?orderId=...`
+- `/orders/review?orderId=...`
+- `/seller/orders/detail?orderId=...`
+- `/collections/detail?collectionId=...`
+
+Dynamic route lama tetap ada untuk sample static build compatibility, tetapi navigasi in-app utama sudah berhenti mengandalkannya.
+
+## Flow yang Sudah Live
+
+### Guest
+
+- landing page
+- onboarding
+- login
+- register
+- forgot password UI flow
+
+### Buyer
+
+- home
+- search
+- category listing
+- product detail
+- store detail
+- favorites
+- collections
+- cart
+- checkout
+- payment
+- orders
+- tracking
+- review
+- messages
+- notifications
+- profile edit
+- address management
+
+### Seller
+
+- seller onboarding
+- seller dashboard
+- seller products
+- add product
+- edit product
+- seller orders
+- seller reports
+- seller settings
+
+## Honest Read-only / Informational Areas
+
+Fitur berikut sengaja dibuat jujur sebagai status informasional, bukan pura-pura transactional:
+
+- `/profile/payments`
+- `/profile/security/2fa`
+- `/profile/security/pin`
+- payout / withdraw seller
+- response time toko otomatis
+
+## Struktur Penting Repo
+
+```text
+src/
+  app/                  App Router pages
+  components/           Reusable UI + layout components
+  context/              Auth provider dan shared app state
+  hooks/                Custom hooks
+  lib/
+    appwrite/           Appwrite client/config
+    services/           Domain service layer
+    routes.ts           Runtime-safe route builders
+    slug.ts             Deterministic slug helpers
+  types/                Shared TypeScript domain types
+docs/
+  AI/AGENTS.md          Aturan kerja agent / contributor AI
+  design_system/        Token, spacing, typography, component guidance
+  to-do.md              Tracker status kerja
+  notes.md              Progress + audit + konteks arsitektur
 ```
 
-## Getting Started
+## Menjalankan Project
 
-First, run the development server:
+Install dependency:
+
+```bash
+npm install
+```
+
+Jalankan development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Validasi utama:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+Project memakai `.env.local` untuk Appwrite config. Minimal env yang dibutuhkan:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_APPWRITE_ENDPOINT=
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+NEXT_PUBLIC_APPWRITE_DATABASE_ID=
+NEXT_PUBLIC_APPWRITE_TABLE_USER_PROFILES_ID=
+NEXT_PUBLIC_APPWRITE_TABLE_STORES_ID=
+NEXT_PUBLIC_APPWRITE_TABLE_PRODUCTS_ID=
+NEXT_PUBLIC_APPWRITE_BUCKET_PROFILE_AVATARS_ID=
+NEXT_PUBLIC_APPWRITE_BUCKET_STORE_ASSETS_ID=
+NEXT_PUBLIC_APPWRITE_BUCKET_PRODUCT_IMAGES_ID=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tambahan table env lain dipakai untuk buyer/seller domain yang sudah hidup.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Current Priorities
 
-## Deploy on Vercel
+Fase polishing tersisa:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- smoke test permission Appwrite dengan akun buyer/seller terpisah
+- upload logo toko bila UI affordance-nya disepakati
+- domain payout seller bila memang masuk scope final
+- final QA end-to-end untuk demo kelompok
+- verifikasi deployment `commerce-gateway` setelah perubahan flow order/chat/review
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Reference Docs
+
+- [Agent Rules](C:/Users/hafiz/Documents/Kampus/CardToo/docs/AI/AGENTS.md)
+- [Progress Notes](C:/Users/hafiz/Documents/Kampus/CardToo/docs/notes.md)
+- [To Do Tracker](C:/Users/hafiz/Documents/Kampus/CardToo/docs/to-do.md)

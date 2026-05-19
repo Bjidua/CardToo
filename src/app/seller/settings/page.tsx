@@ -42,7 +42,7 @@ function SellerSettingsContent() {
 
   return (
     <SellerSettingsForm
-      key={`${store.id}:${store.name}:${store.bannerUrl ?? ""}:${store.description}`}
+      key={`${store.id}:${store.name}:${store.bannerUrl ?? ""}:${store.description}:${store.location}`}
       store={store}
       userId={user.id}
       refreshAuth={refreshAuth}
@@ -68,7 +68,7 @@ function SellerSettingsForm({
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [storeRating, setStoreRating] = useState("0.0");
-  const [responseTime] = useState("Aktif");
+  const [responseTime] = useState("Belum dihitung otomatis");
 
   useEffect(() => {
     return () => {
@@ -100,6 +100,7 @@ function SellerSettingsForm({
       setIsSaving(true);
       await storeService.updateStore(userId, store.id, {
         storeName,
+        location,
         description,
         bannerFile,
       });
@@ -142,7 +143,12 @@ function SellerSettingsForm({
                 const file = e.target.files?.[0];
                 if (file) {
                   setBannerFile(file);
-                  setCoverImage(URL.createObjectURL(file));
+                  setCoverImage((current) => {
+                    if (current?.startsWith("blob:")) {
+                      URL.revokeObjectURL(current);
+                    }
+                    return URL.createObjectURL(file);
+                  });
                 }
               }}
             />
@@ -188,7 +194,7 @@ function SellerSettingsForm({
             <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">
               Waktu Balas
             </span>
-            <span className="text-[15px] font-bold text-text-main">{responseTime}</span>
+            <span className="text-[15px] font-bold text-text-main leading-tight">{responseTime}</span>
           </div>
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
             <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">

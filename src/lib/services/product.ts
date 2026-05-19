@@ -8,6 +8,7 @@ import {
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig, getFileViewUrl } from "@/lib/appwrite/config";
+import { buildSlugBase, withSlugSuffix } from "@/lib/slug";
 import type {
   CreateProductInput,
   Product,
@@ -111,7 +112,8 @@ const toProduct = (
 });
 
 const ensureUniqueSlug = async (baseSlug: string) => {
-  let slug = baseSlug || `product-${Date.now()}`;
+  const normalizedBaseSlug = buildSlugBase(baseSlug, "product");
+  let slug = normalizedBaseSlug;
   let suffix = 1;
 
   while (true) {
@@ -123,7 +125,7 @@ const ensureUniqueSlug = async (baseSlug: string) => {
 
     if (total === 0) return slug;
 
-    slug = `${baseSlug}-${suffix}`;
+    slug = withSlugSuffix(normalizedBaseSlug, suffix);
     suffix += 1;
   }
 };

@@ -19,6 +19,8 @@ export const ProfilePicture = ({
   size = 60,
 }: ProfilePictureProps) => {
   const imageSrc = src || getAssetPath("/assets/ProfilePicture.svg");
+  const isPreviewSource =
+    imageSrc.startsWith("blob:") || imageSrc.startsWith("data:");
 
   return (
     <div
@@ -35,6 +37,7 @@ export const ProfilePicture = ({
         fill
         className="object-cover"
         draggable={false}
+        unoptimized={isPreviewSource}
       />
     </div>
   );

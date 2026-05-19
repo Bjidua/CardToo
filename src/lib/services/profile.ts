@@ -1,13 +1,16 @@
 import type { Models } from "appwrite";
 import {
+  ID,
   Permission,
   Role,
+  storage,
   tablesDB,
 } from "@/lib/appwrite/client";
-import { appwriteConfig } from "@/lib/appwrite/config";
+import { appwriteConfig, getFileViewUrl } from "@/lib/appwrite/config";
 import type { UserProfile, UserProfileRow, UserRole } from "@/types";
 
 const tableId = appwriteConfig.tables.userProfiles;
+const bucketId = appwriteConfig.buckets.profileAvatars;
 type UserProfileRecord = Models.Row & UserProfileRow;
 
 const normalizeError = (error: unknown) =>
@@ -26,6 +29,24 @@ const toUserProfile = (
   avatar_url: row.avatar_url,
   is_active: row.is_active,
 });
+
+const uploadProfileAvatar = async (file: File, userId: string) => {
+  const uploaded = await storage.createFile({
+    bucketId,
+    fileId: ID.unique(),
+    file,
+    permissions: [
+      Permission.read(Role.any()),
+      Permission.update(Role.user(userId)),
+      Permission.delete(Role.user(userId)),
+    ],
+  });
+
+  return {
+    fileId: uploaded.$id,
+    url: getFileViewUrl(bucketId, uploaded.$id),
+  };
+};
 
 export const profileService = {
   async createProfile(input: {
@@ -96,6 +117,44 @@ export const profileService = {
         rowId: userId,
         data,
       });
+      return toUserProfile(row);
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async updateProfileWithAvatar(
+    userId: string,
+    data: Partial<
+      Pick<
+        UserProfileRow,
+        "username" | "role" | "full_name" | "phone" | "is_active"
+      >
+    >,
+    avatarFile?: File | null
+  ) {
+    try {
+      const existing = await tablesDB.getRow<UserProfileRecord>({
+        databaseId: appwriteConfig.databaseId,
+        tableId,
+        rowId: userId,
+      });
+
+      const uploadedAvatar = avatarFile
+        ? await uploadProfileAvatar(avatarFile, userId)
+        : null;
+
+      const row = await tablesDB.updateRow<UserProfileRecord>({
+        databaseId: appwriteConfig.databaseId,
+        tableId,
+        rowId: userId,
+        data: {
+          ...data,
+          avatar_file_id: uploadedAvatar?.fileId || existing.avatar_file_id,
+          avatar_url: uploadedAvatar?.url || existing.avatar_url,
+        },
+      });
+
       return toUserProfile(row);
     } catch (error) {
       throw new Error(normalizeError(error));
