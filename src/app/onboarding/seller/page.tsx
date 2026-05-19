@@ -12,39 +12,68 @@ import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Halaman Pendaftaran Penjual (SellerRegistrationPage)
+ * Alur onboarding langkah-demi-langkah (multi-step wizard) untuk memandu pembeli menjadi penjual (seller).
+ * Terdiri dari 4 langkah:
+ * - Langkah 0: Welcome (Penjelasan keuntungan jualan)
+ * - Langkah 1: Info Toko (Nama toko, slug tautan, deskripsi toko)
+ * - Langkah 2: KYC (Nama lengkap, No HP, Tanggal lahir)
+ * - Langkah 3: Success (Pendaftaran berhasil & redirect ke dashboard)
+ */
 export default function SellerRegistrationPage() {
   const router = useRouter();
+  
+  // Mengambil service upgrade ke role seller dari AuthContext
   const { becomeSeller } = useAuth();
-  const [step, setStep] = useState(0); // 0: Welcome, 1: Store Info, 2: KYC, 3: Success
+  
+  // State pengendali langkah wizard aktif saat ini (0 sampai 3)
+  const [step, setStep] = useState(0);
+  
+  // State loading saat memproses update database & store creation
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // State penyimpan pesan kesalahan validasi/server
   const [error, setError] = useState("");
+  
+  // State form informasi detail toko
   const [storeForm, setStoreForm] = useState({
     storeName: "",
     storeSlug: "",
     description: "",
   });
+  
+  // State form KYC (Know Your Customer) identitas penjual
   const [kycForm, setKycForm] = useState({
     fullName: "",
     phone: "",
     birthDate: "",
   });
 
+  // Judul & Ikon untuk diagram progress bar multi-step
   const steps = [
     { title: "Info Toko", icon: <Icons.Store size={20} /> },
     { title: "Verifikasi", icon: <Icons.Lock size={20} /> },
     { title: "Selesai", icon: <Icons.Plus size={20} className="rotate-45" /> },
   ];
 
+  /**
+   * Menyelesaikan proses pendaftaran.
+   * Mengirim request data toko dan data identitas ke database Appwrite.
+   */
   const handleRegistrationComplete = async () => {
+    // Validasi data nama toko wajib diisi
     if (!storeForm.storeName.trim()) {
       setError("Nama toko wajib diisi.");
-      setStep(1);
+      setStep(1); // Balikkan ke form info toko
       return;
     }
 
     try {
       setError("");
-      setIsSubmitting(true);
+      setIsSubmitting(true); // Aktifkan spinner loading tombol
+      
+      // Panggil metode becomeSeller pada auth context
       await becomeSeller({
         storeName: storeForm.storeName,
         preferredSlug: storeForm.storeSlug,
@@ -52,7 +81,8 @@ export default function SellerRegistrationPage() {
         fullName: kycForm.fullName,
         phone: kycForm.phone,
       });
-      setStep(3);
+      
+      setStep(3); // Pindah ke langkah sukses
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -60,12 +90,13 @@ export default function SellerRegistrationPage() {
           : "Pendaftaran seller gagal. Coba lagi."
       );
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Matikan spinner loading
     }
   };
 
   return (
     <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft pb-20">
+      {/* Header Halaman Dinamis berdasarkan status step */}
       <StickyHeader
         title={step === 0 ? "Buka Toko Gratis" : "Registrasi Penjual"}
         leftAction={
@@ -77,10 +108,12 @@ export default function SellerRegistrationPage() {
       />
 
       <main className="flex-1 px-6 pt-6 pb-32">
+        {/* Render Progress Bar multi-step jika berada di langkah input data */}
         {step > 0 && step < 3 && (
           <div className="flex items-center justify-between mb-12 px-2 relative">
             {steps.map((s, i) => (
               <React.Fragment key={i}>
+                {/* Bulatan Ikon Langkah */}
                 <div className="flex flex-col items-center gap-2 z-10">
                   <div className={cn(
                     "w-11 h-11 rounded-full flex items-center justify-center transition-all",
@@ -93,7 +126,7 @@ export default function SellerRegistrationPage() {
                     step >= i + 1 ? "text-primary" : "text-text-sub/60"
                   )}>{s.title}</span>
                 </div>
-                {/* Connecting Line */}
+                {/* Garis Penghubung antar langkah dengan animasi motion */}
                 {i < steps.length - 1 && (
                   <div className="flex-1 h-[2px] mx-[-15px] mb-[20px] bg-surface-muted relative overflow-hidden">
                     <motion.div 
@@ -109,6 +142,7 @@ export default function SellerRegistrationPage() {
           </div>
         )}
 
+        {/* Transisi Animasi Langkah menggunakan Framer Motion AnimatePresence */}
         <AnimatePresence mode="wait">
           {step === 0 && <WelcomeStep key="welcome" onStart={() => setStep(1)} />}
           {step === 1 && (
@@ -145,6 +179,10 @@ export default function SellerRegistrationPage() {
   );
 }
 
+/**
+ * Komponen Langkah 0: Sambutan Selamat Datang
+ * Berisi deskripsi umum keuntungan menjadi seller TCG.
+ */
 function WelcomeStep({ onStart }: { onStart: () => void }) {
   return (
     <motion.div 
@@ -161,6 +199,7 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
         Jangkau ribuan kolektor kartu di seluruh Indonesia. Proses pendaftaran cepat, aman, dan gratis!
       </p>
 
+      {/* Rincian Keuntungan */}
       <div className="w-full flex flex-col gap-6 mb-12">
         <BenefitItem icon={<Icons.Wallet size={20} />} title="Pencairan Dana Cepat" desc="Tarik saldo penjualanmu kapan saja." />
         <BenefitItem icon={<Icons.Delivery size={20} />} title="Logistik Terintegrasi" desc="Pick up paket langsung ke rumahmu." />
@@ -174,6 +213,9 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
   );
 }
 
+/**
+ * Komponen Langkah 1: Input detail identitas Toko
+ */
 function StoreInfoStep({
   data,
   onChange,
@@ -205,6 +247,7 @@ function StoreInfoStep({
         <p className="text-[14px] text-text-sub">Gunakan nama yang menarik bagi kolektor.</p>
       </div>
 
+      {/* Bagian upload placeholder logo toko */}
       <div className="flex flex-col items-center mb-4">
         <div className="w-24 h-24 bg-surface-hover rounded-card border-2 border-dashed border-surface-muted flex flex-col items-center justify-center text-text-sub/60 gap-1">
           <Icons.Plus size={24} />
@@ -212,6 +255,7 @@ function StoreInfoStep({
         </div>
       </div>
 
+      {/* Input nama toko */}
       <Input
         label="Nama Toko"
         placeholder="Contoh: CardMaster ID"
@@ -220,6 +264,8 @@ function StoreInfoStep({
           onChange((prev) => ({ ...prev, storeName: event.target.value }))
         }
       />
+      
+      {/* Input tautan URL kustom toko */}
       <Input
         label="Link Toko"
         placeholder="cardtoo.com/store/nama-tokomu"
@@ -230,6 +276,7 @@ function StoreInfoStep({
         }
       />
       
+      {/* Area teks deskripsi toko */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-text-main ml-4">Deskripsi Toko</label>
         <textarea 
@@ -249,6 +296,9 @@ function StoreInfoStep({
   );
 }
 
+/**
+ * Komponen Langkah 2: KYC & Pengisian Data Identitas
+ */
 function KYCStep({
   data,
   onChange,
@@ -284,6 +334,7 @@ function KYCStep({
         <p className="text-[14px] text-text-sub">Pastikan data sesuai.</p>
       </div>
       
+      {/* Input nama lengkap KTP */}
       <Input
         label="Nama Lengkap"
         placeholder="Masukkan Nama Lengkap"
@@ -292,6 +343,8 @@ function KYCStep({
           onChange((prev) => ({ ...prev, fullName: event.target.value }))
         }
       />
+      
+      {/* Input nomor telepon aktif */}
       <Input
         label="Nomor Telefon"
         placeholder="Masukkan Nomor Telefon"
@@ -301,6 +354,8 @@ function KYCStep({
           onChange((prev) => ({ ...prev, phone: event.target.value }))
         }
       />
+      
+      {/* Input tanggal lahir */}
       <Input
         label="Tanggal Lahir"
         placeholder="Masukkan Tanggal Lahir"
@@ -311,6 +366,7 @@ function KYCStep({
         }
       />
 
+      {/* Info keamanan enkripsi */}
       <div className="bg-primary/5 p-4 rounded-card border border-primary/10 flex gap-3">
         <Icons.Lock size={20} className="text-primary shrink-0" />
         <p className="text-[12px] text-text-sub leading-tight">
@@ -318,6 +374,7 @@ function KYCStep({
         </p>
       </div>
 
+      {/* Visual error */}
       {error && (
         <p className="px-2 text-center text-[12px] font-medium text-danger">
           {error}
@@ -333,6 +390,9 @@ function KYCStep({
   );
 }
 
+/**
+ * Komponen Langkah 3: Pendaftaran Berhasil & Sukses
+ */
 function SuccessStep({ onComplete }: { onComplete: () => void }) {
   return (
     <motion.div 
@@ -355,6 +415,9 @@ function SuccessStep({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+/**
+ * Komponen Rincian Keuntungan Individual (BenefitItem)
+ */
 function BenefitItem({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
     <div className="flex items-center gap-4 px-4">

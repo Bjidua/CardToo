@@ -15,6 +15,10 @@ import {
 } from "@/lib/services/order";
 import type { SellerOrder } from "@/types";
 
+/**
+ * Komponen Client Detail Pesanan (OrderDetailClient)
+ * Dibungkus dengan ProtectedRoute (requireSeller=true) agar hanya bisa diakses oleh seller sah.
+ */
 export default function OrderDetailClient({ id }: { id: string }) {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -23,13 +27,34 @@ export default function OrderDetailClient({ id }: { id: string }) {
   );
 }
 
+/**
+ * Komponen Utama Konten Detail Pesanan Penjual (SellerOrderDetailContent)
+ * Memuat detail pesanan masuk tertentu dari database:
+ * - Status pesanan aktual.
+ * - Informasi kurir pengiriman (ETD, nama kurir, biaya pengiriman).
+ * - Informasi penerima (Nama, nomor HP, alamat lengkap).
+ * - Daftar item produk (gambar, judul, kondisi, qty, subtotal harga).
+ * - Total rincian harga (subtotal produk, ongkir, biaya layanan aplikasi, total nominal transfer).
+ * - Tombol aksi kirim pesanan (jika status masih packed/dikemas).
+ */
 function SellerOrderDetailContent({ id }: { id: string }) {
   const router = useRouter();
+
+  // Membaca session login seller aktif
   const { user } = useAuth();
+
+  // State data pesanan lengkap
   const [order, setOrder] = useState<SellerOrder | null>(null);
+
+  // State loading pemuatan data pesanan
   const [isLoading, setIsLoading] = useState(false);
+
+  // State loading status update status kirim pesanan
   const [isShipping, setIsShipping] = useState(false);
 
+  /**
+   * Effect Hook untuk memanggil service rincian pesanan berdasarkan ID.
+   */
   useEffect(() => {
     if (!user || !id) return;
 
@@ -46,11 +71,15 @@ function SellerOrderDetailContent({ id }: { id: string }) {
     void loadOrder();
   }, [id, user]);
 
+  /**
+   * Melakukan aksi kirim pesanan (mengubah status ke "shipped").
+   */
   const handleShipOrder = async () => {
     if (!user || !order) return;
 
     try {
       setIsShipping(true);
+      // Panggil API update status order ke database Appwrite
       const updatedOrder = await orderService.markOrderAsShipped(order.id, user.id);
       setOrder(updatedOrder);
     } finally {
@@ -58,6 +87,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
     }
   };
 
+  // UI STATE 1: Spinner memuat data
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen bg-surface-tint">
@@ -74,6 +104,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
     );
   }
 
+  // UI STATE 2: Penanganan order tidak ditemukan/tidak valid
   if (!order) {
     return (
       <div className="flex flex-col min-h-screen bg-surface-tint">
@@ -104,6 +135,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint pb-32">
+      {/* Header Detail Halaman atas */}
       <StickyHeader
         title="Detail Pesanan"
         variant="minimal"
@@ -112,6 +144,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
       />
 
       <main className="px-6 pt-6 flex flex-col gap-6">
+        {/* Seksi 1: Status Pesanan Utama */}
         <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex items-center justify-between gap-4">
           <div className="flex flex-col">
             <span className="text-[12px] font-bold text-text-sub uppercase tracking-widest">
@@ -125,6 +158,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
           <Icons.Dikemas size={32} className="text-secondary/50" />
         </section>
 
+        {/* Seksi 2: Informasi Pengiriman & Tujuan Penerima */}
         <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex flex-col gap-4">
           <div className="flex items-center gap-2 border-b border-surface-muted pb-3">
             <Icons.Delivery size={20} className="text-secondary" />
@@ -155,6 +189,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
           </div>
         </section>
 
+        {/* Seksi 3: Daftar Item Produk & Total Rincian Biaya */}
         <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex flex-col gap-4">
           <div className="flex items-center gap-2 border-b border-surface-muted pb-3">
             <Icons.Collection size={20} className="text-secondary" />
@@ -163,6 +198,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
             </h3>
           </div>
 
+          {/* List Produk */}
           <div className="flex flex-col gap-4">
             {order.items.map((item) => (
               <div key={item.id} className="flex gap-4">
@@ -198,6 +234,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
             ))}
           </div>
 
+          {/* Nominal Breakdown Finansial */}
           <div className="pt-4 border-t border-surface-muted flex flex-col gap-2">
             <div className="flex justify-between items-center text-[13px] text-text-sub font-medium">
               <span>Subtotal</span>
@@ -221,6 +258,7 @@ function SellerOrderDetailContent({ id }: { id: string }) {
         </section>
       </main>
 
+      {/* Tombol aksi kirim melayang di bawah (Hanya tampil jika status masih dikemas/packed) */}
       {order.status === "packed" && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-surface-tint via-surface-tint/90 to-transparent">
           <Button

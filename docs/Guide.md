@@ -11,6 +11,7 @@ Wajib Sesudah Ngoding (Update & Push file)
 
 ## 📑 Struktur File
 - Struktur detail Projects: cek [[notes]]
+
 ## Penginstallan Library
 Yang perlu di install agar lancar karena pake Next.js dan tailwind CSS
 1. Buka terminal di vscode

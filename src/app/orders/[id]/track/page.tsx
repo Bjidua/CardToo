@@ -1,6 +1,11 @@
 import React from "react";
 import TrackClient from "./TrackClient";
 
+/**
+ * generateStaticParams
+ * Fungsi Next.js untuk mem-generate halaman statis rute dinamis pada waktu build.
+ * Menyediakan ID order placeholder statis agar build statis (output: 'export') berhasil.
+ */
 export function generateStaticParams() {
   return [
     { id: "ORD-001" }, 
@@ -11,6 +16,10 @@ export function generateStaticParams() {
   ];
 }
 
+/**
+ * Halaman Pelacakan Transaksi Pesanan Berdasarkan ID Rute (OrderTrackingPage)
+ * Merender component pelacakan pengiriman client-side dengan parameter ID rute dinamis.
+ */
 export default function OrderTrackingPage({ params }: { params: { id: string } }) {
   return <TrackClient id={params.id} />;
 }

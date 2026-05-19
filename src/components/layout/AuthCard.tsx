@@ -1,12 +1,22 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Properti pendukung untuk AuthCard.
+ */
 interface AuthCardProps {
   children: React.ReactNode;
+  /** Judul form (opsional) yang muncul di bagian paling atas kartu */
   title?: string;
+  /** Ekstra CSS class */
   className?: string;
 }
 
+/**
+ * Komponen wadah (container) bergaya kartu melengkung di atas 
+ * yang digunakan khusus untuk halaman pendaftaran (Register) dan masuk (Login).
+ * Memiliki efek bayangan glow berwarna utama (cyan/primary).
+ */
 const AuthCard = ({ children, title, className }: AuthCardProps) => {
   return (
     <div

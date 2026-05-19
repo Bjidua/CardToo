@@ -12,6 +12,10 @@ import { useAuth } from "@/context/AuthContext";
 import { orderService } from "@/lib/services/order";
 import type { SellerOrder, TransactionDetail } from "@/types";
 
+/**
+ * Halaman Rincian Detail Penjualan Toko (SalesDetailPage)
+ * Dibungkus ProtectedRoute (requireSeller=true) agar hanya bisa diakses oleh seller terdaftar.
+ */
 export default function SalesDetailPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -20,13 +24,30 @@ export default function SalesDetailPage() {
   );
 }
 
+/**
+ * Komponen Konten Rincian Detail Penjualan (SalesDetailContent)
+ * Menampilkan histori transaksi penjualan secara granular (per item produk):
+ * - Kolom pencarian berdasarkan ID pesanan atau nama produk.
+ * - Card transaksi detail (ID pesanan, nama produk, status transaksi).
+ * - Breakdown nominal (harga bruto, potongan biaya layanan aplikasi, dan penghasilan bersih seller).
+ */
 function SalesDetailContent() {
+  // Mengambil profile toko dari auth context
   const { store } = useAuth();
   const ownerUserId = store?.ownerUserId ?? null;
+
+  // State pencarian transaksi
   const [searchTerm, setSearchTerm] = useState("");
+
+  // State daftar order mentah dari DB
   const [orders, setOrders] = useState<SellerOrder[]>([]);
+
+  // State loading status muat
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Effect Hook untuk memuat seluruh pesanan masuk toko.
+   */
   useEffect(() => {
     if (!ownerUserId) return;
 
@@ -43,6 +64,9 @@ function SalesDetailContent() {
     void loadOrders();
   }, [ownerUserId]);
 
+  /**
+   * Mengonversi struktur pesanan (SellerOrder) menjadi list rincian transaksi granular per item produk (TransactionDetail[]).
+   */
   const details = useMemo(() => {
     return orders.flatMap((order) =>
       order.items.map(
@@ -52,9 +76,11 @@ function SalesDetailContent() {
           date: new Date(order.date).toLocaleDateString("id-ID"),
           productName: item.title,
           grossAmount: item.totalPrice,
+          // Proporsi biaya layanan per item produk berdasarkan kontribusinya terhadap subtotal order
           serviceFee: Math.round(
             order.appFee * (item.totalPrice / Math.max(order.subtotal, 1))
           ),
+          // Nominal bersih yang didapatkan penjual (Bruto - Biaya layanan)
           netAmount:
             item.totalPrice -
             Math.round(order.appFee * (item.totalPrice / Math.max(order.subtotal, 1))),
@@ -64,6 +90,7 @@ function SalesDetailContent() {
     );
   }, [orders]);
 
+  // Menyaring list transaksi granular berdasarkan ID pesanan atau nama produk
   const filteredDetails = useMemo(
     () =>
       details.filter(
@@ -74,6 +101,9 @@ function SalesDetailContent() {
     [details, searchTerm]
   );
 
+  /**
+   * Helper format angka rupiah (IDR).
+   */
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -84,6 +114,7 @@ function SalesDetailContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Detail Penjualan"
         variant="minimal"
@@ -97,6 +128,7 @@ function SalesDetailContent() {
       />
 
       <main className="flex-1">
+        {/* Kolom Pencarian */}
         <div className="px-6 pt-6 pb-2">
           <Input
             placeholder="Cari ID Pesanan atau Nama Produk..."
@@ -107,7 +139,9 @@ function SalesDetailContent() {
           />
         </div>
 
+        {/* List Transaksi Rinci */}
         <div className="p-6 flex flex-col gap-4">
+          {/* Spinner Pemuatan */}
           {isLoading && (
             <div className="flex items-center justify-center py-16">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
@@ -125,6 +159,7 @@ function SalesDetailContent() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="bg-white rounded-[24px] p-5 shadow-soft border border-surface-muted flex flex-col gap-4"
                 >
+                  {/* Judul & Status Pesanan */}
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-text-sub uppercase tracking-widest">
@@ -146,6 +181,7 @@ function SalesDetailContent() {
                     </span>
                   </div>
 
+                  {/* Rincian Potongan Keuangan */}
                   <div className="flex flex-col gap-2 py-3 border-y border-surface-muted/50 border-dashed">
                     <div className="flex justify-between text-[13px]">
                       <span className="text-text-sub">Harga Produk</span>
@@ -161,6 +197,7 @@ function SalesDetailContent() {
                     </div>
                   </div>
 
+                  {/* Tanggal & Total Akhir Bersih */}
                   <div className="flex justify-between items-center pt-1">
                     <div className="flex flex-col">
                       <span className="text-[11px] text-text-sub font-medium">
@@ -178,6 +215,7 @@ function SalesDetailContent() {
               ))}
           </AnimatePresence>
 
+          {/* State Pencarian Kosong */}
           {!isLoading && filteredDetails.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-text-sub">
               <Icons.Search size={40} className="opacity-20 mb-4" />

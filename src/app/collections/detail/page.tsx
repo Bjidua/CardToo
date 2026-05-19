@@ -4,6 +4,12 @@ import React from "react";
 import { useSearchParams } from "next/navigation";
 import CollectionDetailClient from "@/components/collections/CollectionDetailClient";
 
+/**
+ * Komponen Konten Detail Koleksi (CollectionDetailContent)
+ * Membaca parameter query URL `collectionId` dari browser client Next.js.
+ * Jika parameter `collectionId` kosong, merender visual error.
+ * Jika valid, mendelegasikan rendering detail koleksi ke component `CollectionDetailClient`.
+ */
 function CollectionDetailContent() {
   const searchParams = useSearchParams();
   const collectionId = searchParams.get("collectionId");
@@ -21,6 +27,10 @@ function CollectionDetailContent() {
   return <CollectionDetailClient id={collectionId} />;
 }
 
+/**
+ * Halaman Utama Detail Koleksi Berdasarkan Query URL (CollectionDetailQueryPage)
+ * Dibungkus dengan React Suspense untuk mendukung Dynamic Routing Next.js dengan useSearchParams saat export build.
+ */
 export default function CollectionDetailQueryPage() {
   return (
     <React.Suspense fallback={<div className="flex min-h-screen bg-surface-tint" />}>

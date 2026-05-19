@@ -15,6 +15,10 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+/**
+ * Halaman Tambah Produk Baru Toko (AddProductPage)
+ * Dibungkus dengan ProtectedRoute (requireSeller=true) agar hanya bisa diakses penjual.
+ */
 export default function AddProductPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -23,14 +27,37 @@ export default function AddProductPage() {
   );
 }
 
+/**
+ * Komponen Konten Form Tambah Produk (AddProductContent)
+ * Menyediakan form pengisian data listing kartu baru:
+ * - Unggah gambar cover kartu (JPG, PNG).
+ * - Input teks nama kartu dan kategori/expansion.
+ * - Tombol pilihan kondisi kartu (Mint, Near Mint, dll).
+ * - Input angka nominal harga dan sisa stok.
+ * - Input text-area penjelasan deskripsi kartu.
+ */
 function AddProductContent() {
   const router = useRouter();
+
+  // Membaca info toko & id user aktif
   const { store, user } = useAuth();
+
+  // State pilihan kondisi kartu (Default: Mint)
   const [condition, setCondition] = useState("Mint");
+
+  // State loading status proses submit upload produk
   const [isUploading, setIsUploading] = useState(false);
+
+  // State pesan kesalahan validasi/API
   const [error, setError] = useState("");
+
+  // State file gambar cover yang dipilih dari file explorer
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  // Ref DOM input file type hidden
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // State isian formulir teks
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -39,9 +66,14 @@ function AddProductContent() {
     description: "",
   });
 
+  // Kategori kondisi kartu TCG standar industri
   const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Played"];
 
+  /**
+   * Menangani pengunggahan produk baru ke database Appwrite.
+   */
   const handleUpload = async () => {
+    // Normalisasi string kondisi & kategori agar sesuai dengan format ENUM/Zod Schema
     const normalizedCondition = normalizeProductCondition(condition);
     const normalizedCategory = normalizeProductCategory(formData.category);
 
@@ -50,6 +82,7 @@ function AddProductContent() {
       return;
     }
 
+    // Validasi input wajib diisi
     if (!formData.name || !formData.price || !formData.category) {
       setError("Nama produk, kategori, dan harga wajib diisi.");
       return;
@@ -62,7 +95,9 @@ function AddProductContent() {
 
     try {
       setError("");
-      setIsUploading(true);
+      setIsUploading(true); // Kunci form & tombol
+
+      // Panggil service createProduct untuk menyimpan ke database dan storage Appwrite
       await productService.createProduct(user.id, {
         storeId: store.id,
         title: formData.name,
@@ -73,7 +108,10 @@ function AddProductContent() {
         description: formData.description,
         coverFile: selectedImage,
       });
+
       setIsUploading(false);
+      
+      // Arahkan kembali ke etalase seller
       router.push("/seller/products");
     } catch (submitError) {
       setIsUploading(false);
@@ -87,6 +125,7 @@ function AddProductContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Tambah Produk"
         variant="minimal"
@@ -95,6 +134,8 @@ function AddProductContent() {
       />
 
       <main className="flex flex-1 flex-col gap-6 px-6 pt-6">
+        
+        {/* Input Unggah Gambar Cover */}
         <div className="flex flex-col gap-2">
           <label className="px-2 text-[14px] font-bold text-text-main">Foto Kartu</label>
           <div
@@ -125,6 +166,7 @@ function AddProductContent() {
           />
         </div>
 
+        {/* Input Form Nama Kartu & Kategori Ekspansi */}
         <div className="flex flex-col gap-4">
           <Input
             label="Nama Kartu / Produk"
@@ -145,6 +187,7 @@ function AddProductContent() {
           />
         </div>
 
+        {/* Pilihan Kondisi Kartu TCG */}
         <div className="flex flex-col gap-2">
           <label className="px-2 text-[14px] font-bold text-text-main">Kondisi Kartu</label>
           <div className="flex flex-wrap gap-2 px-2">
@@ -164,6 +207,7 @@ function AddProductContent() {
           </div>
         </div>
 
+        {/* Input Angka Harga & Stok */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Harga (Rp)"
@@ -185,6 +229,7 @@ function AddProductContent() {
           />
         </div>
 
+        {/* Input Text Area Deskripsi Detail */}
         <div className="flex w-full flex-col gap-1.5">
           <label className="ml-4 text-[14px] font-bold text-text-main">
             Deskripsi (Opsional)
@@ -202,6 +247,7 @@ function AddProductContent() {
           />
         </div>
 
+        {/* Info Kesalahan Validasi */}
         {error && (
           <p className="px-2 text-center text-[12px] font-medium text-danger">
             {error}
@@ -209,6 +255,7 @@ function AddProductContent() {
         )}
       </main>
 
+      {/* Tombol Aksi Upload Melayang di Bawah */}
       <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[440px] -translate-x-1/2 bg-linear-to-t from-white via-white/90 to-transparent p-6 pointer-events-none">
         <div className="w-full pointer-events-auto">
           <Button

@@ -1,214 +1,163 @@
-# CardToo Progress Notes
+# CardToo Progress & Technical Notes
 
-## 1. Konteks Project
+> [!NOTE]
+> Dokumen ini mencatat detail arsitektur teknis, peta folder, cakupan database backend, audit progres terkini, serta analisis risiko untuk CardToo. Dokumen ini wajib dibaca oleh semua kontributor dan AI asisten (`Pi`) sebelum memulai pengerjaan fitur baru.
 
-CardToo adalah project ecommerce/marketplace TCG untuk tugas kelompok kampus. Produk utamanya adalah kartu koleksi seperti Pokemon, One Piece, Boboiboy, Yu-Gi-Oh!, dan kategori serupa.
+---
 
-Repo ini dibangun sebagai web app mobile-first dengan target:
+## 1. Konteks Project & Target Persona
 
-- flow guest jelas
-- flow buyer bisa transaksi end-to-end
-- flow seller bisa mengelola toko dan pesanan
+CardToo adalah aplikasi marketplace/e-commerce TCG (*Trading Card Game*) yang dirancang khusus untuk kebutuhan *mobile-first*. Platform ini memfasilitasi transaksi jual-beli kartu koleksi seperti Pokemon, One Piece, Boboiboy, Yu-Gi-Oh!, dan sejenisnya.
 
-## 2. Status Saat Ini
+Aplikasi ini dikembangkan dengan target alur kerja yang jelas untuk tiga persona utama:
+1. **Guest**: Menelusuri produk, melihat kategori, pencarian, dan diarahkan untuk login/register saat ingin bertransaksi.
+2. **Buyer**: Melakukan pembelian (end-to-end), mengelola keranjang, menambahkan produk ke daftar favorit/koleksi, berkirim pesan dengan penjual, melakukan checkout, pembayaran, serta memantau status pesanan dan memberikan ulasan.
+3. **Seller**: Mengupgrade akun buyer menjadi seller, mengelola informasi toko (nama, deskripsi, banner, lokasi), mengelola produk (tambah, edit, hapus), melacak pesanan masuk, serta melihat laporan pendapatan toko.
 
-- Tanggal audit/progress acuan: `18 Mei 2026`
-- Estimasi kesiapan: `~93%`
-- `npm run lint`: lulus
-- `npm run build`: lulus
-- Build App Router statis terakhir menghasilkan `85 routes`
+---
 
-## 3. Arsitektur Saat Ini
+## 2. Folder Structure Tree
+
+Berikut adalah struktur folder proyek CardToo beserta penjelasan fungsinya:
+
+```text
+CardToo/
+├── .github/                  # Konfigurasi GitHub Actions untuk CI/CD dan workflow otomasi
+├── appwrite-functions/       # Serverless cloud functions untuk di-deploy ke Appwrite
+│   └── commerce-gateway/     # Gateway backend untuk operasi database lintas buyer/seller secara aman
+├── docs/                     # Dokumentasi project (panduan, arsitektur, catatan progres)
+│   ├── AI/                   # Panduan pengerjaan & aturan pengembangan untuk asisten AI (AGENTS.md)
+│   └── design_system/        # Token desain, arsitektur visual, dan pedoman UI/UX
+├── public/                   # Aset statis aplikasi yang bisa diakses langsung via URL (favicon, dll.)
+│   └── assets/               # File gambar PNG/SVG untuk logo, banner, dan ikon UI
+├── scripts/                  # Skrip otomasi untuk deploy database, migrasi, dan pembantu development
+├── src/                      # Source code utama aplikasi web Next.js
+│   ├── app/                  # Next.js App Router (sistem routing berbasis folder)
+│   │   ├── (auth)/           # Route group untuk modul autentikasi (login, register, OTP)
+│   │   ├── checkout/         # Alur transaksi checkout dan pembayaran (payment)
+│   │   ├── seller/           # Modul dashboard toko dan pengelolaan pesanan oleh seller
+│   │   ├── test-components/  # Halaman pengujian komponen UI/UX selama masa pengembangan
+│   │   └── ...               # Halaman fitur pembeli/publik (cart, product, profile, dll.)
+│   ├── components/           # Kumpulan komponen React reusable
+│   │   ├── auth/             # Komponen UI spesifik proses login/register
+│   │   ├── chat/             # Komponen UI untuk fitur obrolan pembeli-penjual
+│   │   ├── collections/      # Komponen penampil daftar koleksi TCG
+│   │   ├── layout/           # Tata letak global (BottomNav, StickyHeader, DevGodModePanel)
+│   │   └── ui/               # Komponen UI dasar / atomik (Button, Input, Card, dll.)
+│   ├── context/              # React Context untuk state management global (AuthContext, LanguageContext)
+│   ├── hooks/                # Custom React Hooks (seperti useFavorites untuk mengelola favorit)
+│   ├── lib/                  # Inisialisasi library pihak ketiga dan layer integrasi API
+│   │   ├── appwrite/         # Setup client SDK Appwrite dan konfigurasi environment
+│   │   └── services/         # Layer komunikasi API per sub-modul (auth, cart, order, product, dll.)
+│   └── types/                # Berisi deklarasi/definisi type & interface TypeScript global (index.ts)
+└── tests/                    # Pengujian otomatis aplikasi (integration/unit testing)
+```
+
+### Penjelasan Fungsi Masing-Masing Folder Utama:
+- **`appwrite-functions/`**: Menyimpan fungsi serverless backend (FaaS) yang dieksekusi di lingkungan terisolasi Appwrite. Salah satu fungsi utama adalah `commerce-gateway` yang menjamin integritas transaksi dan operasi tulis (write) yang memerlukan validasi keamanan ketat di sisi server.
+- **`docs/`**: Berisi seluruh file dokumentasi proyek. Hal ini mencakup pedoman standar asisten AI (`AI/AGENTS.md`), catatan perkembangan (`notes.md`), daftar tugas yang harus diselesaikan (`to-do.md`), dan panduan desain visual (`design_system`).
+- **`public/`**: Menyimpan aset statis yang disajikan langsung oleh Next.js tanpa kompilasi tambahan, seperti berkas aset logo, banner hero, dan favicon.
+- **`scripts/`**: Kumpulan skrip otomasi berbasis Node.js yang mempermudah deployment cloud functions ke Appwrite serta skrip migrasi database (misalnya, migrasi penambahan kunci idempotensi pesanan).
+- **`src/`**: Tempat utama penulisan kode program (source code) aplikasi CardToo:
+  - **`src/app/`**: Pusat routing Next.js berbasis file system. Folder ini menentukan path URL aplikasi. Halaman pembeli, seller, serta halaman admin dikelompokkan secara terstruktur di sini.
+  - **`src/components/`**: Komponen antarmuka pengguna (UI) yang dirancang agar dapat digunakan kembali (reusable). Terbagi menjadi komponen tata letak (`layout/`), komponen spesifik fitur (`auth/`, `chat/`), serta komponen atomik/dasar (`ui/`).
+  - **`src/context/`**: Mengelola state global aplikasi menggunakan React Context API, seperti menyimpan data autentikasi user aktif dan preferensi bahasa yang dipilih.
+  - **`src/hooks/`**: Memisahkan logika bisnis atau operasi stateful dari tampilan UI ke dalam fungsi pembantu khusus React (Custom Hooks) agar kode UI tetap bersih dan modular.
+  - **`src/lib/`**: Lapisan integrasi eksternal. Di dalamnya terdapat setup inisialisasi Appwrite SDK (`lib/appwrite`) serta layer `services` yang memisahkan logika database/API query (seperti fetch produk, simpan order, update keranjang) dari komponen visual Next.js.
+  - **`src/types/`**: Menyediakan type-safety menggunakan TypeScript agar seluruh properti objek (misal: data `Product`, `Order`, `User`) yang mengalir dari database hingga ke antarmuka pengguna tervalidasi dengan benar secara statis.
+- **`tests/`**: Berisi file pengujian otomatis untuk memvalidasi alur bisnis kritis agar aplikasi tetap stabil ketika terjadi perubahan atau penambahan fitur di kemudian hari.
+
+---
+
+## 3. Arsitektur Teknis & Konfigurasi
 
 ### Frontend
+- **Framework**: `Next.js 16.2.4` (App Router)
+- **Library Inti**: `React 19.2.4` & `React DOM 19.2.4`
+- **Styling**: `Tailwind CSS v4.0.0` & `@tailwindcss/postcss`
+- **Animasi & Transisi**: `Framer Motion v12.38.0`
+- **Slider/Carousel**: `Swiper v12.1.4`
+- **Ikon**: `Lucide React v1.14.0`
 
-- `Next.js 16 App Router`
-- `React 19`
-- `Tailwind CSS v4`
-- `Framer Motion`
+### Backend (Appwrite)
+Integrasi backend sepenuhnya menggunakan **Appwrite SDK (`^25.0.0`)** yang mencakup:
+- **Autentikasi**: Appwrite Auth (Email/Sandi + sinkronisasi state user ke `AuthContext`).
+- **Database**: Appwrite TablesDB untuk penyimpanan data relasional terstruktur.
+- **Storage**: Appwrite Storage Buckets untuk manajemen file media (avatar, gambar produk, banner toko).
+- **Functions**: Appwrite Functions (`commerce-gateway`) sebagai lapisan trusted backend/API gateway untuk mengoordinasikan transaksi aman.
 
-### Backend
+> [!IMPORTANT]
+> **Static Export Hardening (`output: 'export'`)**
+> Proyek ini menggunakan mode static export di Next.js. Karena halaman HTML diekspor secara statis saat waktu build (*build-time*), rute dinamis standar seperti `/product/[id]` tidak dapat digunakan untuk entitas database yang baru dibuat di Appwrite setelah build selesai.
+> 
+> Sebagai solusinya, semua detail entitas runtime wajib menggunakan rute statis dengan parameter query:
+> - Detail Produk: `/product/detail?productId=...`
+> - Detail Toko: `/store/detail?storeId=...`
+> - Edit Produk Seller: `/seller/products/edit?productId=...`
+> - Ruang Obrolan: `/messages/room?conversationId=...`
+> - Pelacakan Pesanan: `/orders/track?orderId=...`
 
-- `Appwrite Auth`
-- `Appwrite TablesDB`
-- `Appwrite Storage`
-- `Appwrite Functions` (`commerce-gateway`) untuk write lintas buyer/seller
+---
 
-### Routing penting
+## 4. Cakupan Database & Storage (Appwrite Coverage)
 
-Project memakai `output: 'export'`, sehingga detail entity runtime Appwrite dipindahkan ke route statis berbasis query param.
+Berdasarkan berkas konfigurasi `src/lib/appwrite/config.ts`, berikut adalah pemetaan tabel (koleksi), storage bucket, dan fungsi serverless yang digunakan:
 
-Route runtime-safe aktif:
+### Tabel Database (`databaseId: "69f63b060014c2f96188"`)
 
-- `/product/detail?productId=...`
-- `/store/detail?storeId=...`
-- `/seller/products/edit?productId=...`
-- `/messages/room?...`
-- `/orders/track?orderId=...`
-- `/orders/review?orderId=...`
-- `/seller/orders/detail?orderId=...`
-- `/collections/detail?collectionId=...`
+| Nama Tabel / Koleksi ID | Model Layer Service | Deskripsi / Fungsi |
+| :--- | :--- | :--- |
+| `user_profiles` | `profile.ts` | Menyimpan metadata user seperti nama, avatar URL, role (buyer/seller), dll. |
+| `stores` | `store.ts` | Menyimpan profil toko seller termasuk nama toko, deskripsi, banner, dan lokasi. |
+| `products` | `product.ts` | Menyimpan data produk kartu TCG (nama, harga, kategori, stok, foto, deskripsi). |
+| `addresses` | `address.ts` | Daftar alamat pengiriman yang didaftarkan oleh buyer. |
+| `cart_items` | `cart.ts` | Item yang dimasukkan ke keranjang belanja oleh user aktif. |
+| `orders` | `order.ts` | Menyimpan transaksi pesanan (ID, buyer ID, total, status, idempotency key). |
+| `order_items` | `order.ts` | Detail item produk di dalam satu pesanan (kuantitas, harga saat dibeli). |
+| `reviews` | `review.ts` | Ulasan dan rating bintang yang diberikan buyer untuk produk. |
+| `conversations` | `chat.ts` | Kamar chat/percakapan utama yang menghubungkan akun buyer dan seller. |
+| `chat_messages` | `chat.ts` | Isi pesan obrolan terperinci beserta relasi pengirim dan waktu kirim. |
+| `notifications` | `notification.ts` | Notifikasi sistem untuk order, chat baru, dan info status akun. |
+| `favorites` | `favorite.ts` | Daftar produk favorit yang disimpan oleh buyer (Wishlist). |
+| `collections` | `collection.ts` | Daftar koleksi kartu/album yang dibuat secara khusus oleh user. |
+| `collection_items` | `collection.ts` | Kartu/item produk yang dimasukkan ke dalam album koleksi spesifik. |
 
-## 4. Coverage Appwrite
+### Storage Buckets
+- **`profile-avatars`**: Menyimpan file foto profil pengguna.
+- **`store-assets`**: Menyimpan file gambar banner toko seller.
+- **`product-images`**: Menyimpan berkas gambar kartu/produk TCG yang diunggah oleh seller.
 
-### Tables
+### Serverless Functions
+- **`commerce-gateway`**: Berfungsi mengeksekusi operasi penulisan lintas-koleksi yang memerlukan keamanan tinggi, seperti saat checkout (mengurangi stok produk secara atomik dan membuat record `orders` & `order_items` sekaligus secara transaksional).
 
-- `user_profiles`
-- `stores`
-- `products`
-- `addresses`
-- `cart_items`
-- `orders`
-- `order_items`
-- `reviews`
-- `conversations`
-- `chat_messages`
-- `notifications`
-- `favorites`
-- `collections`
-- `collection_items`
+---
 
-### Buckets
+## 5. Progres & Audit Kesiapan Produksi (Progress Audit)
 
-- `profile-avatars`
-- `store-assets`
-- `product-images`
+### Modul yang Sudah Berfungsi Penuh (Production-Ready)
+- [x] **Autentikasi & Sesi**: Login, registrasi, logout terintegrasi dengan status state global di `AuthContext`.
+- [x] **Alur Pembelian (Buyer Flow)**: Menelusuri katalog, menambahkan ke favorit/keranjang, checkout, melakukan simulasi pembayaran, memantau status order, hingga memberikan ulasan/rating.
+- [x] **Alur Penjualan (Seller Flow)**: Mengupgrade profile pembeli menjadi seller, membuat entitas toko baru, menambahkan produk dengan upload gambar langsung ke Appwrite, mengedit dan menghapus produk, serta memantau status pesanan masuk.
+- [x] **Fitur Sosial**: Sistem chat real-time, ulasan produk, dan notifikasi perubahan status transaksi.
+- [x] **Hardening Navigasi**: Transisi navigasi menggunakan route berbasis query parameter guna mendukung Next.js Static Export secara aman.
 
-### Permission snapshot
+### Bagian yang Sedang & Perlu QA Akhir
+- [ ] **Smoke Test Multi-Akun**: Melakukan pengujian alur secara menyeluruh menggunakan tiga akun terpisah (Guest, Buyer, Seller) secara bersamaan untuk mendeteksi konflik state.
+- [ ] **Audit Izin Akses (Permissions Appwrite)**:
+  - Memastikan dokumen sensitif seperti alamat pengiriman, keranjang, dan riwayat pesanan memiliki *read-write permission* yang terbatas hanya untuk pemilik dokumen (`owner-scoped`).
+  - Memastikan data publik (produk, detail toko, review) memiliki izin *read* secara publik.
+- [ ] **Validasi Validitas Gateway**: Pengujian ketahanan `commerce-gateway` dalam menangani pengurangan stok secara konkuren dan penanganan idempotency key pada pesanan.
 
-Hasil audit Appwrite live:
+---
 
-- semua table domain utama memakai `rowSecurity = true`
-- `stores` dan `products` punya table permission public read + `create("users")`
-- table privat lain memakai `create("users")` dan owner-scoped row permissions saat row dibuat dari service
-- bucket `profile-avatars`, `store-assets`, `product-images` memakai `fileSecurity = true`
-- file permission owner/public diatur saat upload pada service terkait
-- flow lintas user untuk `orders`, `chat`, dan notifikasi review/order penting sekarang dipindahkan ke trusted backend `commerce-gateway`
+## 6. Analisis Risiko & Langkah Berikutnya
 
-## 5. Flow Audit
+### Identifikasi Risiko (Risiko & Tantangan)
+1. **Pembatasan Static Export**: Segala penambahan fitur baru yang membutuhkan halaman detail harus mematuhi skema query-based routing (`?id=...`). Pembuatan dynamic path tradisional `/detail/[id]` akan merusak proses build static export di produksi.
+2. **Ketergantungan Eksternal (Appwrite Cloud)**: Karena backend di-host di layanan cloud Appwrite SGP, responsivitas aplikasi sangat bergantung pada latensi jaringan eksternal. Perlu penanganan state loading yang halus di frontend menggunakan Framer Motion.
+3. **Kebocoran Izin Dokumen**: Konfigurasi permission di sisi Appwrite Console harus dikunci dengan benar. Jika terjadi kelalaian dalam setelan permission di dashboard Appwrite, ada risiko user lain dapat membaca/mengubah pesanan atau alamat milik user lain.
 
-### Guest
-
-Status: `live`
-
-Sudah jalan:
-
-- landing
-- onboarding
-- login
-- register
-- auth guard ke halaman private
-
-### Buyer
-
-Status: `live`
-
-Sudah jalan:
-
-- home
-- search
-- categories
-- product detail
-- store detail
-- favorite
-- collections
-- cart
-- checkout
-- payment
-- orders
-- tracking
-- review
-- messages
-- notifications
-- profile edit
-- address management
-
-### Seller
-
-Status: `live`
-
-Sudah jalan:
-
-- onboarding seller
-- dashboard
-- add/edit/delete product
-- seller orders
-- seller reports
-- seller settings
-
-## 6. Honest Read-only / Informational Features
-
-Fitur berikut sengaja tidak dipura-purakan menjadi live:
-
-- `profile/payments`
-- `profile/security/2fa`
-- `profile/security/pin`
-- withdraw seller
-- response time toko otomatis
-
-## 7. Hardening yang Baru Ditutup
-
-### Final hardening batch
-
-Perubahan penting yang baru selesai:
-
-- semua link in-app ke detail produk/toko/edit produk seller pindah ke route statis query-based
-- `profile/edit` sekarang mendukung upload avatar nyata ke bucket `profile-avatars`
-- tampilan avatar ikut sinkron di header home dan halaman profile
-- `stores.location` ditambahkan ke schema Appwrite live dan dipersist dari seller settings
-- tanggal gabung toko sekarang memakai data nyata dari Appwrite
-- withdraw seller tidak lagi mock timeout; sekarang jujur sebagai informational state
-- fallback slug `Date.now()` dihapus dan diganti helper deterministik reusable
-- trusted backend `commerce-gateway` ditambahkan untuk menghindari masalah permission cross-user di checkout dan chat
-
-## 8. Maintainability Assessment
-
-Status maintainability: `baik, tetapi belum selesai total`
-
-Yang sudah bagus:
-
-- service Appwrite sudah dipisah per domain
-- shared types terpusat
-- route helper runtime-safe sudah ada
-- design-system debt besar sudah banyak dibersihkan
-
-Yang masih perlu dipantau:
-
-- QA permission nyata antar akun
-- keputusan scope final untuk logo toko
-- keputusan scope final untuk payout seller
-
-## 9. Remaining Risk
-
-### Risk rendah
-
-- utility page informasional dianggap “kurang lengkap” oleh reviewer non-teknis, meski sekarang sudah jujur
-
-### Risk sedang
-
-- belum ada smoke test formal antar dua akun berbeda untuk semua permission path
-- seller payout dan logo toko bisa dianggap gap bila tim ingin demo “fitur penuh”
-
-## 10. Rekomendasi Next Step
-
-1. jalankan QA guest/buyer/seller end-to-end
-2. cek permission Appwrite dengan akun buyer dan seller berbeda
-3. putuskan apakah:
-   - logo toko
-   - payout seller
-   masuk scope final atau tetap `out of scope`
-
-## 11. Ringkasan Kesiapan Demo
-
-Kalau targetnya adalah demo marketplace TCG yang terasa hidup dan tidak sekadar slicing UI, repo ini sudah sangat dekat:
-
-- auth nyata: siap
-- buyer flow inti: siap
-- seller flow inti: siap
-- Appwrite core: siap
-- static export compatibility: siap
-- polish remaining: minor sampai menengah
-
-Kesimpulan saat ini:
-
-> CardToo sudah layak disebut hampir selesai untuk scope tugas kuliah, dengan sisa pekerjaan utama berupa QA akhir, permission smoke test, dan keputusan scope fitur minor.
+### Langkah Berikutnya
+1. **Melakukan QA End-to-End**: Melaksanakan pengujian fungsional lintas-peran secara menyeluruh sesuai daftar di `docs/to-do.md`.
+2. **Uji Coba Lint & Build Lokal**: Menjalankan perintah `npm run lint` dan `npm run build` secara periodik selama pengembangan untuk memastikan static export terkompilasi tanpa error TypeScript.
+3. **Penyempurnaan UI Polish**: Menyelesaikan affordance UI untuk pengunggahan logo toko dan konfirmasi integrasi alur payout seller.

@@ -15,21 +15,51 @@ import { buildProductDetailHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 
+/**
+ * Halaman Pencarian Kartu (SearchPage)
+ * Menyediakan filter produk kartu TCG terlengkap dengan parameter pencarian dinamis:
+ * - Pencarian teks real-time berdasarkan judul produk kartu.
+ * - Tab pengurutan (Terkait, Terbaru, Terlaris, Urutan Harga terendah).
+ * - Modal drawer filter detail (Berdasarkan kondisi Mint/Near Mint dll, dan rentang nominal Rupiah).
+ * - Aksi wishlist instan pada hasil kartu yang ditemukan.
+ */
 export default function SearchPage() {
   const router = useRouter();
+
+  // Status autentikasi global untuk proteksi wishlist
   const { isGuest, user } = useAuth();
+
+  // State query teks pencarian
   const [searchQuery, setSearchQuery] = useState("");
+
+  // State tab pengurutan aktif (default: Terkait)
   const [activeTab, setActiveTab] = useState("Terkait");
+
+  // State pengendali drawer panel filter
   const [showFilter, setShowFilter] = useState(false);
+
+  // State array filter kondisi kartu yang dicentang user
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+
+  // State filter rentang harga minimum & maksimum
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+
+  // State penyimpan seluruh data produk dari database
   const [products, setProducts] = useState<Product[]>([]);
+
+  // State loading status pemuatan list produk
   const [isLoading, setIsLoading] = useState(true);
+
+  // Hook sinkronisasi status favorit kartu
   const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
+  // List filter opsi tab & opsi kondisi kartu
   const tabs = ["Terkait", "Terbaru", "Terlaris", "Harga"];
   const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Played"];
 
+  /**
+   * Effect Hook untuk menarik semua data produk berstatus published (siap jual).
+   */
   React.useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -44,37 +74,52 @@ export default function SearchPage() {
     void loadProducts();
   }, []);
 
+  /**
+   * Menambahkan/menghapus pilihan kondisi kartu pada filter drawer.
+   */
   const toggleCondition = (cond: string) => {
     setSelectedConditions(prev =>
       prev.includes(cond) ? prev.filter(c => c !== cond) : [...prev, cond]
     );
   };
 
+  /**
+   * Memoized logic pemfilteran dan pengurutan list produk.
+   * Dihitung ulang jika query, filter kondisi, tab, rentang harga, atau list produk berubah.
+   */
   const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return [];
+    if (!searchQuery.trim()) return []; // Kosongkan jika query kosong
+    
+    // Filter 1: Pencarian teks berbasis substring judul kartu (case-insensitive)
     let visibleProducts = products.filter((product) =>
       product.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Filter 2: Kondisi kartu
     if (selectedConditions.length > 0) {
       visibleProducts = visibleProducts.filter(
         (product) => product.condition && selectedConditions.includes(product.condition)
       );
     }
 
+    // Filter 3: Rentang harga minimum
     if (priceRange.min) {
       visibleProducts = visibleProducts.filter(
         (product) => product.price >= Number(priceRange.min)
       );
     }
 
+    // Filter 4: Rentang harga maksimum
     if (priceRange.max) {
       visibleProducts = visibleProducts.filter(
         (product) => product.price <= Number(priceRange.max)
       );
     }
 
+    // Pengurutan 1: Terkini/Terbaru
     if (activeTab === "Terbaru") return [...visibleProducts].reverse();
+    
+    // Pengurutan 2: Harga Terendah
     if (activeTab === "Harga") return [...visibleProducts].sort((a, b) => a.price - b.price);
 
     return visibleProducts;
@@ -82,6 +127,7 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint">
+      {/* Header Pencarian */}
       <StickyHeader
         title="Search"
         variant="minimal"
@@ -90,9 +136,10 @@ export default function SearchPage() {
       />
 
       <main className="flex-1 flex flex-col">
-        {/* Search Input Section */}
+        {/* Kontainer Bar Pencarian Melayang */}
         <div className="px-6 pt-4 pb-2 bg-white/80 backdrop-blur-xl sticky top-[72px] z-30 border-b border-surface-muted shadow-soft">
           <div className="relative group">
+            {/* Input pencarian dengan ikon */}
             <Input
               placeholder="Cari kartu favoritmu..."
               value={searchQuery}
@@ -103,7 +150,7 @@ export default function SearchPage() {
             />
           </div>
 
-          {/* Sort Tabs */}
+          {/* Opsi Tab Pengurutan & Tombol Filter (hanya tampil jika query tidak kosong) */}
           {searchQuery.trim() !== "" && (
             <div className="flex items-center justify-between mt-4 -mx-6 px-6">
               <div className="flex gap-8 overflow-x-auto no-scrollbar scroll-smooth">
@@ -128,6 +175,7 @@ export default function SearchPage() {
                 ))}
               </div>
               <div className="w-px h-6 bg-surface-muted ml-2" />
+              {/* Tombol filter melayang */}
               <button
                 onClick={() => setShowFilter(true)}
                 className={cn(
@@ -144,11 +192,12 @@ export default function SearchPage() {
           )}
         </div>
 
+        {/* Konten Utama Hasil Cari */}
         <div className="flex-1 px-6 pt-4 pb-20">
           {searchQuery.trim() !== "" ? (
             <div className="flex flex-col gap-6">
-              {/* Toko Berkaitan — akan di-render dari hasil query Appwrite */}
-
+              
+              {/* Info Hasil Pencarian */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5 text-text-sub text-[14px] font-medium">
                   <div className="w-8 h-8 bg-surface-hover rounded-full flex items-center justify-center">
@@ -159,6 +208,7 @@ export default function SearchPage() {
                 <span className="text-[12px] font-bold text-text-sub/60">{filteredProducts.length} Kartu ditemukan</span>
               </div>
 
+              {/* Render spinner loading atau Grid hasil produk */}
               {isLoading ? (
                 <div className="flex items-center justify-center py-24">
                   <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -195,6 +245,7 @@ export default function SearchPage() {
                   </AnimatePresence>
                 </div>
               ) : (
+                /* State Hasil Kosong */
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -223,6 +274,7 @@ export default function SearchPage() {
               )}
             </div>
           ) : (
+            /* State Awal Pencarian Kosong */
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -242,10 +294,11 @@ export default function SearchPage() {
         </div>
       </main>
 
-      {/* FILTER DRAWER */}
+      {/* FILTER DRAWER BOTTOM SHEET */}
       <AnimatePresence>
         {showFilter && (
           <>
+            {/* Latar Belakang Transparan Gelap */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -253,6 +306,7 @@ export default function SearchPage() {
               onClick={() => setShowFilter(false)}
               className="fixed inset-0 z-50 bg-text-main/20 backdrop-blur-xs"
             />
+            {/* Panel Form Geser ke Atas (Slide Up Sheet) */}
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -260,7 +314,7 @@ export default function SearchPage() {
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white rounded-t-[40px] z-50 p-8 pb-12 shadow-medium overflow-hidden"
             >
-              {/* Drag Handle */}
+              {/* Handle Geser Panel */}
               <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-surface-muted rounded-full" />
 
               <div className="flex justify-between items-center mb-10 mt-2">
@@ -277,7 +331,7 @@ export default function SearchPage() {
               </div>
 
               <div className="flex flex-col gap-10">
-                {/* Condition Filter */}
+                {/* 1. Filter Kondisi Kartu */}
                 <div>
                   <div className="flex justify-between items-end mb-5">
                     <h4 className="text-[15px] font-bold text-text-main uppercase tracking-wider">Kondisi Kartu</h4>
@@ -305,7 +359,7 @@ export default function SearchPage() {
                   </div>
                 </div>
 
-                {/* Price Filter */}
+                {/* 2. Filter Rentang Harga Nominal Rupiah */}
                 <div>
                   <h4 className="text-[15px] font-bold text-text-main mb-5 uppercase tracking-wider">Rentang Harga (IDR)</h4>
                   <div className="flex items-center gap-4">
@@ -334,6 +388,7 @@ export default function SearchPage() {
                 </div>
               </div>
 
+              {/* Tombol Aksi Reset dan Terapkan Filter */}
               <div className="flex gap-4 mt-12">
                 <button
                   onClick={() => {

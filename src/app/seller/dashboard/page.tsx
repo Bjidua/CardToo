@@ -14,6 +14,10 @@ import { orderService, formatSellerOrderStatus } from "@/lib/services/order";
 import type { SellerOrder } from "@/types";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+/**
+ * Halaman Dashboard Toko Penjual (SellerDashboardPage)
+ * Dibungkus dengan ProtectedRoute dengan requireSeller=true untuk mengamankan akses khusus seller terdaftar.
+ */
 export default function SellerDashboardPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -22,12 +26,29 @@ export default function SellerDashboardPage() {
   );
 }
 
+/**
+ * Komponen Konten Dashboard Toko (SellerDashboardContent)
+ * Menampilkan ringkasan bisnis toko:
+ * - Card Saldo Penghasilan (informasi statis payout).
+ * - StatBox ringkas (Pesanan baru masuk, produk dikirim, dan total listing produk toko).
+ * - List menu manajemen toko (Laporan, Kelola produk, Pesanan masuk, Pengaturan toko).
+ * - List 3 transaksi penjualan terbaru beserta status transaksinya.
+ */
 function SellerDashboardContent() {
   const router = useRouter();
+
+  // Membaca info store dari auth context
   const { store } = useAuth();
+
+  // State pencatat total item kartu yang terdaftar di toko
   const [productCount, setProductCount] = React.useState(0);
+
+  // State daftar seluruh pesanan yang masuk ke toko ini
   const [sellerOrders, setSellerOrders] = React.useState<SellerOrder[]>([]);
 
+  /**
+   * Effect Hook untuk memuat jumlah listing produk toko dari service.
+   */
   React.useEffect(() => {
     const loadProducts = async () => {
       if (!store?.id) {
@@ -46,6 +67,9 @@ function SellerDashboardContent() {
     void loadProducts();
   }, [store?.id]);
 
+  /**
+   * Effect Hook untuk memuat seluruh pesanan pembeli yang masuk ke toko ini.
+   */
   React.useEffect(() => {
     const loadOrders = async () => {
       if (!store?.ownerUserId) {
@@ -64,12 +88,16 @@ function SellerDashboardContent() {
     void loadOrders();
   }, [store?.ownerUserId]);
 
+  // Hitung jumlah pesanan berstatus baru/pending (packed) dan terkirim (shipped)
   const pendingCount = sellerOrders.filter((order) => order.status === "packed").length;
   const shippedCount = sellerOrders.filter((order) => order.status === "shipped").length;
+  
+  // Ambil maksimal 3 item penjualan terbaru untuk feed dashboard
   const recentSales = sellerOrders.slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Dashboard Toko"
         variant="minimal"
@@ -80,6 +108,7 @@ function SellerDashboardContent() {
       />
 
       <main className="flex-1 px-6 pt-6">
+        {/* Card Saldo Dompet Toko (Simulasi / Read Only) */}
         <div className="w-full bg-linear-to-br bg-secondary to-secondary/15 rounded-[24px] p-6 text-white shadow-medium mb-6 relative overflow-hidden">
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-text-main/10 blur-xl" />
@@ -106,6 +135,7 @@ function SellerDashboardContent() {
           </div>
         </div>
 
+        {/* Deretan StatBox Pintasan Cepat */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           <Link href="/seller/orders?tab=Pending">
             <StatBox icon={<Icons.Cart size={20} />} title="Pesanan Baru" count={pendingCount} />
@@ -118,6 +148,7 @@ function SellerDashboardContent() {
           </Link>
         </div>
 
+        {/* List Menu Manajemen Toko */}
         <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2 mb-3">
           Manajemen Toko
         </h3>
@@ -147,6 +178,7 @@ function SellerDashboardContent() {
           />
         </div>
 
+        {/* Seksi Penjualan Terbaru */}
         <div className="flex items-center justify-between mb-4 px-2">
           <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider">
             Penjualan Terbaru
@@ -156,6 +188,7 @@ function SellerDashboardContent() {
           </Link>
         </div>
 
+        {/* List Penjualan Terbaru */}
         <div className="flex flex-col gap-3">
           {recentSales.length > 0 ? (
             recentSales.map((sale) => (
@@ -180,6 +213,9 @@ function SellerDashboardContent() {
   );
 }
 
+/**
+ * Item List Penjualan Terbaru (RecentSaleItem)
+ */
 function RecentSaleItem({
   title,
   price,
@@ -219,6 +255,9 @@ function RecentSaleItem({
   );
 }
 
+/**
+ * Box Statistik (StatBox)
+ */
 function StatBox({
   icon,
   title,

@@ -17,32 +17,69 @@ import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 import type { Product, ReviewSummary, Store } from "@/types";
 
+/**
+ * Komponen Client Profil Toko (StoreProfileClient)
+ * Menampilkan halaman etalase toko penjual:
+ * - Banner cover toko dan avatar/ikon toko.
+ * - Statistik performa toko (kecepatan chat, kecepatan proses, ketepatan waktu kirim).
+ * - Navigasi tab konten: Produk (list kartu dijual beserta kolom cari internal), Ulasan (distribusi bintang rating), dan Tentang (deskripsi toko).
+ * - Aksi hubungi penjual (Chat Penjual).
+ */
 export default function StoreProfileClient({ id }: { id: string }) {
   const router = useRouter();
+
+  // Status autentikasi global untuk proteksi wishlist/favorit kartu
   const { isGuest, user } = useAuth();
+
+  // Referensi DOM ke input pencarian internal toko
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // State tab yang sedang aktif (Produk, Ulasan, Tentang)
   const [activeTab, setActiveTab] = useState("Produk");
+
+  // State pencarian teks internal etalase toko
   const [searchInStore, setSearchInStore] = useState("");
+
+  // State flag pelacak posisi scroll halaman untuk visual transisi sticky header atas
   const [scrolled, setScrolled] = useState(false);
+
+  // State data profil toko
   const [store, setStore] = useState<Store | null>(null);
+
+  // State list produk/kartu yang dijual oleh toko ini
   const [products, setProducts] = useState<Product[]>([]);
+
+  // State rangkuman penilaian review toko
   const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null);
+
+  // State loading status muat data awal
   const [isLoading, setIsLoading] = useState(true);
+
+  // Hook sinkronisasi status favorit kartu
   const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
+  /**
+   * Effect Hook untuk mendeteksi scroll layar pembeli.
+   * Menambahkan border/latar belakang putih blur pada header atas saat di-scroll melewati 100px.
+   */
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /**
+   * Effect Hook untuk memuat seluruh info data toko, list produk siap jual, dan review pembeli.
+   */
   useEffect(() => {
     const loadStore = async () => {
       try {
         setIsLoading(true);
+        // Ambil info detail toko dari database
         const nextStore = await storeService.getStoreById(id);
         setStore(nextStore);
 
+        // Jika toko valid, muat list produk toko & review breakdown toko secara paralel
         if (nextStore) {
           const [nextProducts, nextSummary] = await Promise.all([
             productService.listPublishedProducts({
@@ -64,6 +101,9 @@ export default function StoreProfileClient({ id }: { id: string }) {
     void loadStore();
   }, [id]);
 
+  /**
+   * Menggeser tampilan & memfokuskan kursor ke input pencarian internal produk toko.
+   */
   const handleSearchClick = () => {
     setActiveTab("Produk");
     setTimeout(() => {
@@ -72,6 +112,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
     }, 100);
   };
 
+  // Mengalihkan pembeli ke halaman chat room langsung dengan penjual pemilik toko ini
   const handleChatClick = () => {
     router.push(
       `/messages/room?sellerId=${encodeURIComponent(
@@ -82,9 +123,12 @@ export default function StoreProfileClient({ id }: { id: string }) {
 
   const tabs = ["Produk", "Ulasan", "Tentang"];
 
+  // Memfilter list produk toko berdasarkan ketikan pencarian internal
   const filteredProducts = products.filter((product) =>
     product.title.toLowerCase().includes(searchInStore.toLowerCase())
   );
+
+  // Format string tanggal bergabung toko
   const joinedLabel = store?.createdAt
     ? new Date(store.createdAt).toLocaleDateString("id-ID", {
         month: "long",
@@ -92,6 +136,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
       })
     : "Belum tersedia";
 
+  // UI STATE 1: Spinner memuat
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-tint">
@@ -100,6 +145,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
     );
   }
 
+  // UI STATE 2: Penanganan toko tidak valid
   if (!store) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-surface-tint px-6 text-center">
@@ -113,6 +159,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint pb-32">
+      {/* Header Halaman Melayang (Sticky Header dengan efek scroll transisi) */}
       <div
         className={cn(
           "fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] z-50 transition-all duration-300",
@@ -151,6 +198,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
         </div>
       </div>
 
+      {/* Banner Cover Atas Toko */}
       <div
         className={cn(
           "relative h-60 w-full overflow-hidden transition-colors duration-500",
@@ -162,10 +210,11 @@ export default function StoreProfileClient({ id }: { id: string }) {
         ) : (
           <div className="absolute inset-0 bg-linear-to-br from-secondary to-accent opacity-30" />
         )}
-        <div className="absolute inset-0 z-10 bg-linear-to-b from-text-main/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 z-10 bg-linear-to-br from-text-main/20 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-linear-to-t from-surface-tint via-surface-tint/40 to-transparent z-10" />
       </div>
 
+      {/* Profil Toko utama */}
       <div className="px-6 -mt-24 relative z-10">
         <div className="bg-white rounded-[40px] p-6 shadow-medium border border-surface-muted flex flex-col gap-6">
           <div className="flex items-start justify-between">
@@ -190,6 +239,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
             </div>
           </div>
 
+          {/* Statistik Performa Penjualan */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-surface-tint p-3 rounded-2xl border border-surface-muted flex flex-col items-center">
               <span className="text-[13px] font-bold text-primary">{store.performance.chat}</span>
@@ -205,6 +255,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
             </div>
           </div>
 
+          {/* Tombol Hubungi Penjual */}
           <div className="flex items-center gap-4 pt-4 border-t border-surface-muted">
             <button
               onClick={handleChatClick}
@@ -217,6 +268,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
         </div>
       </div>
 
+      {/* Header Tab Bar */}
       <div className="sticky top-[72px] bg-white/80 backdrop-blur-xl z-30 mt-8 border-b border-surface-muted">
         <div className="flex px-6 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
@@ -241,8 +293,11 @@ export default function StoreProfileClient({ id }: { id: string }) {
         </div>
       </div>
 
+      {/* Area Konten Tab Dinamis */}
       <main className="px-6 pt-8">
         <AnimatePresence mode="wait">
+          
+          {/* TAB 1: Daftar Produk */}
           {activeTab === "Produk" && (
             <motion.div
               key="produk"
@@ -251,6 +306,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
               exit={{ opacity: 0, y: -10 }}
               className="flex flex-col gap-8"
             >
+              {/* Kolom Cari internal etalase */}
               <div className="relative group">
                 <Input
                   ref={searchInputRef}
@@ -267,6 +323,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
                 />
               </div>
 
+              {/* Grid Produk Kartu */}
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 gap-x-4 gap-y-6 justify-items-center">
                   {filteredProducts.map((product) => (
@@ -298,6 +355,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
             </motion.div>
           )}
 
+          {/* TAB 2: Ulasan & Rangkuman Bintang */}
           {activeTab === "Ulasan" && (
             <motion.div
               key="ulasan"
@@ -305,6 +363,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col gap-6"
             >
+              {/* Rating Card dengan Progress Bar Distribusi */}
               <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex items-center justify-between shadow-soft">
                 <div className="flex flex-col">
                   <span className="text-[32px] font-bold text-text-main leading-tight">
@@ -321,6 +380,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
                       : "Belum ada ulasan publik"}
                   </span>
                 </div>
+                {/* Rincian Bar Persentase */}
                 <div className="flex flex-col gap-2 flex-1 ml-10">
                   {[5, 4, 3, 2, 1].map((star) => (
                     <div key={star} className="flex items-center gap-2">
@@ -340,6 +400,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
                 </div>
               </div>
 
+              {/* Daftar Teks Review Pelanggan */}
               {reviewSummary && reviewSummary.totalReviews > 0 ? (
                 <div className="flex flex-col gap-4">
                   {reviewSummary.reviews.slice(0, 4).map((item) => (
@@ -382,6 +443,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
             </motion.div>
           )}
 
+          {/* TAB 3: Tentang Deskripsi Toko */}
           {activeTab === "Tentang" && (
             <motion.div
               key="tentang"

@@ -12,9 +12,12 @@ import type { Product } from "@/types";
 import { productService } from "@/lib/services/product";
 import { buildSellerEditProductHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
-
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+/**
+ * Halaman Kelola Produk Toko Penjual (SellerProductsPage)
+ * Membatasi akses agar hanya bisa dikunjungi penjual yang sah (ProtectedRoute requireSeller=true).
+ */
 export default function SellerProductsPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -23,13 +26,31 @@ export default function SellerProductsPage() {
   );
 }
 
+/**
+ * Komponen Konten Kelola Produk (SellerProductsContent)
+ * Menyediakan dashboard etalase produk seller:
+ * - Kolom pencarian teks internal untuk mempermudah navigasi produk yang banyak.
+ * - Grid visual list produk aktif beserta tombol hapus langsung (Delete) dan info stok.
+ * - Tombol FAB (Floating Action Button) untuk menambah produk baru.
+ */
 function SellerProductsContent() {
   const router = useRouter();
+
+  // Membaca info toko penjual aktif dari auth context
   const { store } = useAuth();
+
+  // State teks filter pencarian produk
   const [searchTerm, setSearchTerm] = useState("");
+
+  // State daftar produk terdaftar di toko
   const [products, setProducts] = useState<Product[]>([]);
+
+  // State loading status pemuatan list
   const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * Effect Hook untuk menarik list produk berdasarkan ID toko.
+   */
   React.useEffect(() => {
     const loadProducts = async () => {
       if (!store?.id) {
@@ -50,19 +71,29 @@ function SellerProductsContent() {
     void loadProducts();
   }, [store?.id]);
 
+  /**
+   * Menghapus dokumen produk dari database etalase toko.
+   * 
+   * @param id ID dokumen produk
+   */
   const handleDelete = async (id: string) => {
     if (confirm("Apakah Anda yakin ingin menghapus produk ini dari toko?")) {
+      // Panggil API penghapusan produk dari database
       await productService.deleteProduct(id);
+      
+      // Update state lokal produk agar langsung hilang dari layar
       setProducts((prev) => prev.filter((product) => product.id !== id));
     }
   };
 
+  // Memfilter produk di UI berdasarkan ketikan di kolom cari
   const filteredProducts = products.filter(p => 
     p.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader 
         title="Kelola Produk" 
         variant="minimal" 
@@ -71,6 +102,7 @@ function SellerProductsContent() {
       />
 
       <main className="flex-1 px-6 pt-6">
+        {/* Kolom Input Cari Produk */}
         <div className="flex items-center gap-3 mb-6">
           <Input 
             placeholder="Cari produkmu..." 
@@ -81,10 +113,12 @@ function SellerProductsContent() {
           />
         </div>
 
+        {/* Total Informasi Jumlah Produk Aktif */}
         <div className="flex items-center justify-between mb-4 px-2">
           <h2 className="text-[16px] font-bold text-text-main">Produk Aktif ({filteredProducts.length})</h2>
         </div>
 
+        {/* Grid Produk Aktif atau Spinner loading */}
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -112,6 +146,7 @@ function SellerProductsContent() {
                   exit={{ opacity: 0, scale: 0.8 }}
                   className="relative group"
                 >
+                  {/* Kartu produk */}
                   <ProductCard 
                     title={product.title}
                     price={product.price}
@@ -121,6 +156,7 @@ function SellerProductsContent() {
                     className="w-[calc(50vw-28px)] max-w-[172px]"
                   />
                   
+                  {/* Tombol Hapus Produk di pojok kanan atas kartu */}
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -131,6 +167,7 @@ function SellerProductsContent() {
                     <Icons.Delete size={14} />
                   </button>
 
+                  {/* Badge Jumlah Stok */}
                   <div className="absolute top-[118px] right-2 px-2 py-0.5 bg-white/95 backdrop-blur-sm rounded-md shadow-sm border border-surface-muted z-10 flex items-center gap-1">
                     <span className="text-[9px] font-bold text-text-main uppercase tracking-tighter">
                       Stok: {product.stock}
@@ -142,6 +179,7 @@ function SellerProductsContent() {
           </motion.div>
         )}
 
+        {/* State Pencarian Kosong */}
         {!isLoading && filteredProducts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-text-sub">
             <Icons.Search size={40} className="opacity-20 mb-4" />
@@ -151,7 +189,7 @@ function SellerProductsContent() {
         )}
       </main>
 
-      {/* FAB Add Product - Centered and Native Feel */}
+      {/* FAB Add Product - Tombol bulat melayang tambah produk baru di bawah tengah */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
         <motion.button
           whileHover={{ scale: 1.05 }}

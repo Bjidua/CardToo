@@ -17,43 +17,79 @@ import { buildProductDetailHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 
+/**
+ * Komponen Konten Halaman Beranda (HomeContent)
+ * Menangani pemuatan produk TCG, kolom pencarian teks, filter kategori kartu, 
+ * slider promosi, serta interaksi penambahan item ke daftar favorit (wishlist).
+ */
 function HomeContent() {
+  // Instance Next.js router untuk navigasi halaman
   const router = useRouter();
+
+  // Mengambil query parameters dari URL (misal: ?category=pokemon)
   const searchParams = useSearchParams();
+
+  // Mengakses state login pengguna dari AuthContext
   const { isGuest, user, profile } = useAuth();
+
+  // Mengambil kategori aktif awal dari parameter URL (default: "All")
   const categoryParam = searchParams.get("category") || "All";
   
+  // State untuk menyimpan nama kategori yang sedang dipilih/aktif
   const [selectedCategory, setSelectedCategory] = React.useState(categoryParam);
+
+  // State teks pencarian produk
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // State penampung daftar semua produk aktif dari server Appwrite
   const [products, setProducts] = React.useState<Product[]>([]);
+
+  // State indikator loading data awal
   const [isLoading, setIsLoading] = React.useState(true);
+
+  // Custom hook untuk sinkronisasi item favorit (wishlist) ke database
   const { isFavorite, toggleFavorite } = useFavorites(user?.id);
 
+  /**
+   * Effect Hook untuk memuat seluruh daftar produk TCG yang telah dipublikasikan (published).
+   * Dijalankan sekali saat komponen pertama kali dipasang (mount).
+   */
   React.useEffect(() => {
     const loadProducts = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true); // Aktifkan spinner memuat
+        // Memanggil service untuk mengambil list produk aktif di database
         const nextProducts = await productService.listPublishedProducts();
         setProducts(nextProducts);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Matikan spinner memuat
       }
     };
 
     void loadProducts();
   }, []);
 
-
+  /**
+   * Memfilter daftar produk secara dinamis berdasarkan kategori yang dipilih
+   * serta kata kunci teks pencarian yang diketik pengguna.
+   * Dibungkus useMemo untuk optimasi agar tidak memicu pemrosesan ulang saat render tak perlu.
+   */
   const filteredProducts = React.useMemo(() => {
     return products.filter((product) => {
+      // Validasi kategori: Jika pilih "All" loloskan semua, jika tidak harus cocok kategori
       const matchesCategory =
         selectedCategory === "All" || product.category === selectedCategory;
+      
+      // Validasi pencarian teks: Judul produk harus mengandung kata kunci pencarian
       const matchesSearch = product.title
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
+      
       return matchesCategory && matchesSearch;
     });
   }, [products, searchQuery, selectedCategory]);
+
+  // Varian animasi stagger untuk kontainer grid kartu produk
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -62,13 +98,13 @@ function HomeContent() {
     }
   } as const;
 
+  // Varian animasi translasi ke atas untuk kartu produk individual
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   } as const;
 
-  // Animation Variants
-
+  // Varian animasi pemudaran transisi masuk (fade-in) untuk elemen promosi & search bar
   const fadeInVariants = {
     hidden: { opacity: 0, y: 10 },
     show: { 
@@ -80,7 +116,7 @@ function HomeContent() {
 
   return (
     <main className="flex-1 flex flex-col bg-background relative pb-40">
-      {/* Header - Consistent with other pages */}
+      {/* Header Halaman Utama dengan visual logo, avatar, notifikasi, dan keranjang */}
       <StickyHeader 
         title="Home" 
         variant="logo"
@@ -108,7 +144,7 @@ function HomeContent() {
         }
       />
 
-      {/* Hero / Banner Section */}
+      {/* Slide banner promosi utama */}
       <motion.section 
         initial="hidden"
         animate="show"
@@ -121,7 +157,7 @@ function HomeContent() {
         />
       </motion.section>
 
-      {/* Search Bar Section */}
+      {/* Bagian input teks kolom pencarian produk */}
       <motion.section 
         variants={fadeInVariants}
         initial="hidden"
@@ -142,7 +178,7 @@ function HomeContent() {
         </div>
       </motion.section>
 
-      {/* Category Section */}
+      {/* Slider menu daftar kategori kartu TCG */}
       <section className="pt-6">
         <CategoryList 
           onSelect={setSelectedCategory} 
@@ -150,6 +186,7 @@ function HomeContent() {
         />
       </section>
 
+      {/* Grid rendering list produk kartu TCG */}
       <section className="px-6 pt-6">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
@@ -173,17 +210,21 @@ function HomeContent() {
                   href={buildProductDetailHref(product.id)}
                   isWishlisted={isFavorite(product.id)}
                   onWishlistToggle={() => {
+                    // Proteksi autentikasi: Jika belum masuk akun, arahkan ke form login
                     if (isGuest || !user) {
                       router.push("/login");
                       return;
                     }
+                    // Tambahkan atau hapus dari wishlist database
                     void toggleFavorite(product.id);
                   }}
                 />
               </motion.div>
             ))}
+            
+            {/* Tampilan alternatif jika kategori/pencarian menghasilkan nol produk */}
             {filteredProducts.length === 0 && (
-              <div className="col-span-2 py-10 text-center text-text-sub">
+              <div className="col-span-2 py-10 text-center text-text-sub font-medium">
                 Tidak ada produk
               </div>
             )}
@@ -194,6 +235,10 @@ function HomeContent() {
   );
 }
 
+/**
+ * Komponen Halaman Utama Home (HomePage)
+ * Menggunakan React.Suspense untuk mengamankan proses SSR & Dynamic SearchParams Next.js
+ */
 export default function HomePage() {
   return (
     <React.Suspense fallback={<main className="flex-1 flex flex-col bg-background relative pb-40"></main>}>

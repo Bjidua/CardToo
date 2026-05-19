@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { Button } from "@/components/ui/Button";
 
-// Import Swiper styles
+// Import Swiper styles untuk komponen slide gambar
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -16,6 +16,7 @@ import "swiper/css/pagination";
 import bigLogo from "../../../public/assets/big-logo.svg";
 import textLogo from "../../../public/assets/text-logo.svg";
 
+// Data konten slider onboarding yang akan ditampilkan bertahap
 const ONBOARDING_DATA = [
   {
     id: 1,
@@ -37,10 +38,21 @@ const ONBOARDING_DATA = [
   },
 ];
 
+/**
+ * Halaman Onboarding / Pengenalan Pertama Kali (OnboardingPage)
+ * Menampilkan slider informasi menarik tentang aplikasi CardToo kepada user yang baru pertama kali membuka web.
+ * Dilengkapi pagination bullet, tombol Skip, dan tombol Get Started di slide terakhir.
+ */
 export default function OnboardingPage() {
   const router = useRouter();
+
+  // State untuk melacak indeks slide Swiper aktif
   const [activeIndex, setActiveIndex] = useState(0);
 
+  /**
+   * Menyimpan status bahwa user telah melihat onboarding di localStorage,
+   * kemudian mengalihkan navigasi ke halaman beranda.
+   */
   const completeOnboarding = () => {
     localStorage.setItem("has_seen_onboarding", "true");
     router.push("/home");
@@ -48,7 +60,7 @@ export default function OnboardingPage() {
 
   return (
     <main className="min-h-screen bg-surface-tint flex flex-col relative overflow-hidden">
-      {/* Skip Button */}
+      {/* Tombol Skip untuk melewati onboarding langsung */}
       <div className="absolute top-10 right-6 z-20">
         <button
           onClick={completeOnboarding}
@@ -58,7 +70,7 @@ export default function OnboardingPage() {
         </button>
       </div>
 
-      {/* Content Section (Swiper) */}
+      {/* Bagian Konten Swiper Slide */}
       <div className="flex-1 flex flex-col">
         <Swiper
           modules={[Pagination]}
@@ -73,7 +85,7 @@ export default function OnboardingPage() {
         >
           {ONBOARDING_DATA.map((item) => (
             <SwiperSlide key={item.id} className="flex flex-col items-center pt-24 px-8 text-center">
-              {/* Illustration Area */}
+              {/* Wilayah Ilustrasi Visual Utama */}
               <div className="w-full flex justify-center mt-15">
                 <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                   <Image
@@ -87,7 +99,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Brand Logo Text */}
+              {/* Logo Teks CardToo di bawah gambar */}
               <div className="w-full flex justify-center mb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
                 <Image
                   src={textLogo}
@@ -98,7 +110,7 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              {/* Title & Description */}
+              {/* Judul Slide & Paragraf Deskripsi */}
               <div className="w-full flex flex-col items-center space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <h1 className="text-[26px] font-bold tracking-tight leading-tight text-text-main">
                   {item.title}
@@ -112,13 +124,12 @@ export default function OnboardingPage() {
         </Swiper>
       </div>
 
-      {/* Bottom Actions & Pagination */}
+      {/* Tindakan Bawah: Titik Pagination & Tombol CTA Utama */}
       <div className="p-8 pb-12 flex flex-col items-center gap-10 z-10">
-        {/* Custom Pagination Style (Handled via CSS below) */}
+        {/* Titik Pagination Swiper */}
         <div className="onboarding-pagination flex justify-center gap-2" />
 
-        {/* Action Button */}
-        {/* Action Button - Hanya muncul di slide terakhir */}
+        {/* Tombol Get Started - Hanya muncul dengan efek fade-in di slide terakhir */}
         <div className="w-full max-w-[347px] h-[55px]">
           {activeIndex === ONBOARDING_DATA.length - 1 && (
             <Button
@@ -131,7 +142,6 @@ export default function OnboardingPage() {
           )}
         </div>
       </div>
-
     </main>
   );
 }

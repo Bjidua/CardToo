@@ -11,12 +11,25 @@ import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { notificationService } from "@/lib/services/notification";
 import type { NotificationGroup, NotificationItem } from "@/types";
 
+/**
+ * Halaman Notifikasi Pengguna (NotificationsPage)
+ * Menampilkan daftar pemberitahuan yang dikelompokkan berdasarkan rentang waktu (misal: Hari Ini, Kemarin, Terdahulu).
+ * Memiliki fitur tandai telah dibaca saat diklik dan navigasi dinamis ke rute target (actionUrl).
+ */
 export default function NotificationsPage() {
+  // Instance router Next.js untuk perpindahan halaman
   const router = useRouter();
+
+  // Status autentikasi dari context global
   const { isGuest, user } = useAuth();
+
+  // State penyimpan grup notifikasi
   const [groups, setGroups] = useState<NotificationGroup[]>([]);
+
+  // State status loading pemuatan data
   const [isLoading, setIsLoading] = useState(false);
 
+  // Varian animasi stagger masuk untuk kelompok notifikasi
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -27,27 +40,34 @@ export default function NotificationsPage() {
     },
   };
 
+  // Varian animasi translasi masuk untuk kartu notifikasi individual
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   };
 
+  /**
+   * Effect Hook untuk memuat seluruh daftar notifikasi dari database Appwrite.
+   * Dijalankan ketika user berhasil login atau inisialisasi awal.
+   */
   useEffect(() => {
     if (!user || isGuest) return;
 
     const loadNotifications = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true); // Aktifkan spinner memuat
+        // Menarik daftar notifikasi terkelompok dari database
         const nextGroups = await notificationService.listNotificationGroups(user.id);
         setGroups(nextGroups);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Matikan spinner memuat
       }
     };
 
     void loadNotifications();
   }, [isGuest, user]);
 
+  // UI STATE 1: Proteksi login tamu (guest)
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white">
@@ -68,6 +88,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-20">
+      {/* Header Halaman */}
       <StickyHeader
         title="Notifikasi"
         variant="minimal"
@@ -76,11 +97,13 @@ export default function NotificationsPage() {
       />
 
       <main className="flex-1 px-6 pt-6">
+        {/* Render loading spinner */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         ) : groups.length > 0 ? (
+          /* Render list notifikasi terkelompok */
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -89,6 +112,7 @@ export default function NotificationsPage() {
           >
             {groups.map((group) => (
               <div key={group.group} className="flex flex-col gap-4">
+                {/* Judul Grup Waktu (Hari Ini, Kemarin, dll.) */}
                 <h2 className="text-[14px] font-bold text-text-sub uppercase tracking-widest px-2">
                   {group.group}
                 </h2>
@@ -103,7 +127,9 @@ export default function NotificationsPage() {
                         type={item.type}
                         isRead={item.read}
                         onClick={() => {
+                          // Tandai notifikasi telah dibaca di database
                           void notificationService.markAsRead(item.id);
+                          // Arahkan ke URL detail aksi (jika dikonfigurasi)
                           if (item.actionUrl) {
                             router.push(item.actionUrl);
                           }
@@ -116,6 +142,7 @@ export default function NotificationsPage() {
             ))}
           </motion.div>
         ) : (
+          /* Tampilan kosong jika notifikasi nihil */
           <div className="flex flex-col items-center justify-center py-24 text-text-sub">
             <div className="w-20 h-20 bg-surface-muted rounded-full flex items-center justify-center mb-4">
               <Icons.History size={40} className="opacity-20" />
@@ -129,7 +156,7 @@ export default function NotificationsPage() {
   );
 }
 
-// Dummy Icons for empty state
+// Komponen Ikon SVG bantu lokal untuk visual empty state
 const Icons = {
   History: ({ size, className }: { size: number; className?: string }) => (
     <svg 

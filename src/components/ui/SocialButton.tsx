@@ -1,11 +1,21 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Properti pendukung untuk komponen tombol masuk akun sosial.
+ */
 interface SocialButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Pilihan penyedia login: Google, Apple, atau Facebook */
   provider: "google" | "apple" | "facebook";
 }
 
+/**
+ * Komponen Tombol Autentikasi Sosial (SSO/Single Sign-On).
+ * Secara otomatis mengatur ikon SVG dan warna asli (brand color) berdasarkan
+ * `provider` yang dipilih (Google, Apple, Facebook).
+ */
 const SocialButton = ({ provider, className, ...props }: SocialButtonProps) => {
+  // Objek konfigurasi ikon SVG dan teks default untuk masing-masing penyedia (provider) sosial
   const providers = {
     google: {
       text: "Sign in with Google",
@@ -37,9 +47,11 @@ const SocialButton = ({ provider, className, ...props }: SocialButtonProps) => {
     },
   };
 
+  // Mengurai teks dan ikon berdasarkan tipe provider yang dipilih
   const { text, icon } = providers[provider];
 
   return (
+    // Tombol login sosial dengan spek visual standard (tinggi 55px, rounded-32px)
     <button
       className={cn(
         "flex w-full items-center justify-center gap-3 px-4 h-[55px]",

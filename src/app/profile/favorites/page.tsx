@@ -16,6 +16,10 @@ import { normalizeProductCondition, productService } from "@/lib/services/produc
 import { storeService } from "@/lib/services/store";
 import type { FavoriteItem } from "@/types";
 
+/**
+ * Halaman Wishlist Favorit Pengguna (MyFavoritePage)
+ * Dibungkus dengan ProtectedRoute untuk mencegah akses langsung oleh user tamu (guest).
+ */
 export default function MyFavoritePage() {
   return (
     <ProtectedRoute>
@@ -24,36 +28,67 @@ export default function MyFavoritePage() {
   );
 }
 
+/**
+ * Komponen Konten Halaman Favorit (MyFavoriteContent)
+ * Menampilkan daftar item kartu TCG yang disukai/difavoritkan oleh user:
+ * - Load data favorit dari database Appwrite.
+ * - Hapus item dari daftar favorit (wishlist).
+ * - Tambahkan item langsung dari wishlist ke keranjang belanja (Add to Cart).
+ */
 function MyFavoriteContent() {
+  // Status autentikasi global
   const { isGuest, user } = useAuth();
+
+  // State daftar kartu favorit terdaftar
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+
+  // State loading status pemuatan data
   const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * Effect Hook untuk memuat wishlist favorit pengguna.
+   * Dijalankan ketika status login user aktif terdeteksi.
+   */
   useEffect(() => {
     if (!user) return;
 
     const loadFavorites = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true); // Aktifkan spinner memuat
+        // Panggil endpoint service mendapatkan data favorit
         const nextFavorites = await favoriteService.listFavorites(user.id);
         setFavorites(nextFavorites);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Matikan spinner memuat
       }
     };
 
     void loadFavorites();
   }, [user]);
 
+  /**
+   * Menghapus salah satu kartu dari daftar favorit pengguna di database.
+   * 
+   * @param productId ID unik produk kartu
+   */
   const handleRemove = async (productId: string) => {
     if (!user) return;
+    // Kirim request penghapusan ke database
     await favoriteService.removeFavorite(user.id, productId);
+    // Perbarui state lokal dengan membuang item bersangkutan
     setFavorites((prev) => prev.filter((item) => item.productId !== productId));
   };
 
+  /**
+   * Menambahkan item favorit secara instan ke keranjang belanja global.
+   * Melakukan query detail produk & toko terlebih dahulu untuk sinkronisasi metadata keranjang.
+   * 
+   * @param item Item favorit yang dipilih
+   */
   const handleAddToCart = async (item: FavoriteItem) => {
     if (!user || !item.storeId) return;
 
+    // Tarik detail produk dan toko secara paralel dari database
     const [product, store] = await Promise.all([
       productService.getProductById(item.productId),
       storeService.getStoreById(item.storeId),
@@ -64,6 +99,7 @@ function MyFavoriteContent() {
     const normalizedCondition = normalizeProductCondition(product.condition || "Mint");
     if (!normalizedCondition) return;
 
+    // Tambahkan payload lengkap ke service keranjang belanja
     await cartService.addItem(user.id, {
       productId: product.id,
       sellerUserId: store.ownerUserId || "",
@@ -78,6 +114,7 @@ function MyFavoriteContent() {
     });
   };
 
+  // Varian animasi stagger masuk untuk daftar item wishlist
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -86,6 +123,7 @@ function MyFavoriteContent() {
     },
   };
 
+  // UI STATE 1: Proteksi tamu (guest)
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-background">
@@ -101,6 +139,7 @@ function MyFavoriteContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
+      {/* Header Halaman atas dengan tombol pintasan Cart */}
       <StickyHeader
         title="My Favorite"
         variant="logo"
@@ -119,6 +158,7 @@ function MyFavoriteContent() {
       />
 
       <main className="flex-1 px-6 pt-6 pb-20">
+        {/* Render spinner loading */}
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -126,6 +166,7 @@ function MyFavoriteContent() {
         ) : (
           <AnimatePresence mode="popLayout">
             {favorites.length > 0 ? (
+              /* Render grid list kartu favorit */
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -146,6 +187,7 @@ function MyFavoriteContent() {
                 ))}
               </motion.div>
             ) : (
+              /* Render empty state jika wishlist kosong */
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

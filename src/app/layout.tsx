@@ -24,6 +24,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 }
 
+/**
+ * Komponen Induk Layout Aplikasi (Root Layout).
+ * Mengatur kerangka dasar HTML, konfigurasi font "Outfit", penyediaan Konteks Global
+ * (Auth & Language), serta pembungkus berukuran `max-w-[440px]` untuk 
+ * mempertahankan tampilan berdesain Mobile/Native App pada desktop.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ 

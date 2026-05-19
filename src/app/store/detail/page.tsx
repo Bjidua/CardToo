@@ -4,6 +4,11 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import StoreProfileClient from "@/app/store/[id]/StoreProfileClient";
 
+/**
+ * Komponen Konten Detail Toko Query (StoreDetailQueryContent)
+ * Membaca parameter query URL `storeId` untuk menampilkan halaman StoreProfileClient.
+ * Jika `storeId` tidak disertakan di URL, menampilkan pesan toko tidak ditemukan.
+ */
 function StoreDetailQueryContent() {
   const searchParams = useSearchParams();
   const storeId = searchParams.get("storeId");
@@ -21,6 +26,10 @@ function StoreDetailQueryContent() {
   return <StoreProfileClient id={storeId} />;
 }
 
+/**
+ * Halaman Detail Toko Query (StoreDetailQueryPage)
+ * Menggunakan React Suspense untuk membungkus useSearchParams saat build static export.
+ */
 export default function StoreDetailQueryPage() {
   return (
     <Suspense fallback={<div className="flex min-h-screen bg-surface-tint" />}>

@@ -4,6 +4,11 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import EditProductClient from "@/app/seller/products/edit/[id]/EditProductClient";
 
+/**
+ * Komponen Konten Edit Produk Query (SellerEditProductQueryContent)
+ * Membaca parameter query URL `productId` untuk merender komponen EditProductClient.
+ * Jika `productId` tidak disertakan di URL, menampilkan pesan produk tidak ditemukan.
+ */
 function SellerEditProductQueryContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId");
@@ -21,6 +26,10 @@ function SellerEditProductQueryContent() {
   return <EditProductClient id={productId} />;
 }
 
+/**
+ * Halaman Edit Produk Query (SellerEditProductQueryPage)
+ * Menggunakan React Suspense untuk membungkus useSearchParams saat build static export.
+ */
 export default function SellerEditProductQueryPage() {
   return (
     <Suspense fallback={<div className="flex min-h-screen bg-surface-tint" />}>

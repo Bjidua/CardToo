@@ -9,11 +9,16 @@ import { Icons } from "@/components/ui/Icons";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
+// Daftar pilihan bahasa yang didukung oleh sistem i18n lokal
 const LANGUAGES = [
   { id: "id", name: "Indonesia", native: "Bahasa Indonesia" },
   { id: "en", name: "English", native: "English (US)" },
 ] as const;
 
+/**
+ * Halaman Pengaturan Bahasa (LanguagePage)
+ * Dibungkus dengan ProtectedRoute untuk menjamin data tersimpan khusus di sesi akun user.
+ */
 export default function LanguagePage() {
   return (
     <ProtectedRoute>
@@ -22,28 +27,37 @@ export default function LanguagePage() {
   );
 }
 
+/**
+ * Komponen Konten Pengaturan Bahasa (LanguageContent)
+ * Menggunakan LanguageContext untuk membaca bahasa aktif (language)
+ * dan men-set preferensi bahasa baru (setLanguage).
+ */
 function LanguageContent() {
   const { language, setLanguage, t } = useLanguage();
 
   return (
     <div className="flex min-h-screen flex-col bg-linear-to-b from-surface-tint to-accent-soft">
+      {/* Header Halaman */}
       <StickyHeader title={t("language")} leftAction={<BackButton variant="primary" />} />
 
       <main className="flex-1 px-6 pb-32 pt-6">
+        {/* Box Pilihan Bahasa */}
         <div className="overflow-hidden rounded-card border border-surface-muted bg-white shadow-soft">
           {LANGUAGES.map((lang, index) => (
             <button
               key={lang.id}
               onClick={() => setLanguage(lang.id)}
               className={cn(
-                "flex w-full items-center justify-between p-6 transition-colors active:bg-text-main/[0.02]",
+                "flex w-full items-center justify-between p-6 transition-colors active:bg-text-main/2",
                 index !== LANGUAGES.length - 1 && "border-b border-surface-muted"
               )}
             >
+              {/* Nama & Teks Native Bahasa */}
               <div className="flex flex-col items-start">
                 <span className="text-[16px] font-bold text-text-main">{lang.name}</span>
                 <span className="text-[13px] text-text-sub">{lang.native}</span>
               </div>
+              {/* Tanda Centang jika terpilih sebagai bahasa aktif */}
               {language === lang.id ? (
                 <motion.div
                   initial={{ scale: 0 }}
@@ -57,6 +71,7 @@ function LanguageContent() {
           ))}
         </div>
 
+        {/* Teks Catatan Info Bahasa */}
         <p className="mt-6 px-4 text-center text-[13px] leading-relaxed text-text-sub">
           {t("language_saved_note")}
         </p>
@@ -64,4 +79,3 @@ function LanguageContent() {
     </div>
   );
 }
-
