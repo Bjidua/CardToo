@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/types";
 import { productService } from "@/lib/services/product";
+import { buildSellerEditProductHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -115,7 +116,7 @@ function SellerProductsContent() {
                     title={product.title}
                     price={product.price}
                     condition={product.condition}
-                    href={`/seller/products/edit/${product.id}`}
+                    href={buildSellerEditProductHref(product.id)}
                     theme="secondary"
                     className="w-[calc(50vw-28px)] max-w-[172px]"
                   />

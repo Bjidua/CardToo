@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { motion } from "framer-motion";
 import type { Product } from "@/types";
 import { normalizeProductCategory, productService } from "@/lib/services/product";
+import { buildProductDetailHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 
@@ -86,7 +87,7 @@ export default function CategoryProductsClient({ slug }: CategoryProductsClientP
                   price={product.price}
                   condition={product.condition}
                   image={product.image || undefined}
-                  href={`/product/${product.id}`}
+                  href={buildProductDetailHref(product.id)}
                   isWishlisted={isFavorite(product.id)}
                   onWishlistToggle={() => {
                     if (isGuest || !user) {

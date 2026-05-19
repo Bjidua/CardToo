@@ -1,13 +1,10 @@
 import type { Models } from "appwrite";
 import {
-  ID,
-  Permission,
   Query,
-  Role,
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig } from "@/lib/appwrite/config";
-import { notificationService } from "@/lib/services/notification";
+import { commerceGatewayService } from "@/lib/services/commerceGateway";
 import { orderService } from "@/lib/services/order";
 import type { Review, ReviewRow, ReviewSummary } from "@/types";
 
@@ -130,35 +127,13 @@ export const reviewService = {
         throw new Error("Produk pesanan tidak tersedia untuk diulas.");
       }
 
-      const row = await tablesDB.createRow<ReviewRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId,
-        rowId: ID.unique(),
-        data: {
-          order_id: order.id,
-          product_id: primaryItem.productId,
-          store_id: order.storeId,
-          user_id: userId,
-          rating,
-          review_text: reviewText.trim() || null,
-        },
-        permissions: [
-          Permission.read(Role.any()),
-          Permission.update(Role.user(userId)),
-          Permission.delete(Role.user(userId)),
-        ],
+      const { review } = await commerceGatewayService.createReview({
+        orderId,
+        rating,
+        reviewText,
       });
 
-      await notificationService.createNotification({
-        userId: order.sellerUserId,
-        title: "Ulasan baru diterima",
-        description: `Pembeli baru saja memberi rating ${rating}/5 untuk order ${order.orderCode}.`,
-        type: "message",
-        label: "REVIEW",
-        actionUrl: `/seller/orders/detail?orderId=${order.id}`,
-      });
-
-      return toReview(row);
+      return review;
     } catch (error) {
       throw new Error(normalizeError(error));
     }

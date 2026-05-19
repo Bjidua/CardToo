@@ -87,6 +87,13 @@ export const notificationService = {
 
       return toNotificationItem(row);
     } catch (error) {
+      if (
+        error instanceof Error &&
+        /(unauthorized|permission|permissions)/i.test(error.message)
+      ) {
+        return null;
+      }
+
       throw new Error(normalizeError(error));
     }
   },

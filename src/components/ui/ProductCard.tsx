@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { buildProductDetailHref } from "@/lib/routes";
 
 interface ProductCardProps {
   title: string;
@@ -38,7 +39,7 @@ export const ProductCard = ({
     if (onPress) {
       onPress();
     } else {
-      router.push(href || "/product/1");
+      router.push(href || buildProductDetailHref("1"));
     }
   };
 

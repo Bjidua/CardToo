@@ -65,7 +65,11 @@ export default function ProfilePage() {
         className="flex items-center gap-5 mb-10 px-6"
       >
         <div className="relative pt-6">
-          <ProfilePicture size={88} className="border-[5px] border-white shadow-soft" />
+          <ProfilePicture
+            src={profile?.avatar_url || undefined}
+            size={88}
+            className="border-[5px] border-white shadow-soft"
+          />
         </div>
         <div className="flex flex-col">
           <div className="flex items-center gap-2">

@@ -1,13 +1,10 @@
 import type { Models } from "appwrite";
 import {
-  ID,
-  Permission,
   Query,
-  Role,
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig } from "@/lib/appwrite/config";
-import { notificationService } from "@/lib/services/notification";
+import { commerceGatewayService } from "@/lib/services/commerceGateway";
 import { profileService } from "@/lib/services/profile";
 import { storeService } from "@/lib/services/store";
 import type {
@@ -47,15 +44,6 @@ const toChatMessage = (
   senderUserId: row.sender_user_id,
   receiverUserId: row.receiver_user_id,
 });
-
-const buildPermissions = (buyerUserId: string, sellerUserId: string) => [
-  Permission.read(Role.user(buyerUserId)),
-  Permission.update(Role.user(buyerUserId)),
-  Permission.delete(Role.user(buyerUserId)),
-  Permission.read(Role.user(sellerUserId)),
-  Permission.update(Role.user(sellerUserId)),
-  Permission.delete(Role.user(sellerUserId)),
-];
 
 const getConversationUnreadCount = async (
   conversationId: string,
@@ -125,22 +113,15 @@ export const chatService = {
         return existing;
       }
 
-      const now = new Date().toISOString();
-      return await tablesDB.createRow<ConversationRecord>({
+      const { conversationId } = await commerceGatewayService.getOrCreateConversation({
+        sellerUserId: input.sellerUserId,
+        storeId: input.storeId,
+      });
+
+      return await tablesDB.getRow<ConversationRecord>({
         databaseId: appwriteConfig.databaseId,
         tableId: conversationsTableId,
-        rowId: ID.unique(),
-        data: {
-          buyer_user_id: input.buyerUserId,
-          seller_user_id: input.sellerUserId,
-          store_id: input.storeId,
-          last_message: null,
-          last_message_at: now,
-          last_sender_id: null,
-          buyer_last_read_at: now,
-          seller_last_read_at: null,
-        },
-        permissions: buildPermissions(input.buyerUserId, input.sellerUserId),
+        rowId: conversationId,
       });
     } catch (error) {
       throw new Error(normalizeError(error));
@@ -265,65 +246,14 @@ export const chatService = {
 
   async sendMessage(userId: string, conversationId: string, text: string) {
     try {
-      const conversation = await tablesDB.getRow<ConversationRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: conversationsTableId,
-        rowId: conversationId,
+      const { message } = await commerceGatewayService.sendMessage({
+        conversationId,
+        text,
       });
 
-      const isBuyer = conversation.buyer_user_id === userId;
-      const receiverUserId = isBuyer
-        ? conversation.seller_user_id
-        : conversation.buyer_user_id;
-      const now = new Date().toISOString();
-      const permissions = buildPermissions(
-        conversation.buyer_user_id,
-        conversation.seller_user_id
-      );
-
-      const row = await tablesDB.createRow<ChatMessageRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: chatMessagesTableId,
-        rowId: ID.unique(),
-        data: {
-          conversation_id: conversationId,
-          sender_user_id: userId,
-          receiver_user_id: receiverUserId,
-          message_text: text.trim(),
-          is_read: false,
-        },
-        permissions,
-      });
-
-      await tablesDB.updateRow<ConversationRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: conversationsTableId,
-        rowId: conversationId,
-        data: isBuyer
-          ? {
-              last_message: text.trim(),
-              last_message_at: now,
-              last_sender_id: userId,
-              buyer_last_read_at: now,
-            }
-          : {
-              last_message: text.trim(),
-              last_message_at: now,
-              last_sender_id: userId,
-              seller_last_read_at: now,
-            },
-      });
-
-      await notificationService.createNotification({
-        userId: receiverUserId,
-        title: "Pesan baru masuk",
-        description: text.trim(),
-        type: "chat",
-        label: "CHAT",
-        actionUrl: `/messages/room?conversationId=${conversationId}`,
-      });
-
-      return toChatMessage(row, userId);
+      return message.senderUserId === userId
+        ? { ...message, sender: "me" as const }
+        : { ...message, sender: "other" as const };
     } catch (error) {
       throw new Error(normalizeError(error));
     }

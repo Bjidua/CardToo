@@ -1,159 +1,158 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# CardToo
+# CardToo Agent Rules
 
-Website CardToo merupakan marketplace untuk JUAL/BELI Kartu.
+## 1. Tujuan Repo
 
----
+CardToo adalah project marketplace TCG mobile-first berbasis web untuk tugas kelompok kampus. Fokus repo ini bukan eksperimen UI acak, tetapi menyelesaikan flow ecommerce yang masuk akal untuk tiga persona:
 
-## 🚀 Fitur Utama (akan diupdate)
-- Daftar fitur website (None)
-- Teknologi: Next.js, Tailwind CSS
-- Framework: React
+- `guest`
+- `buyer`
+- `seller`
 
-## 📂 Struktur Repo
-```plaintext
-📦 CardToo (Project Structure)
-├── public/                  # Aset statis akses langsung
-│   ├── images/              # Gambar
-│   └── favicon.ico          # Icon website
-│
-├── src/                     # Source code aplikasi
-│   ├── app/                 # Rute halaman web Next.js
-│   │   ├── (auth)/          # Rute autentikasi
-│   │   ├── home/            # Halaman Dashboard Utama
-│   │   ├── cart/            # Halaman Keranjang Belanja
-│   │   ├── categories/      # Halaman Semua Kategori
-│   │   ├── search/          # Halaman Pencarian Produk
-│   │   ├── messages/        # Halaman Pesan
-│   │   ├── collections/     # Halaman Koleksi TCG
-│   │   ├── profile/         # Halaman Profil User
-│   │   ├── notifications/   # Halaman Notifikasi
-│   │   ├── seller/          # Halaman seller suite
-│   │   ├── test-components/ # Laboratorium Component
-│   │   ├── layout.tsx       # Struktur kerangka aplikasi
-│   │   ├── page.tsx         # Halaman utama (Landing)
-│   │   └── globals.css      # File utama Tailwind CSS v4
-│   │
-│   ├── components/          # Potongan antarmuka visual
-│   │   ├── ui/              # Atom/Molecule UI reusable
-│   │   └── layout/          # Layout reusable (StickyHeader, BottomNav, dst)
-│   │
-│   ├── hooks/               # Custom hooks
-│   ├── lib/                 # Skrip utilitas, auth, API client
-│   ├── context/             # React context provider
-│   └── types/               # TypeScript shared types
-│
-├── docs/                    # Dokumentasi, panduan tugas, dsb
-│   ├── AI/                  # Rules AI agent
-│   ├── design_system/       # Guideline utama design project
-│   ├── feature_guide.md
-│   ├── notes.md
-│   ├── to-do.md
-│   └── Guide.md
-│
-├── .env.local
-├── .gitignore
-└── README.md
-```
+Setiap perubahan harus memperjelas atau memperkuat flow salah satu dari tiga persona itu.
 
-## AI AGENTS RULES (INDUSTRY SCALE)
+## 2. Source of Truth yang Wajib Dibaca
 
-### 1) 🧠 SESSION BOOTSTRAP & CONTEXT (WAJIB)
-- Saat mulai sesi baru, WAJIB baca: `README.md`, `docs/to-do.md`, `docs/notes.md`, `docs/Guide.md`, dan `docs/AI/AGENTS.md`.
-- WAJIB pahami progres terakhir sebelum menyentuh kode.
-- WAJIB cek struktur folder & file terkait scope task terlebih dahulu.
-- Jika task menyentuh area lintas fitur, lakukan mini-audit dampak ke file terkait sebelum edit.
-- Setiap selesai task, WAJIB update `docs/to-do.md` (status checklist) dan `docs/notes.md` (log teknis singkat).
+Sebelum kerja pada sesi baru, baca:
 
-### 2) 🤝 WORKFLOW EKSEKUSI (WAJIB)
-- DILARANG inisiatif implementasi tanpa instruksi user.
-- WAJIB konfirmasi scope sebelum perubahan besar/arsitektural.
-- Prioritaskan perubahan kecil, terukur, dan bisa diverifikasi.
-- Setiap perubahan wajib punya validasi minimal:
-  1. lint
-  2. build (untuk perubahan signifikan)
-  3. uji alur utama yang terdampak
-- Jika ada trade-off, tampilkan opsi + risiko secara ringkas.
+1. `README.md`
+2. `docs/to-do.md`
+3. `docs/notes.md`
+4. `docs/design_system/`
+5. file terkait scope task
 
-### 3) 🏗️ NEXT.JS ARCHITECTURE (STRICT)
-- `page.tsx` wajib diprioritaskan sebagai **Server Component**.
-- `"use client"` hanya untuk komponen yang butuh state/effect/browser API.
-- Pisahkan UI interaktif ke Client Component terpisah (hindari client-heavy page).
-- Untuk dynamic route pada static export, WAJIB siapkan `generateStaticParams` bila dibutuhkan.
-- Hindari fetch/data transform berulang di banyak komponen; sentralisasi di layer yang tepat (`lib/`, hooks, atau server boundary).
+Jangan mengandalkan asumsi dari sesi lama kalau kondisi file bisa berubah.
 
-### 4) 🧩 COMPONENT SYSTEM & REUSE (STRICT)
-- WAJIB cek `src/components/ui` sebelum membuat komponen baru.
-- DILARANG duplikasi komponen/pola UI yang sudah ada.
-- Jika pola UI dipakai >1 tempat, ekstrak jadi reusable component.
-- Setiap komponen baru WAJIB:
-  - typed props (tanpa `any`)
-  - punya varian bila ada lebih dari 1 gaya penggunaan
-  - konsisten naming & API props
-- Jika komponen baru dibuat, WAJIB tambahkan showcase minimal di `src/app/test-components/page.tsx`.
+## 3. Non-Halu Rule
 
-### 5) 🎨 DESIGN SYSTEM & STYLING GOVERNANCE (STRICT)
-- DILARANG hardcoded hex (`#xxxxxx`) dan arbitrary value tidak perlu (`shadow-[...]`, dsb).
-- WAJIB gunakan token semantik dari `globals.css` / design system:
-  - contoh: `text-primary`, `bg-surface-light`, `shadow-soft`, `shadow-medium`.
-- DILARANG styling manual untuk elemen yang sudah punya template komponen.
-- Input wajib memakai komponen `Input` + prop `label` (tanpa label manual untuk field Input).
-- Mobile-first mandatory: layout widescreen tetap berperilaku seperti viewport mobile app.
+- Jangan klaim fitur “sudah jadi” kalau masih mock, local-only, atau hanya desain.
+- Jangan bilang Appwrite sudah terhubung kalau page masih baca data placeholder.
+- Jangan membuat CTA aktif untuk fitur yang belum punya backend/domain jelas.
+- Kalau fitur belum final, ubah jadi salah satu status berikut:
+  - `live`
+  - `read-only`
+  - `out of scope`
 
-### 6) 🧾 DATA, TYPES, DAN DOMAIN RULES
-- Gunakan **DUMMY DATA ENGINE** (`DUMMY_DATA` object/record) untuk simulasi data dinamis.
-- DILARANG menaruh teks/angka dinamis hardcoded langsung di JSX.
-- Semua entitas domain WAJIB pakai type/interface dari shared types (`src/types`).
-- DILARANG penggunaan `any` kecuali ada alasan kuat dan disetujui.
-- Siapkan struktur agar migrasi ke Appwrite/API minim refactor (shape data konsisten).
+CardToo harus terasa jujur, bukan terlihat lengkap tapi bohong.
 
-### 7) 🔐 SECURITY, PRIVACY, DAN CONFIG HYGIENE
-- DILARANG hardcode secret, token, API key, endpoint sensitif di source code.
-- Gunakan env variables (`.env.local`) dan abstraction di `lib/`.
-- Jangan logging data sensitif (email, token, credential, payload pribadi).
-- Validasi input user di boundary penting (form kritikal / transaksi / auth flow).
+## 4. Arsitektur yang Harus Dipertahankan
 
-### 8) ⚡ PERFORMANCE & UX STANDARDS
-- Gunakan `next/image` untuk aset gambar non-dekoratif utama.
-- Optimalkan render list panjang (batasi render berat, memoisasi saat perlu).
-- Pertahankan “Native App Feel”:
-  - minim text selection global (kecuali input/textarea),
-  - interaksi sentuh responsif,
-  - state loading/empty/error yang jelas.
-- Hindari layout shift mencolok; jaga konsistensi spacing dan skeleton/loading state.
+### App Router
 
-### 9) ✅ QUALITY GATES (DEFINITION OF DONE)
-Task dianggap selesai jika:
-1. Scope user terpenuhi.
-2. Tidak melanggar rules AI + design system.
-3. Lint lulus.
-4. Build lulus (jika perubahan signifikan/struktur).
-5. Dokumentasi progres di `docs/to-do.md` dan `docs/notes.md` terupdate.
-6. Tidak meninggalkan TODO kritikal tanpa catatan tindak lanjut.
+- Gunakan `Server Component` secara default.
+- Tambahkan `"use client"` hanya bila butuh state, effect, browser API, atau interaksi nyata.
 
-### 10) 🗂️ DOCUMENTATION & CHANGELOG DISCIPLINE
-- Setiap task selesai WAJIB menambah log ringkas di `docs/notes.md`:
-  - tanggal/jam sesi
-  - file yang diubah
-  - alasan perubahan
-  - hasil validasi (lint/build/test flow)
-- Update checklist di `docs/to-do.md` dengan status faktual (`[x]` / `[ ]`).
-- Jangan overwrite history lama; tambahkan entri baru agar jejak keputusan terjaga.
+### Static Export
 
-### 11) 🚫 ANTI-PATTERN (DILARANG)
-- Duplikasi komponen/styling.
-- Menambah dependency tanpa alasan jelas.
-- Refactor besar tanpa approval user.
-- Mengubah behavior lintas halaman tanpa impact check.
-- Menghapus code/documentation yang masih relevan tanpa catatan migrasi.
-- Memperbaiki gejala tanpa menyentuh akar masalah (root cause).
+Project memakai `output: 'export'`.
 
-### 12) 🧭 PRIORITAS SAAT KONFLIK
-Jika ada konflik prioritas, urutan keputusan:
-1. Keamanan & data integrity
-2. Kebenaran bisnis/flow
-3. Stabilitas build/lint
-4. Konsistensi design system
-5. Kecepatan implementasi
+Karena itu:
 
-<!-- END:nextjs-agent-rules -->
+- runtime data Appwrite dengan ID yang lahir setelah build **tidak boleh** bergantung pada dynamic route build-time
+- gunakan route query-based statis untuk detail runtime seperti:
+  - `/product/detail?productId=...`
+  - `/store/detail?storeId=...`
+  - `/seller/products/edit?productId=...`
+  - `/messages/room?...`
+  - `/orders/track?orderId=...`
+
+Kalau ada link baru ke entity Appwrite runtime, default-nya adalah route statis query-based, bukan dynamic route baru.
+
+### Layering
+
+Ikuti pola ini:
+
+- `src/app/...` untuk page/client container
+- `src/lib/services/...` untuk domain logic Appwrite
+- `src/types/index.ts` untuk shared entity shape
+- `src/lib/appwrite/...` untuk config/client
+
+Jangan campur query Appwrite mentah ke banyak page kalau sudah bisa ditaruh di service.
+
+## 5. Design System Rules
+
+- Ikuti token semantik dari `globals.css` dan `docs/design_system/`
+- Hindari:
+  - hex hardcoded
+  - `black/gray` mentah
+  - shadow arbitrary tanpa alasan kuat
+- Gunakan komponen reusable yang sudah ada sebelum membuat pola baru:
+  - `Input`
+  - `Button`
+  - `StickyHeader`
+  - `AuthCard`
+  - `MenuListItem`
+  - `ProductCard`
+  - dll
+
+Jangan mengubah desain yang sudah disetujui user kecuali diminta. Fokusnya wiring, consistency, dan hardening.
+
+## 6. Data & Domain Rules
+
+- Semua entity domain harus lewat `src/types/index.ts`
+- Jangan pakai `any` tanpa alasan kuat
+- Jangan pakai dummy entity untuk fitur yang sudah masuk scope backend
+- Nilai default Appwrite yang tidak didukung untuk required column harus diisi di application layer
+- Slug fallback harus deterministik, jangan pakai timestamp mentah sembarangan
+
+## 7. Appwrite Rules
+
+- Auth, tables, dan storage adalah backend utama repo ini
+- Kalau ubah schema Appwrite, sinkronkan:
+  - service layer
+  - shared types
+  - docs status
+- Row/file permission harus masuk akal:
+  - owner-scoped untuk data privat
+  - public read hanya untuk data/asset yang memang harus tampil publik
+
+## 8. Flow Integrity Rules
+
+Setiap perubahan harus dicek dampaknya ke:
+
+- guest flow
+- buyer flow
+- seller flow
+
+Jangan memperbaiki satu halaman sambil memutus navigasi flow lain.
+
+## 9. Quality Gates
+
+Task dianggap selesai kalau:
+
+1. scope user selesai
+2. tidak merusak desain yang disepakati
+3. `npm run lint` lulus
+4. `npm run build` lulus untuk perubahan signifikan
+5. `docs/to-do.md` dan `docs/notes.md` diperbarui bila ada progres penting
+
+## 10. Documentation Discipline
+
+`docs/to-do.md`
+- berisi status kerja faktual
+- pisahkan yang selesai, sedang berjalan, dan backlog
+
+`docs/notes.md`
+- berisi konteks project
+- progress audit
+- coverage Appwrite
+- risiko / next steps
+
+Jangan biarkan docs tertinggal jauh dari code nyata.
+
+## 11. Anti-Pattern yang Dilarang
+
+- route aktif yang sebenarnya dummy
+- CTA palsu dengan `setTimeout`, `alert`, atau `console.log` pura-pura proses
+- local state domain permanen untuk fitur yang seharusnya sudah Appwrite-backed
+- refactor besar tanpa dampak yang dipahami
+- edit visual besar tanpa permintaan user
+
+## 12. Prioritas Keputusan
+
+Jika ada konflik, urutan prioritasnya:
+
+1. kebenaran flow user
+2. stabilitas build/export
+3. keamanan data & permission
+4. maintainability arsitektur
+5. kerapihan visual implementation

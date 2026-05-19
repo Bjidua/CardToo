@@ -8,6 +8,7 @@ import {
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig, getFileViewUrl } from "@/lib/appwrite/config";
+import { buildSlugBase, withSlugSuffix } from "@/lib/slug";
 import type {
   SellerOnboardingInput,
   Store,
@@ -36,14 +37,15 @@ const toStore = (
 ): Store => ({
   id: row.$id,
   name: row.store_name,
-  location: "Indonesia",
+  location: row.location || "Indonesia",
+  createdAt: row.$createdAt,
   rating: "0.0",
   followers: "0",
   isVerified: row.is_verified,
   coverImage: row.banner_url,
   description: row.description || "Belum ada deskripsi toko.",
   performance: {
-    chat: "0%",
+    chat: "Info",
     process: "-",
     onTime: "0%",
   },
@@ -56,7 +58,8 @@ const toStore = (
 });
 
 const ensureUniqueSlug = async (baseSlug: string) => {
-  let slug = baseSlug || `store-${Date.now()}`;
+  const normalizedBaseSlug = buildSlugBase(baseSlug, "store");
+  let slug = normalizedBaseSlug;
   let suffix = 1;
 
   while (true) {
@@ -68,7 +71,7 @@ const ensureUniqueSlug = async (baseSlug: string) => {
 
     if (total === 0) return slug;
 
-    slug = `${baseSlug}-${suffix}`;
+    slug = withSlugSuffix(normalizedBaseSlug, suffix);
     suffix += 1;
   }
 };
@@ -137,6 +140,7 @@ export const storeService = {
         data: {
           store_name: input.storeName.trim(),
           store_slug: uniqueSlug,
+          location: "Indonesia",
           description: input.description?.trim() || null,
           logo_file_id: null,
           logo_url: null,
@@ -185,6 +189,7 @@ export const storeService = {
         rowId: storeId,
         data: {
           store_name: input.storeName.trim(),
+          location: input.location?.trim() || existing.location || "Indonesia",
           description: input.description?.trim() || null,
           banner_file_id: uploadedBanner?.fileId || existing.banner_file_id,
           banner_url: uploadedBanner?.url || existing.banner_url,

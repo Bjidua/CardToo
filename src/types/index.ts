@@ -87,6 +87,7 @@ export interface Product {
 export interface StoreRow {
   store_name: string;
   store_slug: string;
+  location: string | null;
   description: string | null;
   logo_file_id: string | null;
   logo_url: string | null;
@@ -101,6 +102,7 @@ export interface Store {
   id: string;
   name: string;
   location: string;
+  createdAt?: string;
   rating: string;
   followers: string;
   isVerified: boolean;
@@ -392,6 +394,7 @@ export interface UpdateProductInput {
 
 export interface UpdateStoreInput {
   storeName: string;
+  location?: string;
   description?: string;
   bannerFile?: File | null;
 }

@@ -1,6 +1,8 @@
 import {
   Account,
   Client,
+  ExecutionMethod,
+  Functions,
   ID,
   Permission,
   Query,
@@ -18,4 +20,5 @@ export const appwriteClient = client;
 export const account = new Account(client);
 export const tablesDB = new TablesDB(client);
 export const storage = new Storage(client);
-export { ID, Permission, Query, Role };
+export const functions = new Functions(client);
+export { ExecutionMethod, ID, Permission, Query, Role };

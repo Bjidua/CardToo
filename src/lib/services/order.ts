@@ -1,15 +1,12 @@
 import type { Models } from "appwrite";
 import {
-  ID,
-  Permission,
   Query,
-  Role,
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { addressService } from "@/lib/services/address";
 import { cartService } from "@/lib/services/cart";
-import { notificationService } from "@/lib/services/notification";
+import { commerceGatewayService } from "@/lib/services/commerceGateway";
 import { storeService } from "@/lib/services/store";
 import type {
   BuyerOrder,
@@ -39,14 +36,6 @@ const conditionLabelMap: Record<ProductConditionValue, ProductCondition> = {
   good: "Good",
   played: "Played",
 };
-
-const buildPermissions = (buyerUserId: string, sellerUserId: string) => [
-  Permission.read(Role.user(buyerUserId)),
-  Permission.update(Role.user(buyerUserId)),
-  Permission.delete(Role.user(buyerUserId)),
-  Permission.read(Role.user(sellerUserId)),
-  Permission.update(Role.user(sellerUserId)),
-];
 
 const toOrderItem = (row: OrderItemRecord): BuyerOrderItem => ({
   id: row.$id,
@@ -127,17 +116,6 @@ const toSellerOrder = (
   items: items.map(toSellerOrderItem),
 });
 
-const generateOrderCode = () => {
-  const now = new Date();
-  const stamp = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, "0"),
-    String(now.getDate()).padStart(2, "0"),
-  ].join("");
-  const random = Math.random().toString(36).slice(2, 7).toUpperCase();
-  return `ORD-${stamp}-${random}`;
-};
-
 const getOrderItems = async (orderId: string) => {
   const result = await tablesDB.listRows<OrderItemRecord>({
     databaseId: appwriteConfig.databaseId,
@@ -211,80 +189,23 @@ export const orderService = {
         throw new Error("Data seller pada item checkout tidak valid.");
       }
 
-      const subtotal = selectedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
-      const appFee = 2500;
-      const total = subtotal + input.shippingMethod.price + appFee;
-      const orderCode = generateOrderCode();
       const sellerUserId = sellerIds[0];
 
-      const orderRow = await tablesDB.createRow<OrderRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: ordersTableId,
-        rowId: ID.unique(),
-        data: {
-          order_code: orderCode,
-          buyer_user_id: userId,
-          seller_user_id: sellerUserId,
-          store_id: storeIds[0],
-          address_label: primaryAddress.label,
-          recipient_name: primaryAddress.name,
-          recipient_phone: primaryAddress.phone,
-          address_details: primaryAddress.details,
-          payment_method: input.paymentMethod,
-          shipping_method: input.shippingMethod.name,
-          shipping_etd: input.shippingMethod.etd,
-          shipping_fee: input.shippingMethod.price,
-          app_fee: appFee,
-          subtotal,
-          total,
-          product_count: selectedItems.length,
-          status: "unpaid",
-          paid_at: null,
-        },
-        permissions: buildPermissions(userId, sellerUserId),
+      if (sellerUserId === userId) {
+        throw new Error("Anda tidak bisa checkout produk dari toko milik sendiri.");
+      }
+
+      const { orderId } = await commerceGatewayService.createOrder({
+        shippingMethod: input.shippingMethod,
+        paymentMethod: input.paymentMethod,
       });
 
-      const itemPermissions = buildPermissions(userId, sellerUserId);
+      const order = await this.getBuyerOrderById(userId, orderId);
+      if (!order) {
+        throw new Error("Pesanan berhasil dibuat, tetapi detailnya belum bisa dimuat.");
+      }
 
-      await Promise.all(
-        selectedItems.map((item) =>
-          tablesDB.createRow<OrderItemRecord>({
-            databaseId: appwriteConfig.databaseId,
-            tableId: orderItemsTableId,
-            rowId: ID.unique(),
-            data: {
-              order_id: orderRow.$id,
-              product_id: item.productId,
-              product_title: item.title,
-              product_image_url: item.image || null,
-              condition: item.condition
-                .toLowerCase()
-                .replace(/\s+/g, "_") as ProductConditionValue,
-              quantity: item.quantity,
-              unit_price: item.price,
-              total_price: item.price * item.quantity,
-            },
-            permissions: itemPermissions,
-          })
-        )
-      );
-
-      await notificationService.createNotification({
-        userId: sellerUserId,
-        title: "Pesanan baru masuk",
-        description: `${selectedItems.length} produk baru perlu diproses untuk order ${orderCode}.`,
-        type: "order",
-        label: "ORDER",
-        actionUrl: `/seller/orders/detail?orderId=${orderRow.$id}`,
-      });
-
-      await cartService.removeSelectedItems(userId);
-
-      const items = await getOrderItems(orderRow.$id);
-      return toBuyerOrder(orderRow, items, selectedItems[0]?.shopName || "Toko CardToo");
+      return order;
     } catch (error) {
       throw new Error(normalizeError(error));
     }
@@ -385,26 +306,19 @@ export const orderService = {
 
   async markOrderAsPaid(orderId: string) {
     try {
-      const row = await tablesDB.updateRow<OrderRecord>({
+      const { orderId: updatedOrderId } =
+        await commerceGatewayService.markOrderAsPaid(orderId);
+      const row = await tablesDB.getRow<OrderRecord>({
         databaseId: appwriteConfig.databaseId,
         tableId: ordersTableId,
-        rowId: orderId,
-        data: {
-          status: "packed",
-          paid_at: new Date().toISOString(),
-        },
+        rowId: updatedOrderId,
       });
 
-      const items = await getOrderItems(orderId);
-      const store = await storeService.getStoreById(row.store_id);
-      await notificationService.createNotification({
-        userId: row.seller_user_id,
-        title: "Pembayaran dikonfirmasi",
-        description: `Order ${row.order_code} sudah dibayar dan siap diproses.`,
-        type: "order",
-        label: "PAID",
-        actionUrl: `/seller/orders/detail?orderId=${row.$id}`,
-      });
+      const [items, store] = await Promise.all([
+        getOrderItems(updatedOrderId),
+        storeService.getStoreById(row.store_id),
+      ]);
+
       return toBuyerOrder(row, items, store?.name || "Toko CardToo");
     } catch (error) {
       throw new Error(normalizeError(error));
@@ -413,38 +327,24 @@ export const orderService = {
 
   async markOrderAsShipped(orderId: string, sellerUserId: string) {
     try {
-      const currentOrder = await tablesDB.getRow<OrderRecord>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: ordersTableId,
-        rowId: orderId,
-      });
-
-      if (currentOrder.seller_user_id !== sellerUserId) {
+      const currentOrder = await this.getSellerOrderById(sellerUserId, orderId);
+      if (!currentOrder) {
         throw new Error("Anda tidak memiliki akses ke pesanan ini.");
       }
 
-      const row = await tablesDB.updateRow<OrderRecord>({
+      const { orderId: updatedOrderId } =
+        await commerceGatewayService.markOrderAsShipped(orderId);
+
+      const row = await tablesDB.getRow<OrderRecord>({
         databaseId: appwriteConfig.databaseId,
         tableId: ordersTableId,
-        rowId: orderId,
-        data: {
-          status: "shipped",
-        },
+        rowId: updatedOrderId,
       });
 
       const [items, store] = await Promise.all([
-        getOrderItems(orderId),
+        getOrderItems(updatedOrderId),
         storeService.getStoreById(row.store_id),
       ]);
-
-      await notificationService.createNotification({
-        userId: row.buyer_user_id,
-        title: "Pesanan sedang dikirim",
-        description: `Order ${row.order_code} sudah dikirim oleh penjual.`,
-        type: "order",
-        label: "SHIP",
-        actionUrl: `/orders/track?orderId=${row.$id}`,
-      });
 
       return toSellerOrder(row, items, store?.name || "Toko CardToo");
     } catch (error) {
@@ -454,25 +354,19 @@ export const orderService = {
 
   async markOrderAsCompleted(orderId: string) {
     try {
-      const row = await tablesDB.updateRow<OrderRecord>({
+      const { orderId: updatedOrderId } =
+        await commerceGatewayService.markOrderAsCompleted(orderId);
+      const row = await tablesDB.getRow<OrderRecord>({
         databaseId: appwriteConfig.databaseId,
         tableId: ordersTableId,
-        rowId: orderId,
-        data: {
-          status: "completed",
-        },
+        rowId: updatedOrderId,
       });
 
-      const items = await getOrderItems(orderId);
-      const store = await storeService.getStoreById(row.store_id);
-      await notificationService.createNotification({
-        userId: row.buyer_user_id,
-        title: "Pesanan selesai",
-        description: `Order ${row.order_code} sudah selesai. Yuk beri ulasan untuk produk yang dibeli.`,
-        type: "order",
-        label: "DONE",
-        actionUrl: `/orders/review?orderId=${row.$id}`,
-      });
+      const [items, store] = await Promise.all([
+        getOrderItems(updatedOrderId),
+        storeService.getStoreById(row.store_id),
+      ]);
+
       return toBuyerOrder(row, items, store?.name || "Toko CardToo");
     } catch (error) {
       throw new Error(normalizeError(error));

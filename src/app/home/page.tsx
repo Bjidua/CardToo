@@ -13,13 +13,14 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import type { Product } from "@/types";
 import { productService } from "@/lib/services/product";
+import { buildProductDetailHref } from "@/lib/routes";
 import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isGuest, user } = useAuth();
+  const { isGuest, user, profile } = useAuth();
   const categoryParam = searchParams.get("category") || "All";
   
   const [selectedCategory, setSelectedCategory] = React.useState(categoryParam);
@@ -84,7 +85,13 @@ function HomeContent() {
         title="Home" 
         variant="logo"
         size="lg"
-        leftAction={<ProfilePicture size={64} className="border-[3px] border-white shadow-lg ml-1" />}
+        leftAction={
+          <ProfilePicture
+            src={profile?.avatar_url || undefined}
+            size={64}
+            className="border-[3px] border-white shadow-lg ml-1"
+          />
+        }
         rightAction={
           <div className="flex items-center gap-3 mr-1">
             <Link href="/notifications">
@@ -163,7 +170,7 @@ function HomeContent() {
                   price={product.price}
                   condition={product.condition}
                   image={product.image || undefined}
-                  href={`/product/${product.id}`}
+                  href={buildProductDetailHref(product.id)}
                   isWishlisted={isFavorite(product.id)}
                   onWishlistToggle={() => {
                     if (isGuest || !user) {

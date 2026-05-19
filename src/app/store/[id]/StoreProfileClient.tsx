@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { productService } from "@/lib/services/product";
 import { reviewService } from "@/lib/services/review";
+import { buildProductDetailHref } from "@/lib/routes";
 import { storeService } from "@/lib/services/store";
 import { useAuth } from "@/context/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -84,6 +85,12 @@ export default function StoreProfileClient({ id }: { id: string }) {
   const filteredProducts = products.filter((product) =>
     product.title.toLowerCase().includes(searchInStore.toLowerCase())
   );
+  const joinedLabel = store?.createdAt
+    ? new Date(store.createdAt).toLocaleDateString("id-ID", {
+        month: "long",
+        year: "numeric",
+      })
+    : "Belum tersedia";
 
   if (isLoading) {
     return (
@@ -269,7 +276,7 @@ export default function StoreProfileClient({ id }: { id: string }) {
                       price={product.price}
                       condition={product.condition}
                       image={product.image || undefined}
-                      href={`/product/${product.id}`}
+                      href={buildProductDetailHref(product.id)}
                       isWishlisted={isFavorite(product.id)}
                       onWishlistToggle={() => {
                         if (isGuest || !user) {
@@ -390,11 +397,11 @@ export default function StoreProfileClient({ id }: { id: string }) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1">
                   <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Bergabung</span>
-                  <span className="text-[14px] font-bold text-text-main">Mei 2026</span>
+                  <span className="text-[14px] font-bold text-text-main">{joinedLabel}</span>
                 </div>
                 <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1">
                   <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">Waktu Balas</span>
-                  <span className="text-[14px] font-bold text-text-main">Aktif</span>
+                  <span className="text-[14px] font-bold text-text-main">Belum dihitung otomatis</span>
                 </div>
               </div>
             </motion.div>
