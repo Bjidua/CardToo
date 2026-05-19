@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google"
 import "./globals.css"
 import { BottomNav } from "@/components/layout/BottomNav"
 import { AuthProvider } from "@/context/AuthContext"
+import { LanguageProvider } from "@/context/LanguageContext"
 import { DevGodModePanel } from "@/components/layout/DevGodModePanel"
 
 const outfit = Outfit({ 
@@ -32,15 +33,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.className} bg-white antialiased`}>
         <AuthProvider>
-          <DevGodModePanel />
-          {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
-          <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-medium relative flex flex-col">
-            {/* Konten Utama */}
-            <main className="flex-1 flex flex-col relative">
-              {children}
-            </main>
-            <BottomNav />
-          </div>
+          <LanguageProvider>
+            <DevGodModePanel />
+            {/* Main Wrapper: Berfungsi sebagai container HP yang selalu centered */}
+            <div className="mx-auto min-h-screen max-w-[440px] bg-white shadow-medium relative flex flex-col">
+              {/* Konten Utama */}
+              <main className="flex-1 flex flex-col relative">
+                {children}
+              </main>
+              <BottomNav />
+            </div>
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

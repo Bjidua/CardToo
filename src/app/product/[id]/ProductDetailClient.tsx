@@ -175,13 +175,19 @@ export default function ProductDetailClient({ id }: ProductDetailClientProps) {
       void addCurrentProductToCart("cart");
     });
   const handleChat = () =>
-    handleAction(() =>
+    handleAction(() => {
+      if (!store?.ownerUserId || !store?.id) {
+        return;
+      }
+      if (user?.id && store.ownerUserId === user.id) {
+        return;
+      }
       router.push(
         `/messages/room?sellerId=${encodeURIComponent(
-          store?.ownerUserId || ""
-        )}&storeId=${encodeURIComponent(store?.id || "")}`
-      )
-    );
+          store.ownerUserId
+        )}&storeId=${encodeURIComponent(store.id)}`
+      );
+    });
   const handleBuyNow = () =>
     handleAction(() => {
       void addCurrentProductToCart("checkout");

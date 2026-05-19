@@ -9,6 +9,7 @@ import { StickyHeader } from "@/components/layout/StickyHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { collectionService } from "@/lib/services/collection";
 import type { Collection } from "@/types";
@@ -16,6 +17,7 @@ import type { Collection } from "@/types";
 export default function CollectionsPage() {
   const router = useRouter();
   const { isGuest, user } = useAuth();
+  const { t } = useLanguage();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdding, setIsAdding] = useState(false);
@@ -88,8 +90,8 @@ export default function CollectionsPage() {
       <main className="flex-1 flex flex-col min-h-screen bg-background">
         <StickyHeader title="Collections" variant="logo" size="lg" />
         <GuestEmptyState
-          title="Login untuk Mengelola Koleksi"
-          description="Simpan dan kelompokkan kartu impian Anda ke dalam koleksi pribadi dengan masuk ke akun Anda."
+          title={t("login_manage_collections")}
+          description={t("login_manage_collections_desc")}
           icon={<Icons.Collection size={48} />}
         />
       </main>
@@ -98,12 +100,12 @@ export default function CollectionsPage() {
 
   return (
     <main className="flex-1 flex flex-col bg-background relative pb-40">
-      <StickyHeader title="Collection" variant="logo" size="lg" />
+      <StickyHeader title={t("collections")} variant="logo" size="lg" />
 
       <div className="relative z-10 pt-6 px-6 flex flex-col gap-6">
         <div className="flex items-center gap-3">
           <Input
-            placeholder="Cari koleksi..."
+            placeholder={t("search_collections")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             startIcon={<Icons.Search size={23} />}
@@ -134,9 +136,9 @@ export default function CollectionsPage() {
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Icons.Plus size={20} className="text-primary" />
               </div>
-              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
-                Tambah
-              </span>
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
+                  {t("add")}
+                </span>
             </motion.button>
 
             {filteredCollections.map((item) => (
@@ -172,14 +174,14 @@ export default function CollectionsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative w-full max-w-[440px] bg-white rounded-[32px] p-8 shadow-2xl"
             >
-              <h2 className="text-xl font-bold text-text-main mb-2">Buat Koleksi Baru</h2>
+              <h2 className="text-xl font-bold text-text-main mb-2">{t("create_new_collection")}</h2>
               <p className="text-sm text-text-sub mb-8">
-                Beri nama folder untuk mengelompokkan kartu kesayanganmu.
+                {t("collection_name_helper")}
               </p>
 
               <div className="flex flex-col gap-6">
                 <Input
-                  placeholder="Nama Koleksi (misal: Pokemon Rare)"
+                  placeholder={t("collection_name_placeholder")}
                   autoFocus
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
@@ -192,14 +194,14 @@ export default function CollectionsPage() {
                     className="flex-1"
                     onClick={() => setIsAdding(false)}
                   >
-                    Batal
+                    {t("cancel")}
                   </Button>
                   <Button
                     className="flex-1"
                     onClick={() => void handleAddCollection()}
                     disabled={!newTitle.trim() || isCreating}
                   >
-                    {isCreating ? "Menyimpan..." : "Simpan"}
+                    {isCreating ? t("saving") : t("save")}
                   </Button>
                 </div>
               </div>
@@ -212,7 +214,7 @@ export default function CollectionsPage() {
         <div className="flex flex-col items-center justify-center py-20 text-text-sub">
           <Icons.Search size={40} className="opacity-20 mb-4" />
           <p className="text-sm font-bold">
-            Koleksi {`"`}{searchTerm}{`"`} tidak ditemukan
+            {t("collection_not_found").replace("{query}", searchTerm)}
           </p>
         </div>
       )}

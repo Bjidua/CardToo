@@ -12,6 +12,9 @@ type GatewayAction =
   | "markOrderAsPaid"
   | "markOrderAsShipped"
   | "markOrderAsCompleted"
+  | "markOrderAsCancelled"
+  | "closeStore"
+  | "deleteAccount"
   | "getOrCreateConversation"
   | "sendMessage"
   | "createReview";
@@ -92,6 +95,7 @@ export const commerceGatewayService = {
   createOrder(input: {
     shippingMethod: ShippingMethodOption;
     paymentMethod: "qris";
+    idempotencyKey?: string;
   }) {
     return executeGateway<{ orderId: string }>("createOrder", input);
   },
@@ -108,6 +112,20 @@ export const commerceGatewayService = {
     return executeGateway<{ orderId: string }>("markOrderAsCompleted", {
       orderId,
     });
+  },
+
+  markOrderAsCancelled(orderId: string) {
+    return executeGateway<{ orderId: string }>("markOrderAsCancelled", {
+      orderId,
+    });
+  },
+
+  closeStore() {
+    return executeGateway<{ closedStoreId: string }>("closeStore", {});
+  },
+
+  deleteAccount() {
+    return executeGateway<{ deletedUserId: string }>("deleteAccount", {});
   },
 
   getOrCreateConversation(input: {

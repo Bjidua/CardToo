@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { chatService } from "@/lib/services/chat";
+import Image from "next/image";
 import type { ChatMessage } from "@/types";
 
 interface ChatClientProps {
@@ -25,10 +26,12 @@ export default function ChatClient({
   const { user, isGuest } = useAuth();
   const [roomId, setRoomId] = useState(conversationId || "");
   const [roomName, setRoomName] = useState("Chat");
+  const [roomAvatar, setRoomAvatar] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,8 +40,25 @@ export default function ChatClient({
     const initializeRoom = async () => {
       try {
         setIsLoading(true);
+        setError("");
 
         let nextConversationId = conversationId || "";
+
+        if (!nextConversationId && !sellerId && !storeId) {
+          setError("Data chat belum lengkap. Buka chat dari halaman produk atau toko.");
+          setMessages([]);
+          setRoomName("Chat");
+          setRoomAvatar(null);
+          return;
+        }
+
+        if (!nextConversationId && (!sellerId || !storeId)) {
+          setError("Seller atau toko tidak valid untuk memulai chat.");
+          setMessages([]);
+          setRoomName("Chat");
+          setRoomAvatar(null);
+          return;
+        }
 
         if (!nextConversationId && sellerId && storeId) {
           const conversation = await chatService.getOrCreateConversation({
@@ -64,8 +84,18 @@ export default function ChatClient({
 
         setRoomId(room.id);
         setRoomName(room.name);
+        setRoomAvatar(room.avatar || null);
         setMessages(room.messages);
         await chatService.markConversationAsRead(user.id, room.id);
+      } catch (initError) {
+        setError(
+          initError instanceof Error
+            ? initError.message
+            : "Gagal membuka ruang chat."
+        );
+        setMessages([]);
+        setRoomName("Chat");
+        setRoomAvatar(null);
       } finally {
         setIsLoading(false);
       }
@@ -77,6 +107,37 @@ export default function ChatClient({
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!roomId || !user) return;
+
+    const unsubscribe = chatService.subscribeMessages(roomId, (incoming) => {
+      setMessages((current) => {
+        if (current.some((item) => item.id === incoming.$id)) {
+          return current;
+        }
+
+        const next: ChatMessage = {
+          id: incoming.$id,
+          text: incoming.message_text,
+          sender: incoming.sender_user_id === user.id ? "me" : "other",
+          time: new Date(incoming.$createdAt).toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          isRead: incoming.is_read,
+          senderUserId: incoming.sender_user_id,
+          receiverUserId: incoming.receiver_user_id,
+        };
+
+        return [...current, next];
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [roomId, user]);
 
   const handleSend = async () => {
     if (!user || !roomId || !input.trim()) return;
@@ -113,9 +174,15 @@ export default function ChatClient({
         title={roomName}
         leftAction={<BackButton variant="primary" />}
         rightAction={
-          <button className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white">
-            <Icons.Info size={20} />
-          </button>
+          roomAvatar ? (
+            <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
+              <Image src={roomAvatar} alt={roomName} fill className="object-cover" />
+            </div>
+          ) : (
+            <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white">
+              <Icons.Store size={18} />
+            </div>
+          )
         }
       />
 
@@ -167,6 +234,9 @@ export default function ChatClient({
             <p className="text-[12px] text-text-sub">
               Mulai percakapan pertama dengan penjual.
             </p>
+            {error && (
+              <p className="mt-3 text-[12px] font-medium text-danger">{error}</p>
+            )}
           </div>
         )}
         <div ref={scrollRef} />

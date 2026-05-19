@@ -322,7 +322,7 @@ export default function CheckoutPage() {
         )}
       </main>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white border-t border-surface-muted p-6 z-50 flex flex-col gap-6 shadow-2xl">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white border-t border-surface-muted p-6 z-50 flex flex-col gap-6 rounded-t-[32px] shadow-2xl">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center text-[13px]">
             <span className="text-text-sub font-medium">Subtotal Produk</span>

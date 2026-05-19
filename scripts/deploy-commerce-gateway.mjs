@@ -59,7 +59,14 @@ const ensureFunction = async ({ endpoint, projectId, apiKey }) => {
     logging: true,
     entrypoint: "src/main.js",
     commands: "npm install",
-    scopes: ["rows.read", "rows.write"],
+    scopes: [
+      "rows.read",
+      "rows.write",
+      "files.read",
+      "files.write",
+      "users.read",
+      "users.write",
+    ],
   };
 
   if (getResponse.ok) {

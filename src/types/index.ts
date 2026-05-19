@@ -170,6 +170,7 @@ export interface CartItem {
 
 export interface OrderRow {
   order_code: string;
+  idempotency_key?: string | null;
   buyer_user_id: string;
   seller_user_id: string;
   store_id: string;
@@ -290,6 +291,7 @@ export interface BuyerOrderItem {
 export interface BuyerOrder {
   id: string;
   orderCode: string;
+  idempotencyKey?: string | null;
   buyerUserId: string;
   sellerUserId: string;
   storeId: string;
@@ -380,6 +382,7 @@ export interface ShippingMethodOption {
 export interface CreateOrderInput {
   shippingMethod: ShippingMethodOption;
   paymentMethod: PaymentMethodValue;
+  idempotencyKey?: string;
 }
 
 export interface UpdateProductInput {
@@ -414,6 +417,7 @@ export interface Order {
 export interface SellerOrder {
   id: string;
   orderCode: string;
+  idempotencyKey?: string | null;
   buyerUserId: string;
   storeId: string;
   storeName?: string;
@@ -461,6 +465,7 @@ export interface ChatMessage {
   text: string;
   sender: "me" | "other";
   time: string;
+  createdAt?: string;
   isRead: boolean;
   senderUserId: string;
   receiverUserId: string;

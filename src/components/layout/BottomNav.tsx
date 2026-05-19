@@ -6,16 +6,18 @@ import { usePathname } from "next/navigation";
 import { Icons } from "@/components/ui/Icons";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
-const navItems = [
-  { name: "Home", href: "/home", icon: Icons.Home },
-  { name: "Message", href: "/messages", icon: Icons.Message },
-  { name: "Collection", href: "/collections", icon: Icons.Collection },
-  { name: "Profile", href: "/profile", icon: Icons.Profile },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const navItems = [
+    { name: t("home"), href: "/home", icon: Icons.Home },
+    { name: t("message"), href: "/messages", icon: Icons.Message },
+    { name: t("collection"), href: "/collections", icon: Icons.Collection },
+    { name: t("profile"), href: "/profile", icon: Icons.Profile },
+  ];
 
   // Daftar halaman core yang menampilkan BottomNav
   const showOnPaths = ["/home", "/messages", "/collections", "/profile"];

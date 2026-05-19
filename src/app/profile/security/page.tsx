@@ -1,12 +1,46 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { MenuListItem } from "@/components/ui/MenuListItem";
 import { Icons } from "@/components/ui/Icons";
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
+import { commerceGatewayService } from "@/lib/services/commerceGateway";
 
 export default function SecurityPage() {
+  const router = useRouter();
+  const { logout } = useAuth();
+  const [isDeletingAccount, setIsDeletingAccount] = React.useState(false);
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Hapus akun? Jika toko masih aktif, Anda harus menutup toko terlebih dahulu."
+    );
+    if (!confirmed) return;
+
+    try {
+      setIsDeletingAccount(true);
+      await commerceGatewayService.deleteAccount();
+
+      try {
+        await logout();
+      } catch {
+        router.replace("/login");
+      }
+
+      window.alert("Akun berhasil dihapus.");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Gagal menghapus akun.";
+      window.alert(message);
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
       <StickyHeader
@@ -36,6 +70,21 @@ export default function SecurityPage() {
             <p className="text-[12px] text-text-sub/60 leading-relaxed">
               Lindungi akunmu dengan mengaktifkan fitur keamanan tambahan. Jangan berikan kode OTP atau PIN kepada siapapun, termasuk pihak CardToo.
             </p>
+          </div>
+
+          <div className="bg-white rounded-card overflow-hidden shadow-soft border border-danger/30 p-5">
+            <p className="text-[14px] font-bold text-danger">Zona Berbahaya</p>
+            <p className="mt-2 text-[12px] text-text-sub/70">
+              Menghapus akun akan menghapus data akun secara permanen.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-4 w-full h-12 rounded-xl border-danger text-danger"
+              onClick={() => void handleDeleteAccount()}
+              disabled={isDeletingAccount}
+            >
+              {isDeletingAccount ? "Menghapus Akun..." : "Hapus Akun"}
+            </Button>
           </div>
         </div>
       </main>

@@ -14,10 +14,11 @@ import { orderService } from "@/lib/services/order";
 import type { BuyerOrder } from "@/types";
 
 function PaymentContent() {
+  const PAYMENT_TIMEOUT_SECONDS = 15 * 60;
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isGuest, user } = useAuth();
-  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
+  const [timeLeft, setTimeLeft] = useState(PAYMENT_TIMEOUT_SECONDS);
   const [order, setOrder] = useState<BuyerOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,12 +26,22 @@ function PaymentContent() {
   const orderId = searchParams.get("orderId");
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (!order) return;
+
+    const calculateRemaining = () => {
+      const createdAtMs = new Date(order.createdAt).getTime();
+      const expiresAtMs = createdAtMs + PAYMENT_TIMEOUT_SECONDS * 1000;
+      const diff = Math.floor((expiresAtMs - Date.now()) / 1000);
+      return Math.max(0, diff);
+    };
+
+    setTimeLeft(calculateRemaining());
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft(calculateRemaining());
     }, 1000);
+
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [order]);
 
   useEffect(() => {
     if (!user || !orderId || isGuest) return;
@@ -58,7 +69,7 @@ function PaymentContent() {
   };
 
   const handlePaid = async () => {
-    if (!order) return;
+    if (!order || timeLeft <= 0 || order.status === "cancelled") return;
     try {
       setIsSubmitting(true);
       await orderService.markOrderAsPaid(order.id);
@@ -67,6 +78,23 @@ function PaymentContent() {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!order || isSubmitting) return;
+    if (timeLeft > 0) return;
+    if (order.status !== "unpaid") return;
+
+    const cancelWhenExpired = async () => {
+      try {
+        const updated = await orderService.markOrderAsCancelled(order.id);
+        setOrder(updated);
+      } catch {
+        // Ignore to avoid breaking UX if already cancelled elsewhere.
+      }
+    };
+
+    void cancelWhenExpired();
+  }, [order, timeLeft, isSubmitting]);
 
   if (isGuest) {
     return (
@@ -134,15 +162,15 @@ function PaymentContent() {
             Selesaikan pembayaran dalam
           </span>
           <div className="relative flex items-center justify-center">
-            <h2 className="text-[40px] font-bold text-text-main tabular-nums leading-none tracking-tighter">
-              {formatTime(timeLeft)}
-            </h2>
+              <h2 className="text-[40px] font-bold text-text-main tabular-nums leading-none tracking-tighter">
+                {formatTime(timeLeft)}
+              </h2>
           </div>
           <div className="w-64 h-2 bg-surface-muted rounded-full mt-4 overflow-hidden border border-white/20">
             <motion.div
               className="h-full bg-danger"
               initial={{ width: "100%" }}
-              animate={{ width: `${(timeLeft / (24 * 3600)) * 100}%` }}
+              animate={{ width: `${(timeLeft / PAYMENT_TIMEOUT_SECONDS) * 100}%` }}
               transition={{ duration: 1, ease: "linear" }}
             />
           </div>
@@ -151,7 +179,9 @@ function PaymentContent() {
         <div className="bg-warning/10 text-warning px-6 py-2.5 rounded-2xl flex items-center gap-2 mb-8 border border-warning/20">
           <div className="w-2 h-2 bg-warning rounded-full animate-pulse" />
           <span className="text-[13px] font-bold uppercase tracking-wider">
-            Menunggu Pembayaran
+            {order.status === "cancelled" || timeLeft <= 0
+              ? "Pesanan Dibatalkan"
+              : "Menunggu Pembayaran"}
           </span>
         </div>
 
@@ -205,16 +235,20 @@ function PaymentContent() {
         >
           Simpan ke Galeri
         </Button>
-        <Button
-          variant="primary"
-          onClick={() => void handlePaid()}
-          disabled={isSubmitting}
-          className="w-full h-14 rounded-2xl text-[16px] font-bold shadow-lg shadow-primary/30"
-        >
-          {isSubmitting ? "Memproses..." : "Saya Sudah Bayar"}
-        </Button>
+          <Button
+            variant="primary"
+            onClick={() => void handlePaid()}
+            disabled={isSubmitting || timeLeft <= 0 || order.status === "cancelled"}
+            className="w-full h-14 rounded-2xl text-[16px] font-bold shadow-lg shadow-primary/30"
+          >
+            {isSubmitting
+              ? "Memproses..."
+              : timeLeft <= 0 || order.status === "cancelled"
+                ? "Waktu Pembayaran Habis"
+                : "Saya Sudah Bayar"}
+          </Button>
+        </div>
       </div>
-    </div>
   );
 }
 

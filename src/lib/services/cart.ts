@@ -8,10 +8,12 @@ import {
 } from "@/lib/appwrite/client";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { formatProductCondition } from "@/lib/services/product";
-import type { AddCartItemInput, CartItem, CartItemRow } from "@/types";
+import type { AddCartItemInput, CartItem, CartItemRow, ProductRow, StoreRow } from "@/types";
 
 const tableId = appwriteConfig.tables.cartItems;
 type CartItemRecord = Models.Row & CartItemRow;
+type ProductRecord = Models.Row & ProductRow;
+type StoreRecord = Models.Row & StoreRow;
 
 const normalizeError = (error: unknown) =>
   error instanceof Error ? error.message : "Gagal memproses keranjang.";
@@ -84,7 +86,27 @@ export const cartService = {
 
   async addItem(userId: string, input: AddCartItemInput) {
     try {
-      if (input.sellerUserId === userId) {
+      const [product, store] = await Promise.all([
+        tablesDB.getRow<ProductRecord>({
+          databaseId: appwriteConfig.databaseId,
+          tableId: appwriteConfig.tables.products,
+          rowId: input.productId,
+        }),
+        tablesDB.getRow<StoreRecord>({
+          databaseId: appwriteConfig.databaseId,
+          tableId: appwriteConfig.tables.stores,
+          rowId: input.storeId,
+        }),
+      ]);
+
+      const canonicalSellerUserId = store.owner_user_id;
+      if (!canonicalSellerUserId) {
+        throw new Error("Data pemilik toko tidak valid.");
+      }
+      if (product.store_id !== input.storeId) {
+        throw new Error("Produk tidak cocok dengan toko yang dipilih.");
+      }
+      if (canonicalSellerUserId === userId) {
         throw new Error("Anda tidak bisa membeli produk dari toko Anda sendiri.");
       }
 
@@ -98,13 +120,13 @@ export const cartService = {
           tableId,
           rowId: existing.$id,
           data: {
-            seller_user_id: input.sellerUserId,
+            seller_user_id: canonicalSellerUserId,
             store_id: input.storeId,
-            product_title: input.productTitle,
-            product_image_url: input.productImageUrl || null,
-            store_name: input.storeName,
-            condition: input.condition,
-            price: input.price,
+            product_title: product.title,
+            product_image_url: product.cover_url || null,
+            store_name: store.store_name,
+            condition: product.condition,
+            price: product.price,
             quantity: existing.quantity + nextQuantity,
             is_selected: shouldSelect,
           },
@@ -120,13 +142,13 @@ export const cartService = {
         data: {
           user_id: userId,
           product_id: input.productId,
-          seller_user_id: input.sellerUserId,
+          seller_user_id: canonicalSellerUserId,
           store_id: input.storeId,
-          product_title: input.productTitle,
-          product_image_url: input.productImageUrl || null,
-          store_name: input.storeName,
-          condition: input.condition,
-          price: input.price,
+          product_title: product.title,
+          product_image_url: product.cover_url || null,
+          store_name: store.store_name,
+          condition: product.condition,
+          price: product.price,
           quantity: nextQuantity,
           is_selected: shouldSelect,
         },
