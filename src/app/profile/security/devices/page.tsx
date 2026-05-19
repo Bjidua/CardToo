@@ -11,6 +11,9 @@ import type { Device } from "@/types";
 
 type SessionItem = Awaited<ReturnType<typeof authService.listSessions>>[number];
 
+/**
+ * Memformat string waktu pembuatan sesi ke format lokal yang rapi (id-ID)
+ */
 const formatSessionTime = (session: SessionItem) => {
   if (session.current) {
     return "Sesi aktif saat ini";
@@ -24,6 +27,9 @@ const formatSessionTime = (session: SessionItem) => {
   });
 };
 
+/**
+ * Menormalisasi objek sesi mentah Appwrite ke interface Device UI
+ */
 const toDevice = (session: SessionItem): Device => ({
   id: session.$id,
   name:
@@ -35,6 +41,10 @@ const toDevice = (session: SessionItem): Device => ({
   isCurrent: session.current,
 });
 
+/**
+ * Halaman Manajemen Perangkat / Sesi Terhubung (DevicesPage)
+ * Dibungkus dengan ProtectedRoute untuk mencegah akses tamu tanpa login.
+ */
 export default function DevicesPage() {
   return (
     <ProtectedRoute>
@@ -43,14 +53,32 @@ export default function DevicesPage() {
   );
 }
 
+/**
+ * Komponen Konten Manajemen Perangkat (DevicesContent)
+ * Memanggil endpoint Appwrite `authService.listSessions` untuk melacak seluruh login perangkat aktif,
+ * dan menyediakan opsi logout perangkat tunggal maupun logout massal dari semua perangkat lain.
+ */
 function DevicesContent() {
   const { refreshAuth } = useAuth();
+  
+  // State daftar perangkat aktif
   const [devices, setDevices] = useState<Device[]>([]);
+  
+  // State pesan error API
   const [error, setError] = useState("");
+  
+  // State loading pemuatan data
   const [isLoading, setIsLoading] = useState(true);
+  
+  // State ID sesi perangkat yang sedang di-logout agar memicu loader lokal di list item
   const [loggingOutId, setLoggingOutId] = useState<string | null>(null);
+  
+  // State loading status logout massal semua perangkat
   const [isLoggingOutAll, setIsLoggingOutAll] = useState(false);
 
+  /**
+   * Effect Hook untuk memuat seluruh sesi perangkat aktif yang terdaftar di Appwrite.
+   */
   useEffect(() => {
     const loadSessions = async () => {
       try {
@@ -72,15 +100,23 @@ function DevicesContent() {
     void loadSessions();
   }, []);
 
+  // Memeriksa apakah ada sesi masuk lain selain tab browser aktif saat ini
   const hasOtherSessions = useMemo(
     () => devices.some((device) => !device.isCurrent),
     [devices]
   );
 
+  /**
+   * Mengakhiri sesi masuk perangkat tertentu.
+   * 
+   * @param sessionId ID unik sesi Appwrite
+   */
   const handleLogoutSession = async (sessionId: string) => {
     try {
-      setLoggingOutId(sessionId);
+      setLoggingOutId(sessionId); // Set loader baris perangkat
       await authService.logoutSession(sessionId);
+      
+      // Hapus perangkat dari state lokal
       setDevices((prev) => prev.filter((device) => device.id !== sessionId));
     } catch (logoutError) {
       setError(
@@ -93,10 +129,15 @@ function DevicesContent() {
     }
   };
 
+  /**
+   * Mengakhiri seluruh sesi masuk aktif lainnya di perangkat lain secara massal.
+   */
   const handleLogoutAll = async () => {
     try {
       setIsLoggingOutAll(true);
       await authService.logoutAllSessions();
+      
+      // Sinkronisasi data sesi otentikasi global
       await refreshAuth();
     } catch (logoutError) {
       setError(
@@ -111,12 +152,14 @@ function DevicesContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Perangkat Terhubung"
         leftAction={<BackButton variant="primary" />}
       />
 
       <main className="flex-1 px-6 pt-6 pb-32">
+        {/* Banner Edukasi Keamanan */}
         <div className="bg-primary/5 p-4 rounded-card border border-primary/10 mb-8">
           <p className="text-[13px] text-text-sub leading-relaxed">
             Ini adalah daftar sesi Appwrite yang saat ini masuk ke akun CardToo
@@ -124,12 +167,14 @@ function DevicesContent() {
           </p>
         </div>
 
+        {/* Tampilan Pesan Kesalahan */}
         {error ? (
           <div className="mb-6 rounded-card border border-danger/10 bg-danger/5 px-4 py-3 text-[13px] font-medium text-danger">
             {error}
           </div>
         ) : null}
 
+        {/* Render List Perangkat atau Spinner loading */}
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -161,6 +206,7 @@ function DevicesContent() {
                     </span>
                   </div>
                 </div>
+                {/* Tombol Logout per-baris perangkat */}
                 {!device.isCurrent ? (
                   <button
                     type="button"
@@ -176,6 +222,7 @@ function DevicesContent() {
           </div>
         )}
 
+        {/* Tombol Logout Massal (Logout dari semua perangkat lain) */}
         <button
           type="button"
           className="w-full mt-10 py-4 text-danger font-bold border-2 border-danger/10 rounded-card active:scale-[0.98] transition-all disabled:opacity-60"

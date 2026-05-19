@@ -12,6 +12,10 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 
+/**
+ * Halaman Pengaturan Utama (SettingsPage)
+ * Dibungkus dengan ProtectedRoute agar hanya bisa diakses user terotentikasi.
+ */
 export default function SettingsPage() {
   return (
     <ProtectedRoute>
@@ -20,11 +24,25 @@ export default function SettingsPage() {
   );
 }
 
+/**
+ * Komponen Konten Pengaturan (SettingsContent)
+ * Menampilkan menu berjenjang i18n dinamis:
+ * - Seksi Akun & Keamanan (Edit profile, alamat, pembayaran, password)
+ * - Seksi Pengaturan Aplikasi (Toggle notifikasi, pilihan bahasa)
+ * - Seksi Bantuan & Informasi (Pusat bantuan FAQ, kebijakan privasi, tentang CardToo)
+ * - Aksi Logout (Keluar sesi)
+ */
 function SettingsContent() {
+  // Service logout dari auth context global
   const { logout } = useAuth();
+
+  // Membaca status bahasa aktif & helper translate i18n
   const { language, t } = useLanguage();
+
+  // State toggle notifikasi push dinamis (client-side simulation)
   const [pushNotif, setPushNotif] = useState(true);
 
+  // Varian stagger animasi masuk menu setting
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -35,6 +53,7 @@ function SettingsContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
+      {/* Header Halaman */}
       <StickyHeader
         title={t("settings")}
         variant="minimal"
@@ -49,7 +68,7 @@ function SettingsContent() {
           animate="show"
           className="flex flex-col gap-8"
         >
-          {/* Section: Account & Security */}
+          {/* Seksi: Akun & Keamanan */}
           <div className="flex flex-col gap-3">
             <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("account_security")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
@@ -60,10 +79,11 @@ function SettingsContent() {
             </div>
           </div>
 
-          {/* Section: Settings */}
+          {/* Seksi: Pengaturan Aplikasi */}
           <div className="flex flex-col gap-3">
             <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("app_settings")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
+              {/* Toggle Notifikasi Push */}
               <div className="flex items-center justify-between p-5 border-b border-surface-muted">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-card bg-surface-hover flex items-center justify-center text-accent">
@@ -78,12 +98,14 @@ function SettingsContent() {
                     pushNotif ? "bg-primary" : "bg-surface-hover"
                   )}
                 >
+                  {/* Handle toggle switch bergeser dengan framer motion */}
                   <motion.div 
                     animate={{ x: pushNotif ? 26 : 4 }}
                     className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
                   />
                 </button>
               </div>
+              {/* Navigasi Pilihan Bahasa */}
               <MenuListItem
                 icon={<Icons.Search size={20} />}
                 label={t("language")}
@@ -93,7 +115,7 @@ function SettingsContent() {
             </div>
           </div>
 
-          {/* Section: Support */}
+          {/* Seksi: Bantuan & Informasi */}
           <div className="flex flex-col gap-3">
             <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("help_info")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
@@ -103,7 +125,7 @@ function SettingsContent() {
             </div>
           </div>
 
-          {/* Logout Action using Template Button */}
+          {/* Tombol Logout Sesi Akun */}
           <div className="pt-4">
             <Button 
               variant="danger" 

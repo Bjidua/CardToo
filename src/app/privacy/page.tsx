@@ -3,9 +3,15 @@
 import { StickyHeader } from "@/components/layout/StickyHeader";
 import { BackButton } from "@/components/ui/BackButton";
 
+/**
+ * Halaman Kebijakan Privasi (PrivacyPage)
+ * Menampilkan dokumen hukum dasar persetujuan pemrosesan informasi pribadi pembeli/penjual di CardToo.
+ * Termasuk deskripsi pengumpulan data, penggunaan data, enkripsi keamanan, dan cookie.
+ */
 export default function PrivacyPage() {
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
+      {/* Header Halaman atas dengan tombol kembali */}
       <StickyHeader
         title="Kebijakan Privasi"
         leftAction={<BackButton variant="primary" />}
@@ -34,6 +40,7 @@ export default function PrivacyPage() {
               Kami menggunakan cookie untuk meningkatkan pengalaman navigasi Anda dan mengingat preferensi pengaturan aplikasi Anda.
             </p>
 
+            {/* Catatan waktu update terakhir */}
             <div className="mt-10 pt-6 border-t border-surface-muted text-[12px] text-text-sub/60">
               Terakhir diperbarui: 5 Mei 2026
             </div>

@@ -15,33 +15,61 @@ import { cartService } from "@/lib/services/cart";
 import { orderService } from "@/lib/services/order";
 import type { Address, CartItem, ShippingMethodOption } from "@/types";
 
+// Konfigurasi daftar metode pengiriman (kurir) beserta harga & estimasi waktu sampai (ETD)
 const SHIPPING_METHODS: ShippingMethodOption[] = [
   { id: "reg", name: "J&T Reguler", price: 15000, etd: "2-3 Hari" },
   { id: "exp", name: "JNE YES", price: 35000, etd: "Esok Sampai" },
   { id: "hmt", name: "SiCepat Halu", price: 12000, etd: "4-5 Hari" },
 ];
 
+// Konfigurasi metode pembayaran yang didukung (saat ini hanya QRIS)
 const PAYMENT_METHODS = [
   { id: "qr", name: "QRIS (OVO, Dana, GoPay)", icon: <Icons.QR size={20} /> },
 ] as const;
 
+/**
+ * Halaman Proses Checkout Belanja (CheckoutPage)
+ * Mengelola proses pembuatan pesanan dari item-item yang terpilih di keranjang belanja,
+ * pemilihan alamat pengiriman, pemilihan kurir logistik, dan penghitungan biaya akhir.
+ */
 export default function CheckoutPage() {
   const router = useRouter();
+
+  // Mendapatkan data user login dan status guest dari AuthContext
   const { isGuest, user } = useAuth();
+
+  // State untuk menyimpan kurir pengiriman terpilih (default: J&T Reguler)
   const [selectedShipping, setSelectedShipping] = useState(SHIPPING_METHODS[0]);
+
+  // State untuk menyimpan metode pembayaran terpilih (default: QRIS)
   const [selectedPayment] = useState(PAYMENT_METHODS[0]);
+
+  // State alamat pengiriman aktif
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+
+  // State penampung item-item keranjang belanja yang terpilih untuk dibeli
   const [items, setItems] = useState<CartItem[]>([]);
+
+  // State indikator pemuatan data utama dari database
   const [isLoading, setIsLoading] = useState(false);
+
+  // State indikator submit pembuatan pesanan di database
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // State penampung pesan error jika proses memuat/submit gagal
   const [error, setError] = useState("");
 
+  /**
+   * Effect Hook untuk memuat data item terpilih & alamat utama pengguna.
+   * Dipicu ketika data user/guest sudah teridentifikasi di sisi client.
+   */
   useEffect(() => {
     if (!user || isGuest) return;
 
     const loadCheckoutData = async () => {
       try {
         setIsLoading(true);
+        // Memuat item yang dicentang di keranjang & alamat utama secara paralel
         const [nextItems, nextAddress] = await Promise.all([
           cartService.getSelectedItems(user.id),
           addressService.getPrimaryAddress(user.id),
@@ -63,29 +91,47 @@ export default function CheckoutPage() {
     void loadCheckoutData();
   }, [isGuest, user]);
 
+  /**
+   * Mengumpulkan ID toko unik dari list produk untuk membatasi checkout multi-toko.
+   * Menggunakan useMemo agar perhitungan hanya berjalan saat data `items` berubah.
+   */
   const storeIds = useMemo(
     () => Array.from(new Set(items.map((item) => item.storeId))),
     [items]
   );
 
+  // Perhitungan Subtotal Produk
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  // Perhitungan ongkos kirim berdasarkan kurir terpilih
   const shippingFee = selectedShipping.price;
+
+  // Biaya aplikasi (platform fee) sebesar Rp 2.500 jika ada produk yang dibeli
   const appFee = subtotal > 0 ? 2500 : 0;
+
+  // Total pembayaran akhir yang harus dibayarkan
   const total = subtotal + shippingFee + appFee;
 
+  /**
+   * Mengirim pesanan ke server dan mengarahkan pengguna ke halaman pembayaran.
+   */
   const handlePlaceOrder = async () => {
     if (!user) return;
 
     try {
       setError("");
       setIsSubmitting(true);
+      
+      // Membuat entitas order baru di database melalui API orderService
       const order = await orderService.createOrderFromSelectedCart(user.id, {
         shippingMethod: selectedShipping,
         paymentMethod: "qris",
       });
+      
+      // Jika berhasil, arahkan ke halaman pembayaran dengan query parameter ID order terkait
       router.push(`/checkout/payment?orderId=${order.id}`);
     } catch (submitError) {
       setError(
@@ -100,6 +146,9 @@ export default function CheckoutPage() {
     setIsSubmitting(false);
   };
 
+  /**
+   * Utilitas format angka desimal menjadi format mata uang Rupiah
+   */
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -107,6 +156,7 @@ export default function CheckoutPage() {
       minimumFractionDigits: 0,
     }).format(price);
 
+  // UI STATE 1: Jika berstatus guest, arahkan login terlebih dahulu
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
@@ -125,6 +175,7 @@ export default function CheckoutPage() {
     );
   }
 
+  // UI STATE 2: Menampilkan loading spinner selama data alamat & keranjang dimuat
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-tint">
@@ -133,6 +184,7 @@ export default function CheckoutPage() {
     );
   }
 
+  // UI STATE 3: Jika tidak ada produk terpilih untuk dicheckout
   if (items.length === 0) {
     return (
       <div className="flex flex-col min-h-screen bg-surface-tint">
@@ -160,6 +212,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint pb-64">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Konfirmasi Pesanan"
         variant="minimal"
@@ -168,6 +221,8 @@ export default function CheckoutPage() {
       />
 
       <main className="px-6 pt-6 flex flex-col gap-8">
+        
+        {/* Seksi 1: Alamat Pengiriman */}
         <section className="bg-white p-6 rounded-[32px] shadow-soft border border-surface-muted">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -212,6 +267,7 @@ export default function CheckoutPage() {
           )}
         </section>
 
+        {/* Seksi 2: Daftar Item yang Dibeli */}
         <section className="flex flex-col gap-4">
           <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">
             Item Pesanan
@@ -255,6 +311,7 @@ export default function CheckoutPage() {
           </div>
         </section>
 
+        {/* Seksi 3: Pilihan Kurir Pengiriman */}
         <section className="flex flex-col gap-4">
           <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">
             Metode Pengiriman
@@ -294,6 +351,7 @@ export default function CheckoutPage() {
           </div>
         </section>
 
+        {/* Seksi 4: Metode Pembayaran */}
         <section className="flex flex-col gap-4">
           <h3 className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">
             Metode Pembayaran
@@ -311,18 +369,21 @@ export default function CheckoutPage() {
           </div>
         </section>
 
+        {/* Notifikasi limitasi transaksi multi-toko (v1) */}
         {storeIds.length > 1 && (
           <p className="px-2 text-[12px] font-medium text-danger">
             Checkout v1 hanya mendukung item dari satu toko dalam satu transaksi.
           </p>
         )}
 
+        {/* Penampil error jika proses checkout gagal */}
         {error && (
           <p className="px-2 text-[12px] font-medium text-danger">{error}</p>
         )}
       </main>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-white border-t border-surface-muted p-6 z-50 flex flex-col gap-6 rounded-t-[32px] shadow-2xl">
+      {/* Ringkasan Biaya Belanja & Tombol Konfirmasi Pesanan */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] z-50 bg-white border-t border-surface-muted p-6 flex flex-col gap-6 rounded-t-[32px] shadow-2xl">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center text-[13px]">
             <span className="text-text-sub font-medium">Subtotal Produk</span>
@@ -349,6 +410,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        {/* Tombol aksi utama untuk membuat invoice pesanan */}
         <Button
           onClick={() => void handlePlaceOrder()}
           disabled={!selectedAddress || storeIds.length > 1 || isSubmitting}

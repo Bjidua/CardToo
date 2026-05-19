@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
+/**
+ * Komponen Navigasi Utama di bagian bawah layar (Bottom Navigation Bar).
+ * Menggunakan gaya mengambang (floating pill) dengan animasi Framer Motion.
+ * 
+ * Hanya muncul di rute-rute utama yang didefinisikan dalam `showOnPaths`.
+ * 
+ * @param isDemo - Jika bernilai true, BottomNav akan merender secara relatif 
+ *                 (tidak fixed) berguna untuk preview desain di Storybook/Doc.
+ */
 export const BottomNav = ({ isDemo = false }: { isDemo?: boolean }) => {
   const pathname = usePathname();
   const { t } = useLanguage();

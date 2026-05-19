@@ -12,12 +12,24 @@ import { chatService } from "@/lib/services/chat";
 import Image from "next/image";
 import type { ChatMessage } from "@/types";
 
+/**
+ * Properti pendukung komponen ChatClient.
+ */
 interface ChatClientProps {
+  /** ID spesifik ruang obrolan (jika sudah pernah dibuat) */
   conversationId?: string;
+  /** ID penjual, digunakan untuk membuat room baru jika belum ada */
   sellerId?: string;
+  /** ID toko penjual, disematkan pada room baru jika belum ada */
   storeId?: string;
 }
 
+/**
+ * Komponen Utama (Client-Side) untuk antarmuka ruang percakapan (Chat Room).
+ * Bertanggung jawab mengambil daftar pesan historis, berlangganan (subscribe) 
+ * pesan baru secara real-time via chatService, serta menangani pengiriman pesan.
+ * Komponen ini terintegrasi langsung dengan AuthContext untuk mengecek identitas (isGuest).
+ */
 export default function ChatClient({
   conversationId,
   sellerId,

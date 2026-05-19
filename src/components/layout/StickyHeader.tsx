@@ -5,15 +5,33 @@ import { motion } from "framer-motion";
 import { BackgroundLogo } from "@/components/ui/BackgroundLogo";
 import { cn } from "@/lib/utils";
 
+/**
+ * Properti pendukung untuk komponen Header (Navbar Atas) lengket.
+ */
 interface StickyHeaderProps {
+  /** Teks judul halaman yang ditampilkan di tengah header */
   title: string;
+  /** Elemen opsional di sisi kiri (biasanya tombol Back/Kembali) */
   leftAction?: React.ReactNode;
+  /** Elemen opsional di sisi kanan (biasanya tombol pengaturan/aksi lain) */
   rightAction?: React.ReactNode;
+  /** Kelas CSS tambahan */
   className?: string;
+  /** 
+   * Varian desain:
+   * - logo: ada corak logo transparan di latar belakang (utama)
+   * - minimal: background putih transparan
+   * - solid: background putih pekat
+   */
   variant?: "logo" | "minimal" | "solid";
+  /** Ukuran tinggi header (lg untuk halaman utama, sm untuk halaman detail) */
   size?: "sm" | "lg";
 }
 
+/**
+ * Komponen UI untuk Header Halaman yang melayang di bagian atas layar (Sticky).
+ * Mendukung berbagai varian desain dan dilengkapi dengan animasi masuk (framer-motion).
+ */
 export const StickyHeader = ({ 
   title, 
   leftAction, 

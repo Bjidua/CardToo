@@ -16,20 +16,27 @@ import {
 } from "@/lib/services/order";
 import type { SellerOrder } from "@/types";
 
+// Tipe definisi tab filter pesanan di dashboard seller
 type SellerOrderTab = "Pending" | "Processing" | "Completed";
 
+// Pemetaan ID tab ke array status order riil di DB/Appwrite
 const TAB_STATUS_MAP: Record<SellerOrderTab, SellerOrder["status"][]> = {
-  Pending: ["packed"],
-  Processing: ["shipped"],
-  Completed: ["completed"],
+  Pending: ["packed"], // Perlu Dikirim
+  Processing: ["shipped"], // Sedang Dikirim
+  Completed: ["completed"], // Sudah Selesai
 };
 
+// Daftar metadata tab navigasi
 const tabs: Array<{ id: SellerOrderTab; label: string }> = [
   { id: "Pending", label: "Perlu Dikirim" },
   { id: "Processing", label: "Dikirim" },
   { id: "Completed", label: "Selesai" },
 ];
 
+/**
+ * Halaman Pengelolaan Pesanan Toko Penjual (SellerOrdersPage)
+ * Dibungkus dengan ProtectedRoute (requireSeller=true) agar hanya bisa diakses seller terdaftar.
+ */
 export default function SellerOrdersPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -38,20 +45,42 @@ export default function SellerOrdersPage() {
   );
 }
 
+/**
+ * Komponen Konten Pengelolaan Pesanan (SellerOrdersContent)
+ * Menampilkan dan mengelola pesanan masuk:
+ * - Tab navigasi penyaring status (Perlu dikirim, Dikirim, Selesai).
+ * - Menampilkan detail pesanan (Kode pesanan, nama pembeli, total produk, total harga).
+ * - Tombol aksi kirim barang (untuk order yang baru masuk/packed).
+ * - Tombol navigasi menuju halaman detail pesanan.
+ */
 function SellerOrdersContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // Membaca session user login aktif dari auth context
   const { user, isGuest } = useAuth();
+
+  // Membaca tab aktif awal dari query parameter URL (?tab=...)
   const requestedTab = searchParams.get("tab");
   const initialTab = tabs.some((tab) => tab.id === requestedTab)
     ? (requestedTab as SellerOrderTab)
     : "Pending";
 
+  // State tab filter aktif
   const [activeTab, setActiveTab] = useState<SellerOrderTab>(initialTab);
+
+  // State penyimpan seluruh data pesanan masuk ke toko
   const [orders, setOrders] = useState<SellerOrder[]>([]);
+
+  // State loading pemuatan data
   const [isLoading, setIsLoading] = useState(false);
+
+  // State ID pesanan yang sedang diproses kirim untuk loader lokal tombol
   const [isActioning, setIsActioning] = useState<string | null>(null);
 
+  /**
+   * Effect Hook untuk memuat daftar pesanan masuk berdasarkan ownerUserId penjual.
+   */
   useEffect(() => {
     if (!user || isGuest) return;
 
@@ -68,6 +97,7 @@ function SellerOrdersContent() {
     void loadOrders();
   }, [isGuest, user]);
 
+  // Memfilter daftar pesanan berdasarkan tab aktif saat ini
   const filteredOrders = useMemo(
     () =>
       orders.filter((order) =>
@@ -76,15 +106,26 @@ function SellerOrdersContent() {
     [activeTab, orders]
   );
 
+  /**
+   * Mengirim pesanan / mengubah status pesanan dari "packed" ke "shipped".
+   * 
+   * @param orderId ID unik dokumen transaksi/order
+   */
   const handleShipOrder = async (orderId: string) => {
     if (!user) return;
 
     try {
-      setIsActioning(orderId);
+      setIsActioning(orderId); // Set loading status untuk baris bersangkutan
+      
+      // Request update status ke database Appwrite
       const updatedOrder = await orderService.markOrderAsShipped(orderId, user.id);
+      
+      // Update data di state lokal
       setOrders((current) =>
         current.map((order) => (order.id === orderId ? updatedOrder : order))
       );
+      
+      // Pindahkan tampilan user ke tab 'Processing' (Sedang dikirim)
       setActiveTab("Processing");
     } finally {
       setIsActioning(null);
@@ -93,6 +134,7 @@ function SellerOrdersContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Pesanan Masuk"
         variant="minimal"
@@ -101,6 +143,7 @@ function SellerOrdersContent() {
       />
 
       <main className="flex-1">
+        {/* Tab Selector Sticky */}
         <div className="flex border-b border-surface-muted bg-white sticky top-[60px] z-20">
           {tabs.map((tab) => (
             <button
@@ -122,7 +165,9 @@ function SellerOrdersContent() {
           ))}
         </div>
 
+        {/* List Data Pesanan */}
         <div className="p-6 flex flex-col gap-4">
+          {/* Loading Spinner */}
           {isLoading && (
             <div className="flex items-center justify-center py-12">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
@@ -140,6 +185,7 @@ function SellerOrdersContent() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="bg-white rounded-[24px] p-5 shadow-soft border border-surface-muted flex flex-col gap-4"
                 >
+                  {/* Bagian Atas Pesanan */}
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-text-sub uppercase tracking-widest">
@@ -154,6 +200,7 @@ function SellerOrdersContent() {
                     </span>
                   </div>
 
+                  {/* Summary Ringkasan Jumlah & Total Harga */}
                   <div className="flex items-center gap-3 py-2 border-y border-surface-muted/50 border-dashed">
                     <div className="w-10 h-10 rounded-xl bg-surface-muted flex items-center justify-center text-text-sub">
                       <Icons.Collection size={20} />
@@ -175,6 +222,7 @@ function SellerOrdersContent() {
                     </span>
                   </div>
 
+                  {/* Tombol Tindakan Aksi */}
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -188,6 +236,7 @@ function SellerOrdersContent() {
                     >
                       Detail
                     </Button>
+                    {/* Tombol Aksi Kirim Pesanan (Hanya untuk tab Perlu Dikirim/packed) */}
                     {order.status === "packed" && (
                       <Button
                         fullWidth={false}
@@ -203,6 +252,7 @@ function SellerOrdersContent() {
                 </motion.div>
               ))
             ) : !isLoading ? (
+              /* State Pesanan Kosong */
               <div className="flex flex-col items-center justify-center py-20 text-text-sub">
                 <div className="w-20 h-20 bg-surface-muted rounded-full flex items-center justify-center mb-4">
                   <Icons.Cart size={32} className="opacity-20" />

@@ -7,6 +7,9 @@ import { Icons } from "@/components/ui/Icons";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
+/**
+ * Struktur objek representasi riwayat item pesanan di antarmuka pengguna.
+ */
 export interface OrderItem {
   id: string;
   shopName: string;
@@ -18,19 +21,35 @@ export interface OrderItem {
   status: "Belum Bayar" | "Dikemas" | "Dikirim" | "Selesai" | "Dibatalkan";
 }
 
+/**
+ * Properti pendukung komponen kartu riwayat pesanan.
+ */
 interface OrderItemCardProps {
+  /** Objek data pesanan lengkap */
   order: OrderItem;
+  /** Ekstra CSS class */
   className?: string;
+  /** Fungsi untuk menandai pesanan selesai diterima oleh pembeli */
   onComplete?: (orderId: string) => void;
 }
 
+/**
+ * Komponen UI untuk merender satu baris pesanan di halaman Riwayat Pesanan (Order History).
+ * Komponen ini sangat dinamis karena akan mengubah status, warna, dan tombol tindakan (action buttons)
+ * yang tersedia di bagian bawah kartu sesuai dengan *current status* dari pesanan tersebut.
+ */
 export const OrderItemCard = ({
   order,
   className,
   onComplete,
 }: OrderItemCardProps) => {
+  // Instance router Next.js untuk kebutuhan perpindahan halaman aksi pembayaran/ulasan/pelacakan
   const router = useRouter();
 
+  /**
+   * Menentukan warna visual teks dan latar belakang badge status pesanan.
+   * @param status Status pesanan saat ini
+   */
   const getStatusColor = (status: OrderItem["status"]) => {
     switch (status) {
       case "Belum Bayar": return "text-warning bg-warning/10";
@@ -42,6 +61,10 @@ export const OrderItemCard = ({
     }
   };
 
+  /**
+   * Mengembalikan komponen ikon visual yang mewakili status pesanan saat ini.
+   * @param status Status pesanan saat ini
+   */
   const getStatusIcon = (status: OrderItem["status"]) => {
     switch (status) {
       case "Belum Bayar": return <Icons.Wallet size={14} />;
@@ -53,6 +76,7 @@ export const OrderItemCard = ({
   };
 
   return (
+    // Menggunakan framer motion div untuk efek hover transisi terangkat sedikit (y: -2)
     <motion.div
       whileHover={{ y: -2 }}
       className={cn(
@@ -60,13 +84,14 @@ export const OrderItemCard = ({
         className
       )}
     >
-      {/* Header: Shop Name & Status */}
+      {/* BAGIAN HEADER: Nama Toko Penjual & Badge Status Pesanan */}
       <div className="flex items-center justify-between border-b border-surface-muted pb-3">
         <div className="flex items-center gap-2">
           <Icons.Store size={18} className="text-text-sub" />
           <span className="text-[14px] font-bold text-text-main">{order.shopName}</span>
           <Icons.ChevronRight size={14} className="text-text-sub/60" />
         </div>
+        {/* Kontainer Badge Status dengan pewarnaan dinamis */}
         <div className={cn(
           "px-2 py-1 rounded-full flex items-center gap-1.5",
           getStatusColor(order.status)
@@ -76,8 +101,9 @@ export const OrderItemCard = ({
         </div>
       </div>
 
-      {/* Body: Product Info */}
+      {/* BAGIAN BODY: Informasi Produk & Total Pembayaran */}
       <div className="flex gap-4">
+        {/* Gambar Utama Produk */}
         <div className="w-[80px] h-[80px] bg-skeleton rounded-card overflow-hidden shrink-0 relative">
           {order.productImage ? (
             <Image src={order.productImage} alt={order.productTitle} fill className="object-cover" />
@@ -99,8 +125,9 @@ export const OrderItemCard = ({
         </div>
       </div>
 
-      {/* Footer: Actions */}
+      {/* BAGIAN FOOTER: Tombol Aksi/Tindakan Dinamis Berdasarkan Status Pesanan */}
       <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-surface-muted">
+        {/* Status 1: Belum Bayar -> Menampilkan tombol arahkan ke halaman QRIS invoice */}
         {order.status === "Belum Bayar" && (
           <button 
             onClick={() => router.push(`/checkout/payment?orderId=${order.id}`)}
@@ -109,6 +136,8 @@ export const OrderItemCard = ({
             Bayar Sekarang
           </button>
         )}
+        
+        {/* Status 2: Dikirim -> Menampilkan tombol konfirmasi barang sampai (Terima Pesanan) & tombol lacak kurir */}
         {order.status === "Dikirim" && (
           <>
             <button
@@ -125,6 +154,8 @@ export const OrderItemCard = ({
             </button>
           </>
         )}
+        
+        {/* Status 3: Selesai -> Menampilkan tombol repeat order (Beli Lagi) & tombol tulis ulasan rating (Nilai) */}
         {order.status === "Selesai" && (
           <>
             <button className="px-4 h-[36px] border border-surface-muted text-text-sub text-[13px] font-bold rounded-full active:scale-95 transition-all">
@@ -142,3 +173,4 @@ export const OrderItemCard = ({
     </motion.div>
   );
 };
+

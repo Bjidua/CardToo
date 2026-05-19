@@ -1,3 +1,8 @@
+/**
+ * Nilai fallback (default) untuk konfigurasi Appwrite.
+ * Digunakan jika environment variables (.env) tidak ditemukan.
+ * Sangat membantu untuk development tanpa harus selalu menset .env
+ */
 const fallback = {
   endpoint: "https://sgp.cloud.appwrite.io/v1",
   projectId: "69e2486e0031d1797cb8",
@@ -22,6 +27,11 @@ const fallback = {
   commerceGatewayFunctionId: "commerce-gateway",
 } as const;
 
+/**
+ * Objek konfigurasi utama Appwrite yang diekspor.
+ * Memprioritaskan variabel environment (NEXT_PUBLIC_*) jika tersedia, 
+ * jika tidak akan menggunakan nilai fallback.
+ */
 export const appwriteConfig = {
   endpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || fallback.endpoint,
   projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || fallback.projectId,
@@ -87,6 +97,14 @@ export const appwriteConfig = {
   },
 } as const;
 
+/**
+ * Menghasilkan URL publik untuk melihat file secara langsung dari Appwrite Storage.
+ * Digunakan untuk merender gambar avatar, produk, atau banner.
+ * 
+ * @param bucketId - ID Bucket Appwrite tempat file disimpan
+ * @param fileId - ID unik dari file yang akan diakses
+ * @returns String URL lengkap yang bisa dipakai di tag <img> atau komponen Next/Image
+ */
 export const getFileViewUrl = (bucketId: string, fileId: string) => {
   const url = new URL(
     `${appwriteConfig.endpoint}/storage/buckets/${bucketId}/files/${fileId}/view`

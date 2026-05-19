@@ -13,11 +13,24 @@ import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { formatBuyerOrderStatus, orderService } from "@/lib/services/order";
 import type { BuyerOrder } from "@/types";
 
+/**
+ * Komponen Konten Halaman Pesanan Pembeli (OrdersContent)
+ * Mengelola tab utama (Order vs Riwayat/History), filter status (Belum Bayar, Dikemas, Dikirim, Selesai, Dibatalkan),
+ * memuat data pesanan dari orderService, serta interaksi konfirmasi barang sampai (Complete Order).
+ */
 function OrdersContent() {
   const searchParams = useSearchParams();
+  
+  // Status login user dari AuthContext global
   const { isGuest, user } = useAuth();
+  
+  // Mengambil status filter awal yang di-pass via query URL (misal: /orders?status=unpaid)
   const initialStatus = searchParams.get("status");
 
+  /**
+   * Menentukan inisialisasi tab dan sub-filter berdasarkan parameter query URL awal.
+   * Dibungkus useMemo untuk menjamin kalkulasi hanya terjadi saat initialStatus berubah.
+   */
   const initialTabAndFilter = useMemo(() => {
     if (initialStatus === "unpaid") return { tab: "Order" as const, filter: "Belum Bayar" };
     if (initialStatus === "processing") return { tab: "Order" as const, filter: "Dikemas" };
@@ -26,33 +39,54 @@ function OrdersContent() {
     return { tab: "Order" as const, filter: "Semua" };
   }, [initialStatus]);
 
+  // State tab utama yang terpilih ("Order" untuk pesanan aktif, "History" untuk pesanan selesai/batal)
   const [activeTab, setActiveTab] = useState<"Order" | "History">(initialTabAndFilter.tab);
+  
+  // State sub-filter status belanja aktif
   const [subFilter, setSubFilter] = useState(initialTabAndFilter.filter);
+  
+  // State daftar pesanan mentah (raw orders) dari database Appwrite
   const [orders, setOrders] = useState<BuyerOrder[]>([]);
+  
+  // State loading status pemuatan list pesanan
   const [isLoading, setIsLoading] = useState(false);
 
+  // Daftar label sub-filter untuk tab pesanan aktif (Order)
   const orderFilters = ["Semua", "Belum Bayar", "Dikemas", "Dikirim"];
+  
+  // Daftar label sub-filter untuk tab riwayat pesanan (History)
   const historyFilters = ["Semua", "Selesai", "Dibatalkan"];
 
+  // Menentukan daftar sub-filter yang tampil di layar berdasarkan tab utama aktif
   const currentFilters = activeTab === "Order" ? orderFilters : historyFilters;
 
+  /**
+   * Effect Hook untuk memuat seluruh transaksi pesanan pembeli.
+   * Dijalankan saat inisialisasi awal atau user ID berubah.
+   */
   useEffect(() => {
     if (!user || isGuest) return;
 
     const loadOrders = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true); // Aktifkan spinner memuat
+        // Menarik daftar transaksi pesanan milik pembeli dari database
         const nextOrders = await orderService.listBuyerOrders(user.id);
         setOrders(nextOrders);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Matikan spinner memuat
       }
     };
 
     void loadOrders();
   }, [isGuest, user]);
 
+  /**
+   * Memproses daftar pesanan mentah (database format) menjadi format UI model (OrderItem)
+   * serta memfilternya berdasarkan tab aktif & sub-filter status terpilih.
+   */
   const filteredOrders = useMemo(() => {
+    // Transformasi data model
     const uiOrders: OrderItem[] = orders.map((order) => ({
       id: order.id,
       shopName: order.storeName || "Toko CardToo",
@@ -68,6 +102,7 @@ function OrdersContent() {
       date: order.paidAt || undefined,
     }));
 
+    // Penyaringan data sesuai tab & sub-filter status
     return uiOrders.filter((order) => {
       const isMainTabMatch = activeTab === "Order" 
         ? ["Belum Bayar", "Dikemas", "Dikirim"].includes(order.status)
@@ -79,18 +114,29 @@ function OrdersContent() {
     });
   }, [activeTab, orders, subFilter]);
 
+  /**
+   * Menyelesaikan transaksi pesanan (konfirmasi barang sampai oleh pembeli).
+   * Mengirim perubahan status transaksi ke database, lalu memperbarui list pesanan.
+   * 
+   * @param orderId ID unik pesanan transaksi
+   */
   const handleCompleteOrder = async (orderId: string) => {
     await orderService.markOrderAsCompleted(orderId);
     if (!user) return;
+    // Tarik ulang list transaksi terbaru untuk sinkronisasi state
     const nextOrders = await orderService.listBuyerOrders(user.id);
     setOrders(nextOrders);
   };
 
+  /**
+   * Mengubah tab utama (Order <=> History) dan menyetel sub-filter kembali ke default "Semua".
+   */
   const handleMainTabChange = (tab: "Order" | "History") => {
     setActiveTab(tab);
     setSubFilter("Semua");
   };
 
+  // UI STATE 1: Proteksi guest/tamu, tampilkan form kosong login
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
@@ -102,7 +148,7 @@ function OrdersContent() {
         />
         <GuestEmptyState 
           title="Login untuk Lihat Pesanan" 
-          description="Lacak status pesanan dan riwayat belanja Anda dengan masuk ke akun CardToo."
+          description="Lacak status pesanan dan riwayat belanja Anda dengan masuk to akun CardToo."
           icon={<Icons.History size={48} />}
         />
       </main>
@@ -111,6 +157,7 @@ function OrdersContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="My Orders"
         variant="minimal"
@@ -119,9 +166,10 @@ function OrdersContent() {
       />
 
       <main className="flex-1 flex flex-col pb-20">
-        {/* Main Tabs Wrapper */}
+        {/* Tombol Tab Utama Geser (Order vs History) */}
         <div className="px-6 pt-6 bg-white/20">
           <div className="relative w-full h-[52px] bg-surface-hover rounded-card p-1.5 flex items-center mb-6">
+            {/* Latar Belakang Putih Meluncur untuk Tab Aktif */}
             <motion.div
               layoutId="activeTabBg"
               className="absolute h-[40px] bg-white rounded-button shadow-soft z-0"
@@ -154,7 +202,7 @@ function OrdersContent() {
           </div>
         </div>
 
-        {/* Sub-Filters Bar (Refined Shopee Style) */}
+        {/* Scroll Bar Sub-Filters Horizontal (Gaya E-Commerce Premium) */}
         <div className="w-full bg-white/60 backdrop-blur-xl sticky top-[72px] z-30 border-b border-surface-muted shadow-soft">
           <div className="flex overflow-x-auto scrollbar-hide px-6">
             <div className="flex gap-8 py-4 min-w-max relative">
@@ -168,6 +216,7 @@ function OrdersContent() {
                   )}
                 >
                   {filter}
+                  {/* Garis bawah animasi untuk sub-filter aktif */}
                   {subFilter === filter && (
                     <motion.div
                       layoutId="subFilterUnderline"
@@ -181,13 +230,14 @@ function OrdersContent() {
           </div>
         </div>
 
-        {/* Content List Section */}
+        {/* Seksi Reruntuhan Grid List Pesanan Terfilter */}
         <div className="px-6 pt-6 flex-1">
           {isLoading && (
             <div className="flex items-center justify-center py-16">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
           )}
+          
           <AnimatePresence mode="wait">
             {!isLoading && filteredOrders.length > 0 ? (
               <motion.div
@@ -206,6 +256,7 @@ function OrdersContent() {
                 ))}
               </motion.div>
             ) : !isLoading ? (
+              /* Render empty state jika tidak ada transaksi pada filter aktif */
               <motion.div
                 key="empty"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -233,6 +284,10 @@ function OrdersContent() {
   );
 }
 
+/**
+ * Halaman Pesanan Utama (OrdersPage)
+ * Mengamankan pemrosesan URL Query SearchParams dengan React Suspense.
+ */
 export default function OrdersPage() {
   return (
     <React.Suspense fallback={<div className="flex-1 flex min-h-screen bg-surface-tint"></div>}>

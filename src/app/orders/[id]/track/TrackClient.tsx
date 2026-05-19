@@ -11,6 +11,7 @@ import { GuestEmptyState } from "@/components/auth/GuestEmptyState";
 import { orderService } from "@/lib/services/order";
 import type { BuyerOrder } from "@/types";
 
+// Tipe data representasi elemen langkah dalam tracking pengiriman
 type TrackingStep = {
   id: number;
   title: string;
@@ -19,6 +20,11 @@ type TrackingStep = {
   icon: React.ReactNode;
 };
 
+/**
+ * Format string tanggal dari database menjadi tampilan lokal Indonesia
+ * 
+ * @param value String ISO Date
+ */
 const formatStepTime = (value: string | null) =>
   value
     ? new Date(value).toLocaleString("id-ID", {
@@ -29,6 +35,12 @@ const formatStepTime = (value: string | null) =>
       })
     : "-";
 
+/**
+ * Membangun array data langkah pelacakan status pesanan
+ * berdasarkan status order saat ini dari database.
+ * 
+ * @param order Data pesanan pembeli
+ */
 const buildTrackingSteps = (order: BuyerOrder): TrackingStep[] => {
   const hasPaid = Boolean(order.paidAt);
   const isPacked = ["packed", "shipped", "completed"].includes(order.status);
@@ -86,33 +98,54 @@ const buildTrackingSteps = (order: BuyerOrder): TrackingStep[] => {
   ];
 };
 
+/**
+ * Komponen Client Pelacakan Pengiriman (TrackClient)
+ * Menarik detail data transaksi dari database, lalu merender lini masa (timeline) status pengiriman barang.
+ * Menyediakan tombol CTA untuk live chat dengan penjual jika terjadi kendala pengiriman.
+ */
 export default function TrackClient({ id }: { id: string }) {
   const router = useRouter();
+
+  // Status login user aktif
   const { user, isGuest } = useAuth();
+
+  // State data transaksi dari database
   const [order, setOrder] = useState<BuyerOrder | null>(null);
+
+  // State loading status pemuatan data
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Effect Hook untuk memuat data detail pesanan.
+   * Dijalankan ketika ID pesanan atau status otorisasi berubah.
+   */
   useEffect(() => {
     if (!user || isGuest || !id) return;
 
     const loadOrder = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true); // Aktifkan spinner memuat
+        // Menarik data transaksi pesanan berdasarkan ID
         const nextOrder = await orderService.getBuyerOrderById(user.id, id);
         setOrder(nextOrder);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Matikan spinner memuat
       }
     };
 
     void loadOrder();
   }, [id, isGuest, user]);
 
+  /**
+   * Menghasilkan langkah-langkah pelacakan secara dinamis berdasarkan data pesanan terupdate.
+   * Dibungkus useMemo untuk optimasi agar tidak dihitung ulang di setiap re-render biasa.
+   */
   const trackingSteps = useMemo(
     () => (order ? buildTrackingSteps(order) : []),
     [order]
   );
 
+  // UI STATE 1: Proteksi login tamu (guest)
   if (isGuest) {
     return (
       <main className="flex-1 flex flex-col min-h-screen bg-surface-tint">
@@ -133,6 +166,7 @@ export default function TrackClient({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint">
+      {/* Header Halaman */}
       <StickyHeader
         title="Lacak Pesanan"
         variant="minimal"
@@ -141,11 +175,13 @@ export default function TrackClient({ id }: { id: string }) {
       />
 
       <main className="px-6 pt-8 pb-32 flex flex-col gap-8">
+        {/* Render spinner loading */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         ) : !order ? (
+          /* Render info jika order tidak ditemukan */
           <section className="bg-white p-8 rounded-[32px] border border-surface-muted shadow-soft flex flex-col items-center text-center gap-3">
             <Icons.Delivery size={32} className="text-primary/30" />
             <p className="text-[16px] font-bold text-text-main">Pesanan Tidak Ditemukan</p>
@@ -154,7 +190,9 @@ export default function TrackClient({ id }: { id: string }) {
             </p>
           </section>
         ) : (
+          /* Render Lini Masa Pelacakan Utama */
           <>
+            {/* Box Kode Pesanan */}
             <section className="bg-white p-6 rounded-[32px] border border-surface-muted shadow-soft flex items-center gap-4">
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
                 <Icons.Delivery size={32} />
@@ -169,9 +207,11 @@ export default function TrackClient({ id }: { id: string }) {
               </div>
             </section>
 
+            {/* Render Garis & Bulatan Lini Masa */}
             <section className="flex flex-col gap-6 pl-4">
               {trackingSteps.map((step, index) => (
                 <div key={step.id} className="relative flex gap-6">
+                  {/* Garis Vertikal Penghubung antar bulatan */}
                   {index !== trackingSteps.length - 1 && (
                     <div
                       className={cn(
@@ -181,6 +221,7 @@ export default function TrackClient({ id }: { id: string }) {
                     />
                   )}
 
+                  {/* Bulatan Ikon Status Langkah */}
                   <div
                     className={cn(
                       "relative z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm",
@@ -193,6 +234,7 @@ export default function TrackClient({ id }: { id: string }) {
                     {step.icon}
                   </div>
 
+                  {/* Deskripsi & Waktu Langkah */}
                   <div className="flex flex-col gap-1 pb-10">
                     <h3
                       className={cn(
@@ -212,6 +254,7 @@ export default function TrackClient({ id }: { id: string }) {
               ))}
             </section>
 
+            {/* Banner CTA Hubungi Penjual (Live Chat) */}
             <section className="mt-4 bg-primary/5 p-6 rounded-[32px] border border-primary/10 flex flex-col items-center text-center gap-3">
               <Icons.Message size={24} className="text-primary" />
               <p className="text-[13px] font-bold text-text-main">
@@ -219,6 +262,7 @@ export default function TrackClient({ id }: { id: string }) {
               </p>
               <button
                 onClick={() =>
+                  // Arahkan ke room chat dengan detail ID seller & ID toko
                   router.push(
                     `/messages/room?sellerId=${encodeURIComponent(
                       order.sellerUserId

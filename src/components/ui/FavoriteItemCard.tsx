@@ -6,17 +6,33 @@ import { Icons } from "@/components/ui/Icons";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+/**
+ * Properti pendukung komponen item favorit/wishlist.
+ */
 interface FavoriteItemCardProps {
+  /** ID item/kartu favorit (biasanya productId) */
   id: string;
+  /** Nama/judul kartu */
   title: string;
+  /** Nama toko penjual */
   shopName: string;
+  /** Harga per unit */
   price: number;
+  /** URL gambar kartu */
   image?: string;
+  /** Fungsi untuk membatalkan favorit / hapus dari daftar (mengubah status hati) */
   onRemove?: () => void;
+  /** Fungsi untuk langsung memasukkan barang ini ke keranjang belanja */
   onAddToCart?: () => void;
+  /** CSS class tambahan */
   className?: string;
 }
 
+/**
+ * Komponen kartu baris horizontal yang khusus didesain untuk halaman Favorit/Wishlist.
+ * Berbeda dengan ProductCard (Grid), komponen ini memanjang dan menampilkan 
+ * tombol aksi "Add to Cart" langsung di sebelah harga.
+ */
 export const FavoriteItemCard = ({
   title,
   shopName,
@@ -27,6 +43,7 @@ export const FavoriteItemCard = ({
   className,
 }: FavoriteItemCardProps) => {
   return (
+    // Motion div dengan animasi layout enter/exit halus, serta pergeseran sedikit ke atas (y: -4) saat di-hover oleh kursor mouse
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.95 }}
@@ -38,7 +55,7 @@ export const FavoriteItemCard = ({
         className
       )}
     >
-      {/* Product Image */}
+      {/* Gambar Produk Kartu Favorit */}
       <div className="w-[70px] h-[90px] bg-skeleton rounded-card overflow-hidden shrink-0 relative shadow-inner">
         {image ? (
           <Image src={image} alt={title} fill className="object-cover" />
@@ -47,13 +64,14 @@ export const FavoriteItemCard = ({
         )}
       </div>
 
-      {/* Content Section */}
+      {/* Bagian Konten Kanan: Info Judul, Nama Toko, Harga, dan Tombol Tambah ke Keranjang */}
       <div className="flex-1 flex flex-col justify-between h-[90px] min-w-0">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-[18px] font-bold text-text-main truncate leading-tight">
               {title}
             </h3>
+            {/* Tombol icon love merah untuk menghapus produk dari wishlist */}
             <button
               onClick={onRemove}
               className="w-8 h-8 rounded-full flex items-center justify-center text-danger hover:bg-danger/10 active:scale-90 transition-all"
@@ -70,10 +88,12 @@ export const FavoriteItemCard = ({
         </div>
 
         <div className="flex items-center justify-between gap-2">
+          {/* Format mata uang Rupiah standard lokalisasi id-ID */}
           <span className="text-[18px] font-bold text-primary">
             {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(price)}
           </span>
           
+          {/* Tombol pintasan untuk langsung memasukkan barang ini ke keranjang belanja (Cart) */}
           <button
             onClick={onAddToCart}
             className="flex items-center gap-2 bg-primary/10 hover:bg-primary text-primary hover:text-white px-4 h-[34px] rounded-full text-[12px] font-bold transition-all active:scale-95"
@@ -84,7 +104,7 @@ export const FavoriteItemCard = ({
         </div>
       </div>
       
-      {/* Subtle background decoration */}
+      {/* Dekorasi lingkaran lembut blur di latar belakang sudut kanan bawah */}
       <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors" />
     </motion.div>
   );

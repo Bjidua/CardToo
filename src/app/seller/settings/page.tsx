@@ -16,6 +16,10 @@ import { storeService } from "@/lib/services/store";
 import type { Store } from "@/types";
 import { useRouter } from "next/navigation";
 
+/**
+ * Halaman Pengaturan Toko Penjual (SellerSettingsPage)
+ * Dibungkus ProtectedRoute (requireSeller=true) agar hanya bisa diakses oleh seller terdaftar.
+ */
 export default function SellerSettingsPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -24,8 +28,14 @@ export default function SellerSettingsPage() {
   );
 }
 
+/**
+ * Komponen Konten Pengaturan Toko (SellerSettingsContent)
+ * Melakukan validasi awal session toko & user aktif. Jika tidak valid/loading,
+ * merender loading spinner. Jika sukses, menampilkan form pengaturan (SellerSettingsForm).
+ */
 function SellerSettingsContent() {
   const { store, user, refreshAuth } = useAuth();
+  
   if (!store || !user) {
     return (
       <div className="flex flex-col min-h-screen bg-surface-tint">
@@ -44,6 +54,7 @@ function SellerSettingsContent() {
 
   return (
     <SellerSettingsForm
+      // Key digunakan untuk reset state form secara otomatis jika properti toko berubah
       key={`${store.id}:${store.name}:${store.bannerUrl ?? ""}:${store.description}:${store.location}`}
       store={store}
       userId={user.id}
@@ -52,6 +63,14 @@ function SellerSettingsContent() {
   );
 }
 
+/**
+ * Komponen Utama Form Pengaturan Toko (SellerSettingsForm)
+ * Menyediakan pengisian data identitas toko:
+ * - Unggah foto banner/sampul toko.
+ * - Form nama toko, lokasi fisik, dan deskripsi toko.
+ * - Statistik performa toko (waktu balas chat & rating bintang rata-rata).
+ * - "Zona Berbahaya" untuk menutup toko secara permanen.
+ */
 function SellerSettingsForm({
   store,
   userId,
@@ -62,18 +81,35 @@ function SellerSettingsForm({
   refreshAuth: () => Promise<void>;
 }) {
   const router = useRouter();
+
+  // State lokal formulir
   const [storeName, setStoreName] = useState(store.name);
   const [description, setDescription] = useState(store.description);
   const [location, setLocation] = useState(store.location || "Indonesia");
+  
+  // State preview banner/cover toko (URL object blob atau URL gambar storage Appwrite)
   const [coverImage, setCoverImage] = useState<string | null>(
     store.bannerUrl || store.coverImage || null
   );
+
+  // State file banner baru yang dipilih
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+
+  // State loading saat menyimpan perubahan profile
   const [isSaving, setIsSaving] = useState(false);
+
+  // State loading saat proses penutupan toko permanen
   const [isClosingStore, setIsClosingStore] = useState(false);
+
+  // State rating bintang rata-rata toko
   const [storeRating, setStoreRating] = useState("0.0");
+
+  // State waktu respons balas chat penjual (Statis)
   const [responseTime] = useState("Belum dihitung otomatis");
 
+  /**
+   * Effect Hook pembersihan URL object blob sementara untuk menghemat memory leakage.
+   */
   useEffect(() => {
     return () => {
       if (coverImage?.startsWith("blob:")) {
@@ -82,6 +118,9 @@ function SellerSettingsForm({
     };
   }, [coverImage]);
 
+  /**
+   * Effect Hook untuk memuat rating rata-rata toko dari service review.
+   */
   useEffect(() => {
     if (!store.id) return;
 
@@ -97,11 +136,15 @@ function SellerSettingsForm({
     void loadMetadata();
   }, [store.id]);
 
+  /**
+   * Menyimpan perubahan profile toko ke database.
+   */
   const handleSave = async () => {
     if (!store.id || !storeName.trim()) return;
 
     try {
       setIsSaving(true);
+      // Panggil storeService untuk update data dokumen & upload banner baru
       await storeService.updateStore(userId, store.id, {
         storeName,
         location,
@@ -109,12 +152,16 @@ function SellerSettingsForm({
         bannerFile,
       });
       setBannerFile(null);
+      // Refresh state AuthContext untuk menyinkronkan data toko terbaru ke UI global
       await refreshAuth();
     } finally {
       setIsSaving(false);
     }
   };
 
+  /**
+   * Menutup toko secara permanen (menghapus seluruh produk & data toko dari sistem).
+   */
   const handleCloseStore = async () => {
     const confirmed = window.confirm(
       "Tutup toko ini? Semua produk, percakapan, dan data terkait toko akan dihapus permanen."
@@ -123,9 +170,12 @@ function SellerSettingsForm({
 
     try {
       setIsClosingStore(true);
+      // Panggil service penutupan toko (Commerce Gateway)
       await commerceGatewayService.closeStore();
+      // Sinkronisasi data user setelah menutup toko (status isSeller = false)
       await refreshAuth();
       window.alert("Toko berhasil ditutup.");
+      // Arahkan user kembali ke profil pembeli biasa
       router.replace("/profile");
     } catch (error) {
       const message =
@@ -138,6 +188,7 @@ function SellerSettingsForm({
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-tint pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Pengaturan Toko"
         variant="minimal"
@@ -146,6 +197,8 @@ function SellerSettingsForm({
       />
 
       <main className="px-6 pt-6 flex flex-col gap-8">
+        
+        {/* Seksi Unggah Banner Toko */}
         <section className="flex flex-col gap-4">
           <label className="text-[14px] font-bold text-text-main uppercase tracking-widest px-2">
             Banner Toko
@@ -183,6 +236,7 @@ function SellerSettingsForm({
           </p>
         </section>
 
+        {/* Formulir Isian Data Identitas Toko */}
         <section className="bg-white rounded-[40px] p-8 shadow-medium border border-surface-muted flex flex-col gap-6">
           <Input
             label="Nama Toko"
@@ -214,6 +268,7 @@ function SellerSettingsForm({
           </div>
         </section>
 
+        {/* Seksi Performa Statistik (Waktu Balas & Rating Toko) */}
         <section className="grid grid-cols-2 gap-4">
           <div className="bg-white p-6 rounded-[32px] border border-surface-muted flex flex-col gap-1 shadow-soft">
             <span className="text-[10px] text-text-sub font-bold uppercase tracking-widest">
@@ -232,6 +287,7 @@ function SellerSettingsForm({
           </div>
         </section>
 
+        {/* Zona Berbahaya (Tutup Toko) */}
         <section className="bg-white rounded-[28px] border border-danger/30 p-5 shadow-soft">
           <p className="text-[14px] font-bold text-danger">Zona Berbahaya</p>
           <p className="mt-2 text-[12px] text-text-sub">
@@ -248,6 +304,7 @@ function SellerSettingsForm({
         </section>
       </main>
 
+      {/* Tombol Simpan Perubahan Melayang di Bawah */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-6 bg-linear-to-t from-surface-tint via-surface-tint/80 to-transparent z-40">
         <Button
           variant="secondary"

@@ -8,19 +8,38 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { buildProductDetailHref } from "@/lib/routes";
 
+/**
+ * Properti pendukung untuk komponen ProductCard.
+ */
 interface ProductCardProps {
+  /** Nama/judul produk kartu */
   title: string;
+  /** Harga produk dalam format angka murni (akan otomatis diformat ke Rupiah) */
   price: number;
+  /** URL gambar produk (akan menggunakan skeleton placeholder jika kosong) */
   image?: string;
+  /** Label kondisi fisik kartu (standar TCG: Mint, Near Mint, dll) */
   condition?: "Mint" | "Near Mint" | "Excellent" | "Good" | "Played";
+  /** Status apakah kartu ini sudah ada di dalam wishlist/favorit pengguna aktif */
   isWishlisted?: boolean;
+  /** Ekstra CSS class */
   className?: string;
+  /** URL rute spesifik saat kartu diklik (default: akan diarahkan ke /product/1) */
   href?: string;
+  /** Tema kartu (primary = warna utama/ungu, secondary = warna alternatif) */
   theme?: "primary" | "secondary";
+  /** Callback opsional jika ingin melakukan aksi khusus saat kartu diklik, menimpa navigasi href */
   onPress?: () => void;
+  /** Callback saat tombol love/wishlist diklik */
   onWishlistToggle?: () => void;
 }
 
+/**
+ * Komponen UI Card (Kartu) standar untuk menampilkan ringkasan informasi produk 
+ * di halaman grid produk, beranda, dan favorit.
+ * Dilengkapi dengan animasi *hover* dan gestur tekan (menggunakan Framer Motion) 
+ * agar terasa lebih responsif seperti aplikasi native.
+ */
 export const ProductCard = ({
   title,
   price,
@@ -33,8 +52,14 @@ export const ProductCard = ({
   onPress,
   onWishlistToggle,
 }: ProductCardProps) => {
+  // Instance router Next.js untuk navigasi antar rute detail produk
   const router = useRouter();
 
+  /**
+   * Menangani peristiwa klik pada kartu produk.
+   * Jika disediakan callback kustom onPress, jalankan onPress.
+   * Jika tidak, arahkan pengguna ke rute URL detail produk terkait.
+   */
   const handleCardClick = () => {
     if (onPress) {
       onPress();
@@ -43,6 +68,10 @@ export const ProductCard = ({
     }
   };
 
+  /**
+   * Memformat angka desimal harga menjadi format mata uang Rupiah (IDR).
+   * @param amount Angka nominal harga
+   */
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -52,6 +81,7 @@ export const ProductCard = ({
   };
 
   return (
+    // Pembungkus kartu utama menggunakan motion.div dengan efek mereduksi skala (tap scale 0.98) saat ditekan
     <motion.div
       whileTap={{ scale: 0.98 }}
       onClick={handleCardClick}
@@ -63,7 +93,7 @@ export const ProductCard = ({
         className
       )}
     >
-      {/* Image Container with Inset Shadow */}
+      {/* KONTENER GAMBAR UTAMA: Memiliki drop-shadow inner dan efek zoom scale-105 saat di-hover */}
       <div className="relative w-full h-[146px] bg-skeleton rounded-t-card overflow-hidden shadow-inner">
         {image ? (
           <Image
@@ -79,14 +109,14 @@ export const ProductCard = ({
           </div>
         )}
 
-        {/* Condition Badge (Improvement) */}
+        {/* Badge Kondisi Produk (Mint / Near Mint / Excellent / dsb) */}
         <div className="absolute left-2 top-2 rounded-full bg-text-main/50 px-2 py-0.5 backdrop-blur-md">
           <span className="text-[8px] font-bold text-white uppercase tracking-wider">
             {condition}
           </span>
         </div>
 
-        {/* Wishlist Button (Improvement) */}
+        {/* Tombol Wishlist (Love) melayang. stopPropagation digunakan agar klik love tidak memicu navigasi detail kartu */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -104,11 +134,12 @@ export const ProductCard = ({
         </button>
       </div>
 
-      {/* Info Section */}
+      {/* SEKSI INFORMASI TEKS: Judul Produk (maksimal 2 baris) & Label Harga Terformat */}
       <div className="flex flex-col gap-1 px-2 w-full">
         <h3 className="text-[14px] font-bold text-text-main line-clamp-2 leading-[1.2] h-[34px]">
           {title}
         </h3>
+        {/* Penentuan warna teks harga berdasarkan tema (primary = ungu, secondary = pink/cyan) */}
         <p className={cn(
           "text-[16px] font-bold mt-1",
           theme === "primary" ? "text-primary" : "text-secondary"
@@ -117,8 +148,9 @@ export const ProductCard = ({
         </p>
       </div>
 
-      {/* Bottom Subtle Bar (Native feel) */}
+      {/* Garis Dekoratif Halus di Bagian Bawah Kartu saat di-hover */}
       <div className="absolute bottom-1 left-4 right-4 h-1 rounded-full bg-text-main/5 opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.div>
   );
 };
+

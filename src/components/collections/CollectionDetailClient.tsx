@@ -15,10 +15,18 @@ import { useAuth } from "@/context/AuthContext";
 import { collectionService } from "@/lib/services/collection";
 import type { Collection, CollectionItem } from "@/types";
 
+/**
+ * Properti pendukung untuk komponen Detail Koleksi.
+ */
 interface CollectionDetailClientProps {
+  /** ID unik koleksi yang akan dimuat */
   id: string;
 }
 
+/**
+ * Halaman Detail Koleksi (Client-Side).
+ * Dibungkus dengan `ProtectedRoute` karena ini adalah fitur khusus member (harus login).
+ */
 export default function CollectionDetailClient({ id }: CollectionDetailClientProps) {
   return (
     <ProtectedRoute>
@@ -27,6 +35,12 @@ export default function CollectionDetailClient({ id }: CollectionDetailClientPro
   );
 }
 
+/**
+ * Isi (Content) dari halaman detail koleksi. 
+ * Bertanggung jawab mengambil data (fetching) berdasarkan id dari Appwrite, 
+ * menampilkan daftar kartu dengan filter, menangani penghapusan item,
+ * serta menampilkan modal "Upload Kartu Baru".
+ */
 function CollectionDetailContent({ id }: CollectionDetailClientProps) {
   const router = useRouter();
   const { user } = useAuth();

@@ -12,8 +12,10 @@ import { orderService } from "@/lib/services/order";
 import { cn } from "@/lib/utils";
 import type { SellerOrder } from "@/types";
 
+// Tipe rentang waktu filter laporan penjualan
 type TimeRange = "Hari ini" | "Minggu ini" | "Bulan ini";
 
+// Tipe data objek produk terlaris
 type BestSellerStat = {
   rank: number;
   title: string;
@@ -21,6 +23,10 @@ type BestSellerStat = {
   revenue: string;
 };
 
+/**
+ * Halaman Laporan Penjualan Toko (SellerReportsPage)
+ * Membatasi akses agar hanya bisa diakses seller terdaftar (ProtectedRoute requireSeller=true).
+ */
 export default function SellerReportsPage() {
   return (
     <ProtectedRoute requireSeller={true}>
@@ -29,15 +35,38 @@ export default function SellerReportsPage() {
   );
 }
 
+/**
+ * Komponen Konten Laporan Penjualan (SellerReportsContent)
+ * Menampilkan statistik bisnis detail toko:
+ * - Rentang waktu (Hari ini, Minggu ini, Bulan ini)
+ * - StatCard (Total Omzet, Profit Bersih, Jumlah Pesanan, Total Pengunjung)
+ * - Grafik batang (Simulasi performa nominal penjualan)
+ * - List produk terlaris berdasarkan revenue terbesar.
+ * - Fitur Export Data (Ekspor CSV untuk Excel/Sheets atau Cetak PDF).
+ */
 function SellerReportsContent() {
+  // Mengambil profile toko dari auth context
   const { store } = useAuth();
   const ownerUserId = store?.ownerUserId ?? null;
+
+  // State rentang waktu filter aktif
   const [timeRange, setTimeRange] = useState<TimeRange>("Bulan ini");
+
+  // State loading proses ekspor data
   const [isExporting, setIsExporting] = useState(false);
+
+  // State pengendali drawer pilihan format ekspor (CSV/PDF)
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  // State seluruh list pesanan masuk toko
   const [orders, setOrders] = useState<SellerOrder[]>([]);
+
+  // State loading status muat pesanan
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Effect Hook untuk memuat seluruh pesanan masuk toko.
+   */
   useEffect(() => {
     if (!ownerUserId) return;
 
@@ -54,6 +83,9 @@ function SellerReportsContent() {
     void loadOrders();
   }, [ownerUserId]);
 
+  /**
+   * Memfilter daftar pesanan berdasarkan rentang waktu terpilih (Hari ini, Minggu ini, Bulan ini).
+   */
   const filteredOrders = useMemo(() => {
     const now = new Date();
 
@@ -77,23 +109,32 @@ function SellerReportsContent() {
     });
   }, [orders, timeRange]);
 
+  // Memfilter pesanan yang sudah berstatus selesai/completed
   const completedOrders = useMemo(
     () => filteredOrders.filter((order) => order.status === "completed"),
     [filteredOrders]
   );
 
+  /**
+   * Menghitung seluruh metrics rangkuman laporan (Omzet, Profit bersih, Grafik, Terlaris).
+   */
   const reportData = useMemo(() => {
+    // 1. Hitung total omzet bruto dari pesanan berstatus selesai
     const omzetNumber = completedOrders.reduce(
       (sum, order) => sum + order.totalPrice,
       0
     );
+
+    // 2. Hitung total profit bersih penjual (setelah dipotong biaya admin aplikasi)
     const profitNumber = completedOrders.reduce(
       (sum, order) => sum + Math.max(0, order.subtotal - order.appFee),
       0
     );
-    const ordersCount = filteredOrders.length;
-    const visitors = 0;
 
+    const ordersCount = filteredOrders.length;
+    const visitors = 0; // Metrik pengunjung statis
+
+    // 3. Menghitung data visual tinggi batang chart
     const bucketCount = timeRange === "Hari ini" ? 8 : 10;
     const chartSeed = Array.from({ length: bucketCount }, (_, index) => {
       const matchingOrders = filteredOrders.filter((order) => {
@@ -115,6 +156,7 @@ function SellerReportsContent() {
         ? chartSeed.map((value) => Math.max(12, Math.round((value / maxValue) * 100)))
         : Array.from({ length: bucketCount }, () => 0);
 
+    // 4. Agregasi total penjualan produk untuk menyaring list produk terlaris
     const itemMap = new Map<string, { title: string; sold: number; revenue: number }>();
 
     completedOrders.forEach((order) => {
@@ -156,6 +198,9 @@ function SellerReportsContent() {
 
   const ranges: TimeRange[] = ["Hari ini", "Minggu ini", "Bulan ini"];
 
+  /**
+   * Ekspor data transaksi ke file format CSV.
+   */
   const handleExportCSV = () => {
     setIsExporting(true);
     setShowExportMenu(false);
@@ -184,6 +229,9 @@ function SellerReportsContent() {
     }, 800);
   };
 
+  /**
+   * Ekspor laporan ke PDF dengan memicu dialog browser print.
+   */
   const handleExportPDF = () => {
     setIsExporting(true);
     setShowExportMenu(false);
@@ -196,6 +244,7 @@ function SellerReportsContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-white pb-32">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="Laporan Penjualan"
         variant="minimal"
@@ -216,6 +265,7 @@ function SellerReportsContent() {
         }
       />
 
+      {/* Drawer Pilihan Format Ekspor */}
       <AnimatePresence>
         {showExportMenu && (
           <>
@@ -283,6 +333,7 @@ function SellerReportsContent() {
       </AnimatePresence>
 
       <main className="flex-1 px-6 pt-6 flex flex-col gap-8">
+        {/* Filter Rentang Waktu Pill Buttons */}
         <div className="flex gap-2 p-1 bg-surface-muted rounded-full w-fit mx-auto">
           {ranges.map((range) => (
             <button
@@ -300,12 +351,14 @@ function SellerReportsContent() {
           ))}
         </div>
 
+        {/* Render Spinner loading atau metrik laporan */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
           </div>
         ) : (
           <>
+            {/* Grid 4 StatCard Utama */}
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <StatCard
@@ -341,6 +394,7 @@ function SellerReportsContent() {
                   icon={<Icons.Profile size={20} />}
                 />
               </div>
+              {/* Tautan navigasi ke rincian daftar order masuk */}
               <Link
                 href="/seller/reports/detail"
                 className="w-full h-14 bg-white rounded-2xl shadow-soft border border-surface-muted flex items-center justify-center gap-2 text-[14px] font-bold text-secondary active:scale-[0.98] transition-all"
@@ -350,6 +404,7 @@ function SellerReportsContent() {
               </Link>
             </div>
 
+            {/* Visual Grafik Batang Penjualan */}
             <div className="bg-white p-6 rounded-[32px] shadow-soft border border-surface-muted flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h3 className="text-[14px] font-bold text-text-main">
@@ -385,6 +440,7 @@ function SellerReportsContent() {
               </div>
             </div>
 
+            {/* List 5 Item Produk Terlaris Toko */}
             <div className="flex flex-col gap-4">
               <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">
                 Produk Terlaris
@@ -414,6 +470,9 @@ function SellerReportsContent() {
   );
 }
 
+/**
+ * Komponen Kartu Statistik Mini (StatCard)
+ */
 function StatCard({
   title,
   value,
@@ -451,6 +510,9 @@ function StatCard({
   );
 }
 
+/**
+ * Item List Produk Terlaris (BestSellerItem)
+ */
 function BestSellerItem({
   rank,
   title,

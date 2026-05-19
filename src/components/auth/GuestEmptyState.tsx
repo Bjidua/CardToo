@@ -6,12 +6,23 @@ import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
+/**
+ * Properti pendukung komponen layar kosong (Empty State) untuk pengguna non-login (Guest).
+ */
 interface GuestEmptyStateProps {
+  /** Judul pesan utama */
   title: string;
+  /** Deskripsi penjelasan mengapa pengguna harus login */
   description: string;
+  /** Ikon React opsional, default menggunakan ikon gembok (Lock) */
   icon?: React.ReactNode;
 }
 
+/**
+ * Komponen UI untuk merender layar peringatan bahwa pengguna belum masuk (Guest State).
+ * Menawarkan tombol navigasi cepat ke halaman Login atau Register.
+ * Biasa digunakan di halaman seperti Chat, Profil, atau Keranjang untuk memblokir akses.
+ */
 export const GuestEmptyState = ({ title, description, icon }: GuestEmptyStateProps) => {
   const router = useRouter();
 

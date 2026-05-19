@@ -7,6 +7,10 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/Button";
 import { Icons } from "@/components/ui/Icons";
 
+/**
+ * Halaman Pengaturan PIN Transaksi (PinPage)
+ * Dibungkus dengan ProtectedRoute untuk mencegah penyalahgunaan tanpa autentikasi login.
+ */
 export default function PinPage() {
   return (
     <ProtectedRoute>
@@ -15,15 +19,22 @@ export default function PinPage() {
   );
 }
 
+/**
+ * Komponen Konten PIN (PinContent)
+ * Menampilkan placeholder grafis 6 digit PIN (simulasi/Coming Soon).
+ * Menjelaskan lingkup fitur keamanan transaksi saat ini.
+ */
 function PinContent() {
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-surface-tint to-accent-soft">
+      {/* Header Halaman atas */}
       <StickyHeader
         title="PIN CardToo"
         leftAction={<BackButton variant="primary" />}
       />
 
       <main className="flex-1 px-6 pt-10 pb-32">
+        {/* Banner Fitur Pengenalan PIN */}
         <div className="flex flex-col items-center text-center mb-12">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6">
             <Icons.Review size={40} />
@@ -37,6 +48,7 @@ function PinContent() {
           </p>
         </div>
 
+        {/* Simulasi Input Dot PIN & Tombol Status */}
         <div className="flex flex-col items-center gap-10">
           <div className="flex gap-3 opacity-60">
             {Array.from({ length: 6 }).map((_, index) => (

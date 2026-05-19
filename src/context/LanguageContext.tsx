@@ -2,12 +2,16 @@
 
 import React, { createContext, useContext, useMemo, useState } from "react";
 
+/** Tipe dukungan bahasa di CardToo (Indonesia & Inggris) */
 export type AppLanguage = "id" | "en";
 
+// Key LocalStorage untuk menyimpan preferensi bahasa pengguna agar persisten
 const LANGUAGE_STORAGE_KEY = "cardtoo-language";
 
+// Representasi tipe data kamus kata (dictionary) untuk terjemahan teks
 type Dictionary = Record<string, string>;
 
+// Kamus kata (Dictionary) dua bahasa untuk kebutuhan lokalisasi antarmuka pengguna
 const dictionaries: Record<AppLanguage, Dictionary> = {
   id: {
     language: "Bahasa",
@@ -123,21 +127,42 @@ const dictionaries: Record<AppLanguage, Dictionary> = {
   },
 };
 
+/**
+ * Struktur objek nilai yang akan dilempar oleh LanguageContext ke seluruh aplikasi.
+ */
 type LanguageContextValue = {
+  /** Bahasa yang saat ini sedang aktif dipilih pengguna */
   language: AppLanguage;
+  /** Fungsi untuk mengganti preferensi bahasa */
   setLanguage: (language: AppLanguage) => void;
+  /**
+   * Fungsi helper untuk menerjemahkan (translate) key bahasa menjadi teks yang sesungguhnya.
+   * @param key String identifier dari dictionary (contoh: "home", "logout")
+   * @returns Teks yang sudah diterjemahkan berdasarkan bahasa yang aktif
+   */
   t: (key: string) => string;
 };
 
+// Inisialisasi Context bahasa dengan nilai awal undefined
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
+/**
+ * Komponen pembungkus (Provider) utama untuk fungsionalitas Multi-bahasa (i18n lokal).
+ * Akan otomatis membaca dari LocalStorage (jika ada) saat aplikasi pertama dimuat.
+ */
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
+  // State untuk menyimpan bahasa aktif. Dibaca pertama kali secara malas (lazy initialization) dari LocalStorage
   const [language, setLanguageState] = useState<AppLanguage>(() => {
+    // Jalankan pengecekan window untuk menghindari kegagalan Server-Side Rendering (SSR)
     if (typeof window === "undefined") return "id";
     const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
     return stored === "en" || stored === "id" ? stored : "id";
   });
 
+  /**
+   * Mengubah status preferensi bahasa aktif saat ini dan menyimpannya secara persisten ke LocalStorage.
+   * @param nextLanguage Kode bahasa baru ("id" | "en")
+   */
   const setLanguage = (nextLanguage: AppLanguage) => {
     setLanguageState(nextLanguage);
     if (typeof window !== "undefined") {
@@ -145,10 +170,12 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
+  // Menggunakan useMemo agar objek value tidak dimuat ulang secara sia-sia jika state bahasa tidak berubah
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
       setLanguage,
+      // Jika key tidak ditemukan di kamus terjemahan, kembalikan key mentah sebagai fallback
       t: (key: string) => dictionaries[language][key] || key,
     }),
     [language]
@@ -159,6 +186,10 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   );
 };
 
+/**
+ * Custom hook untuk mengakses nilai bahasa dan fungsi terjemahannya (translate `t()`).
+ * Wajib dipanggil dari dalam komponen yang berada di bawah `<LanguageProvider>`.
+ */
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
