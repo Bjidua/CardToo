@@ -10,9 +10,11 @@ import Image from "next/image";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
+import { commerceGatewayService } from "@/lib/services/commerceGateway";
 import { reviewService } from "@/lib/services/review";
 import { storeService } from "@/lib/services/store";
 import type { Store } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function SellerSettingsPage() {
   return (
@@ -59,6 +61,7 @@ function SellerSettingsForm({
   userId: string;
   refreshAuth: () => Promise<void>;
 }) {
+  const router = useRouter();
   const [storeName, setStoreName] = useState(store.name);
   const [description, setDescription] = useState(store.description);
   const [location, setLocation] = useState(store.location || "Indonesia");
@@ -67,6 +70,7 @@ function SellerSettingsForm({
   );
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isClosingStore, setIsClosingStore] = useState(false);
   const [storeRating, setStoreRating] = useState("0.0");
   const [responseTime] = useState("Belum dihitung otomatis");
 
@@ -108,6 +112,27 @@ function SellerSettingsForm({
       await refreshAuth();
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleCloseStore = async () => {
+    const confirmed = window.confirm(
+      "Tutup toko ini? Semua produk, percakapan, dan data terkait toko akan dihapus permanen."
+    );
+    if (!confirmed) return;
+
+    try {
+      setIsClosingStore(true);
+      await commerceGatewayService.closeStore();
+      await refreshAuth();
+      window.alert("Toko berhasil ditutup.");
+      router.replace("/profile");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Gagal menutup toko.";
+      window.alert(message);
+    } finally {
+      setIsClosingStore(false);
     }
   };
 
@@ -205,6 +230,21 @@ function SellerSettingsForm({
               <Icons.Review size={12} className="text-warning fill-warning" />
             </div>
           </div>
+        </section>
+
+        <section className="bg-white rounded-[28px] border border-danger/30 p-5 shadow-soft">
+          <p className="text-[14px] font-bold text-danger">Zona Berbahaya</p>
+          <p className="mt-2 text-[12px] text-text-sub">
+            Menutup toko akan menghapus data toko secara permanen.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4 w-full h-12 rounded-xl border-danger text-danger"
+            onClick={() => void handleCloseStore()}
+            disabled={isClosingStore}
+          >
+            {isClosingStore ? "Menutup Toko..." : "Tutup Toko"}
+          </Button>
         </section>
       </main>
 

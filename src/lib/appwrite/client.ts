@@ -1,11 +1,13 @@
 import {
   Account,
+  Channel,
   Client,
   ExecutionMethod,
   Functions,
   ID,
   Permission,
   Query,
+  Realtime,
   Role,
   Storage,
   TablesDB,
@@ -21,4 +23,5 @@ export const account = new Account(client);
 export const tablesDB = new TablesDB(client);
 export const storage = new Storage(client);
 export const functions = new Functions(client);
-export { ExecutionMethod, ID, Permission, Query, Role };
+export const realtime = new Realtime(client);
+export { Channel, ExecutionMethod, ID, Permission, Query, Role };

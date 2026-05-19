@@ -10,11 +10,13 @@ import { cn } from "@/lib/utils";
 import { MenuListItem } from "@/components/ui/MenuListItem";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { isGuest, isSeller, profile } = useAuth();
+  const { t } = useLanguage();
 
   React.useEffect(() => {
     if (isGuest) {
@@ -52,7 +54,7 @@ export default function ProfilePage() {
     <main className="flex-1 flex flex-col min-h-screen bg-linear-to-b from-white to-white/95 pb-32">
       {/* STICKY HEADER AREA */}
       <StickyHeader 
-        title="Profile" 
+        title={t("profile")} 
         variant="logo" 
         size="lg"
       />
@@ -97,18 +99,18 @@ export default function ProfilePage() {
         {/* My Order Card */}
         <motion.div variants={itemVariants} className="bg-white rounded-card p-5 shadow-soft border border-surface-muted">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[16px] font-bold text-text-main">My Order</h3>
+            <h3 className="text-[16px] font-bold text-text-main">{t("my_order")}</h3>
             <Link href="/orders" className="flex items-center gap-1 text-[13px] font-bold text-primary hover:opacity-60 transition-opacity uppercase tracking-wider">
-              Order history
+              {t("order_history")}
               <Icons.ChevronRight size={14} />
             </Link>
           </div>
 
           <div className="grid grid-cols-4 gap-2">
-            <OrderStatusItem icon={<Icons.Wallet size={24} />} label="Belum bayar" href="/orders?status=unpaid" />
-            <OrderStatusItem icon={<Icons.Dikemas size={24} />} label="Dikemas" href="/orders?status=processing" />
-            <OrderStatusItem icon={<Icons.Delivery size={24} />} label="Dikirim" href="/orders?status=shipped" />
-            <OrderStatusItem icon={<Icons.Review size={24} />} label="Penilaian" href="/orders?status=review" />
+            <OrderStatusItem icon={<Icons.Wallet size={24} />} label={t("unpaid")} href="/orders?status=unpaid" />
+            <OrderStatusItem icon={<Icons.Dikemas size={24} />} label={t("packed")} href="/orders?status=processing" />
+            <OrderStatusItem icon={<Icons.Delivery size={24} />} label={t("shipped")} href="/orders?status=shipped" />
+            <OrderStatusItem icon={<Icons.Review size={24} />} label={t("review")} href="/orders?status=review" />
           </div>
         </motion.div>
 
@@ -116,33 +118,33 @@ export default function ProfilePage() {
         <motion.div variants={itemVariants} className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
           <div className="flex flex-col">
             <MenuListItem 
-              icon={<Icons.Favorite size={20} />} 
-              label="My Favorite" 
-              href="/profile/favorites"
-              showBorder 
-            />
+                icon={<Icons.Favorite size={20} />} 
+                label={t("my_favorite")} 
+                href="/profile/favorites"
+                showBorder 
+              />
             
             {isSeller ? (
-              <MenuListItem 
-                icon={<Icons.Store size={20} />} 
-                label="Dashboard Seller" 
-                href="/seller/dashboard"
-                showBorder 
-              />
-            ) : (
-              <MenuListItem 
-                icon={<Icons.Store size={20} />} 
-                label="Register as Seller" 
-                href="/onboarding/seller"
-                showBorder 
-              />
-            )}
+                <MenuListItem 
+                  icon={<Icons.Store size={20} />} 
+                  label={t("seller_dashboard")} 
+                  href="/seller/dashboard"
+                  showBorder 
+                />
+              ) : (
+                <MenuListItem 
+                  icon={<Icons.Store size={20} />} 
+                  label={t("register_as_seller")} 
+                  href="/onboarding/seller"
+                  showBorder 
+                />
+              )}
 
-            <MenuListItem 
-              icon={<Icons.Settings size={20} />} 
-              label="Setting" 
-              href="/profile/settings"
-            />
+              <MenuListItem 
+                icon={<Icons.Settings size={20} />} 
+                label={t("setting")} 
+                href="/profile/settings"
+              />
           </div>
         </motion.div>
         

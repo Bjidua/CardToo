@@ -29,6 +29,14 @@ type OrderItemRecord = Models.Row & OrderItemRow;
 const normalizeError = (error: unknown) =>
   error instanceof Error ? error.message : "Gagal memproses pesanan.";
 
+const createCheckoutIdempotencyKey = (userId: string) => {
+  const randomPart =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `checkout:${userId}:${randomPart}`;
+};
+
 const conditionLabelMap: Record<ProductConditionValue, ProductCondition> = {
   mint: "Mint",
   near_mint: "Near Mint",
@@ -56,6 +64,7 @@ const toBuyerOrder = (
 ): BuyerOrder => ({
   id: row.$id,
   orderCode: row.order_code,
+  idempotencyKey: row.idempotency_key || null,
   buyerUserId: row.buyer_user_id,
   sellerUserId: row.seller_user_id,
   storeId: row.store_id,
@@ -97,6 +106,7 @@ const toSellerOrder = (
 ): SellerOrder => ({
   id: row.$id,
   orderCode: row.order_code,
+  idempotencyKey: row.idempotency_key || null,
   buyerUserId: row.buyer_user_id,
   storeId: row.store_id,
   storeName,
@@ -198,6 +208,8 @@ export const orderService = {
       const { orderId } = await commerceGatewayService.createOrder({
         shippingMethod: input.shippingMethod,
         paymentMethod: input.paymentMethod,
+        idempotencyKey:
+          input.idempotencyKey || createCheckoutIdempotencyKey(userId),
       });
 
       const order = await this.getBuyerOrderById(userId, orderId);
@@ -356,6 +368,27 @@ export const orderService = {
     try {
       const { orderId: updatedOrderId } =
         await commerceGatewayService.markOrderAsCompleted(orderId);
+      const row = await tablesDB.getRow<OrderRecord>({
+        databaseId: appwriteConfig.databaseId,
+        tableId: ordersTableId,
+        rowId: updatedOrderId,
+      });
+
+      const [items, store] = await Promise.all([
+        getOrderItems(updatedOrderId),
+        storeService.getStoreById(row.store_id),
+      ]);
+
+      return toBuyerOrder(row, items, store?.name || "Toko CardToo");
+    } catch (error) {
+      throw new Error(normalizeError(error));
+    }
+  },
+
+  async markOrderAsCancelled(orderId: string) {
+    try {
+      const { orderId: updatedOrderId } =
+        await commerceGatewayService.markOrderAsCancelled(orderId);
       const row = await tablesDB.getRow<OrderRecord>({
         databaseId: appwriteConfig.databaseId,
         tableId: ordersTableId,

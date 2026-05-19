@@ -1,6 +1,8 @@
 import type { Models } from "appwrite";
 import {
+  Channel,
   Query,
+  realtime,
   tablesDB,
 } from "@/lib/appwrite/client";
 import { appwriteConfig } from "@/lib/appwrite/config";
@@ -40,6 +42,7 @@ const toChatMessage = (
   text: row.message_text,
   sender: row.sender_user_id === currentUserId ? "me" : "other",
   time: formatChatTime(row.$createdAt),
+  createdAt: row.$createdAt,
   isRead: row.is_read,
   senderUserId: row.sender_user_id,
   receiverUserId: row.receiver_user_id,
@@ -62,7 +65,7 @@ const getConversationUnreadCount = async (
   return result.total;
 };
 
-const resolveConversationName = async (
+const resolveConversationMeta = async (
   conversation: ConversationRecord,
   currentUserId: string
 ) => {
@@ -70,14 +73,25 @@ const resolveConversationName = async (
 
   if (isBuyer) {
     const store = await storeService.getStoreById(conversation.store_id);
-    if (store) return store.name;
+    if (store) {
+      return {
+        name: store.name,
+        avatar: store.logoUrl || store.bannerUrl || undefined,
+      };
+    }
 
     const sellerProfile = await profileService.getProfile(conversation.seller_user_id);
-    return sellerProfile?.full_name || sellerProfile?.username || "Seller";
+    return {
+      name: sellerProfile?.full_name || sellerProfile?.username || "Seller",
+      avatar: sellerProfile?.avatar_url || undefined,
+    };
   }
 
   const buyerProfile = await profileService.getProfile(conversation.buyer_user_id);
-  return buyerProfile?.full_name || buyerProfile?.username || "Pembeli";
+  return {
+    name: buyerProfile?.full_name || buyerProfile?.username || "Pembeli",
+    avatar: buyerProfile?.avatar_url || undefined,
+  };
 };
 
 export const chatService = {
@@ -144,14 +158,15 @@ export const chatService = {
 
       const contacts = await Promise.all(
         result.rows.map(async (conversation) => {
-          const [name, unread] = await Promise.all([
-            resolveConversationName(conversation, userId),
+          const [meta, unread] = await Promise.all([
+            resolveConversationMeta(conversation, userId),
             getConversationUnreadCount(conversation.$id, userId),
           ]);
 
           return {
             id: conversation.$id,
-            name,
+            name: meta.name,
+            avatar: meta.avatar,
             msg: conversation.last_message || "Mulai percakapan baru",
             time: formatChatTime(conversation.last_message_at),
             unread,
@@ -183,7 +198,7 @@ export const chatService = {
         return null;
       }
 
-      const [messagesResult, name] = await Promise.all([
+      const [messagesResult, meta] = await Promise.all([
         tablesDB.listRows<ChatMessageRecord>({
           databaseId: appwriteConfig.databaseId,
           tableId: chatMessagesTableId,
@@ -192,12 +207,13 @@ export const chatService = {
             Query.orderAsc("$createdAt"),
           ],
         }),
-        resolveConversationName(conversation, userId),
+        resolveConversationMeta(conversation, userId),
       ]);
 
       return {
         id: conversation.$id,
-        name,
+        name: meta.name,
+        avatar: meta.avatar,
         sellerUserId: conversation.seller_user_id,
         buyerUserId: conversation.buyer_user_id,
         storeId: conversation.store_id,
@@ -251,11 +267,43 @@ export const chatService = {
         text,
       });
 
+      const localTime = formatChatTime(
+        message.createdAt || new Date().toISOString()
+      );
+
       return message.senderUserId === userId
-        ? { ...message, sender: "me" as const }
-        : { ...message, sender: "other" as const };
+        ? { ...message, sender: "me" as const, time: localTime }
+        : { ...message, sender: "other" as const, time: localTime };
     } catch (error) {
       throw new Error(normalizeError(error));
     }
+  },
+
+  subscribeMessages(
+    conversationId: string,
+    onEvent: (message: ChatMessageRecord) => void
+  ) {
+    const channel = Channel.tablesdb(appwriteConfig.databaseId)
+      .table(chatMessagesTableId)
+      .row();
+
+    const subscriptionPromise = realtime.subscribe(
+      channel,
+      (event) => {
+        const payload = event.payload as Partial<ChatMessageRecord & { $id: string }>;
+        if (
+          payload &&
+          payload.conversation_id === conversationId &&
+          typeof payload.$id === "string"
+        ) {
+          onEvent(payload as ChatMessageRecord);
+        }
+      },
+      [Query.equal("conversation_id", [conversationId])]
+    );
+
+    return () => {
+      void subscriptionPromise.then((subscription) => subscription.unsubscribe());
+    };
   },
 };

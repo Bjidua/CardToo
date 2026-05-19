@@ -10,6 +10,7 @@ import { MenuListItem } from "@/components/ui/MenuListItem";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function SettingsPage() {
   return (
@@ -21,6 +22,7 @@ export default function SettingsPage() {
 
 function SettingsContent() {
   const { logout } = useAuth();
+  const { language, t } = useLanguage();
   const [pushNotif, setPushNotif] = useState(true);
 
   const containerVariants = {
@@ -34,7 +36,7 @@ function SettingsContent() {
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-white to-white/95">
       <StickyHeader
-        title="Settings"
+        title={t("settings")}
         variant="minimal"
         size="sm"
         leftAction={<BackButton variant="primary" />}
@@ -49,25 +51,25 @@ function SettingsContent() {
         >
           {/* Section: Account & Security */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Akun & Keamanan</h3>
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("account_security")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
-              <MenuListItem icon={<Icons.Profile size={20} />} label="Edit Profil" href="/profile/edit" showBorder />
-              <MenuListItem icon={<Icons.MapPin size={20} />} label="Alamat Saya" href="/profile/address" showBorder />
-              <MenuListItem icon={<Icons.Wallet size={20} />} label="Rekening Bank / Kartu" href="/profile/payments" showBorder />
-              <MenuListItem icon={<Icons.Lock size={20} />} label="Keamanan & Password" href="/profile/security" />
+              <MenuListItem icon={<Icons.Profile size={20} />} label={t("edit_profile")} href="/profile/edit" showBorder />
+              <MenuListItem icon={<Icons.MapPin size={20} />} label={t("my_address")} href="/profile/address" showBorder />
+              <MenuListItem icon={<Icons.Wallet size={20} />} label={t("bank_card")} href="/profile/payments" showBorder />
+              <MenuListItem icon={<Icons.Lock size={20} />} label={t("security_password")} href="/profile/security" />
             </div>
           </div>
 
           {/* Section: Settings */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Pengaturan</h3>
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("app_settings")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
               <div className="flex items-center justify-between p-5 border-b border-surface-muted">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-card bg-surface-hover flex items-center justify-center text-accent">
                     <Icons.Notification size={20} />
                   </div>
-                  <span className="text-[16px] font-medium text-text-main">Notifikasi</span>
+                  <span className="text-[16px] font-medium text-text-main">{t("notification")}</span>
                 </div>
                 <button 
                   onClick={() => setPushNotif(!pushNotif)}
@@ -82,17 +84,22 @@ function SettingsContent() {
                   />
                 </button>
               </div>
-              <MenuListItem icon={<Icons.Search size={20} />} label="Bahasa" href="/profile/language" subValue="Indonesia" />
+              <MenuListItem
+                icon={<Icons.Search size={20} />}
+                label={t("language")}
+                href="/profile/language"
+                subValue={language === "id" ? t("indonesia") : t("english")}
+              />
             </div>
           </div>
 
           {/* Section: Support */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">Bantuan & Info</h3>
+            <h3 className="text-[14px] font-bold text-text-sub uppercase tracking-wider px-2">{t("help_info")}</h3>
             <div className="bg-white rounded-card overflow-hidden shadow-soft border border-surface-muted">
-              <MenuListItem icon={<Icons.Help size={20} />} label="Pusat Bantuan" href="/help" showBorder />
-              <MenuListItem icon={<Icons.Privacy size={20} />} label="Kebijakan Privasi" href="/privacy" showBorder />
-              <MenuListItem icon={<Icons.Info size={20} />} label="Tentang CardToo" href="/about" />
+              <MenuListItem icon={<Icons.Help size={20} />} label={t("help_center")} href="/help" showBorder />
+              <MenuListItem icon={<Icons.Privacy size={20} />} label={t("privacy_policy")} href="/privacy" showBorder />
+              <MenuListItem icon={<Icons.Info size={20} />} label={t("about_cardtoo")} href="/about" />
             </div>
           </div>
 
@@ -103,7 +110,7 @@ function SettingsContent() {
               startIcon={<Icons.Logout size={22} />}
               onClick={() => void logout()}
             >
-              Logout
+              {t("logout")}
             </Button>
           </div>
         </motion.div>

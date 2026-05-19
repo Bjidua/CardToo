@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate:orders:idempotency": "node scripts/migrate-orders-idempotency-key.mjs"
   },
   "dependencies": {
     "appwrite": "^25.0.0",
